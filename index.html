@@ -1266,7 +1266,8 @@ JSON.stringify(saved)
 
 }
   function showSavedPosts(){
-
+savedPosts = JSON.parse(localStorage.getItem("yocewor_saved_posts")) || [];
+    
 let container = document.getElementById("savedPosts");
 
 container.innerHTML = "";
