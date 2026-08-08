@@ -1229,8 +1229,7 @@ button.textContent="↗ Share";
 function toggleSave(button){
 
 let post = button.closest(".post");
-
-let saved = JSON.parse(localStorage.getItem("yocewor_saved_posts")) || [];
+let savedPosts = JSON.parse(localStorage.getItem("yocewor_saved_posts")) || [];
 
 let postHTML = post.outerHTML;
 
@@ -1239,30 +1238,25 @@ if(button.classList.contains("saved")){
 button.classList.remove("saved");
 button.textContent = "🔖 Save";
 
-saved = saved.filter(function(item){
+savedPosts = savedPosts.filter(function(item){
 return item !== postHTML;
 });
-
-localStorage.setItem(
-"yocewor_saved_posts",
-JSON.stringify(saved)
-);
 
 }else{
 
 button.classList.add("saved");
 button.textContent = "✓ Saved";
 
-if(!saved.includes(postHTML)){
-saved.push(postHTML);
+if(!savedPosts.includes(postHTML)){
+savedPosts.push(postHTML);
+}
+
 }
 
 localStorage.setItem(
 "yocewor_saved_posts",
-JSON.stringify(saved)
+JSON.stringify(savedPosts)
 );
-
-}
 
 }
   function showSavedPosts(){
