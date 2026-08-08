@@ -1049,7 +1049,23 @@ document.getElementById("profileEditor").style.display="none";
 
 alert("Profile updated successfully!");
 }
+function toggleFollow(button){
 
+if(button.textContent.trim()==="Follow"){
+
+button.textContent="Following ✓";
+button.style.background="rgba(255,255,255,.10)";
+button.style.color="#9ee7bd";
+
+}else{
+
+button.textContent="Follow";
+button.style.background="linear-gradient(90deg,#6f9fff,#a86cff)";
+button.style.color="#fff";
+
+}
+
+}
 </script>
 
 </body>
