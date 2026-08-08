@@ -890,7 +890,7 @@ Welcome to my YOCEWOR profile.
 Edit Profile
 </button>
 
-  <button class="edit" onclick="showPage('saved')">
+<button class="edit" onclick="showPage('saved');showSavedPosts()">
 🔖 Saved Posts
 </button>
   
@@ -981,6 +981,7 @@ Profile
 <script>
 
 let userPostCount=0;
+let savedPosts=[];
 
 function showPage(page,element){
 
@@ -1226,17 +1227,63 @@ button.textContent="↗ Share";
 }
 function toggleSave(button){
 
+let post = button.closest(".post");
+
 if(button.classList.contains("saved")){
 
 button.classList.remove("saved");
 button.textContent = "🔖 Save";
+
+let index = savedPosts.indexOf(post);
+
+if(index !== -1){
+savedPosts.splice(index,1);
+}
 
 }else{
 
 button.classList.add("saved");
 button.textContent = "✓ Saved";
 
+if(!savedPosts.includes(post)){
+savedPosts.push(post);
 }
+
+}
+
+}
+  function showSavedPosts(){
+
+let container = document.getElementById("savedPosts");
+
+container.innerHTML = "";
+
+if(savedPosts.length === 0){
+
+container.innerHTML = `
+<div style="text-align:center;color:#858598;padding:40px 20px;">
+🔖 No saved posts yet.
+</div>
+`;
+
+return;
+
+}
+
+savedPosts.forEach(function(post){
+
+let copy = post.cloneNode(true);
+
+let saveButton = copy.querySelector(".save-btn");
+
+if(saveButton){
+saveButton.textContent = "✓ Saved";
+saveButton.classList.add("saved");
+}
+
+container.appendChild(copy);
+
+});
 
 }
 </script>
