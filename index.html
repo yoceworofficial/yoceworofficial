@@ -983,6 +983,7 @@ Profile
 let userPostCount=0;
 let savedPosts=JSON.parse(localStorage.getItem("yocewor_saved_posts")) || [];
 localStorage.setItem("yocewor_test", "ready");
+localStorage.removeItem("yocewor_saved_posts");
 
 function showPage(page,element){
 
