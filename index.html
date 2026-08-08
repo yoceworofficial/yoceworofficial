@@ -1,8 +1,4 @@
-<!-- इस version में Home + Explore + Create + Profile + Activity शामिल हैं -->
-
-<!-- IMPORTANT:
-अपने मौजूदा index.html के पूरे code को replace करके
-नीचे का पूरा code paste करना है। -->
+<!-- पूरा code index.html में paste करना है -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,11 +9,13 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+
 body{
 font-family:Arial,sans-serif;
 background:#090912;
-color:white;
+color:#fff;
 }
+
 .app{
 max-width:480px;
 min-height:100vh;
@@ -27,6 +25,7 @@ radial-gradient(circle at 10% 0%,rgba(92,110,255,.18),transparent 32%),
 radial-gradient(circle at 100% 5%,rgba(218,76,190,.14),transparent 30%),
 #090912;
 }
+
 header{
 height:70px;
 display:flex;
@@ -39,6 +38,7 @@ z-index:10;
 background:rgba(9,9,18,.92);
 backdrop-filter:blur(16px);
 }
+
 .logo{
 font-size:25px;
 font-weight:800;
@@ -47,152 +47,380 @@ background:linear-gradient(90deg,#76a9ff,#a878ff,#ef79ca);
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 }
+
 .circle{
-width:40px;height:40px;border-radius:50%;
-display:flex;align-items:center;justify-content:center;
+width:40px;
+height:40px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
 background:rgba(255,255,255,.08);
 }
+
 .page{display:none}
 .page.active{display:block}
+
 .title{
 padding:22px 18px 16px;
 font-size:22px;
 font-weight:700;
 }
-.welcome{padding:25px 18px 12px}
-.welcome h1{font-size:29px;line-height:1.15}
-.welcome p{color:#a4a4b8;margin-top:9px;font-size:14px}
+
+.welcome{
+padding:25px 18px 12px;
+}
+
+.welcome h1{
+font-size:29px;
+line-height:1.15;
+}
+
+.welcome p{
+color:#a4a4b8;
+margin-top:9px;
+font-size:14px;
+}
 
 .stories{
-display:flex;gap:14px;overflow-x:auto;
+display:flex;
+gap:14px;
+overflow-x:auto;
 padding:8px 18px 18px;
 scrollbar-width:none;
 }
+
 .stories::-webkit-scrollbar{display:none}
-.story{min-width:68px;text-align:center}
+
+.story{
+min-width:68px;
+text-align:center;
+}
+
 .story-avatar{
-width:62px;height:62px;padding:3px;border-radius:50%;
+width:62px;
+height:62px;
+padding:3px;
+border-radius:50%;
 background:linear-gradient(135deg,#6ca8ff,#a86fff,#ef70c8);
 }
+
 .story-inner{
-width:100%;height:100%;border-radius:50%;
+width:100%;
+height:100%;
+border-radius:50%;
 background:#181827;
-display:flex;align-items:center;justify-content:center;
+display:flex;
+align-items:center;
+justify-content:center;
 font-size:24px;
 }
-.story-name{margin-top:7px;font-size:11px;color:#c8c8d7}
+
+.story-name{
+margin-top:7px;
+font-size:11px;
+color:#c8c8d7;
+}
 
 .create{
-margin:5px 18px 18px;padding:14px;border-radius:18px;
+margin:5px 18px 18px;
+padding:14px;
+border-radius:18px;
 background:rgba(255,255,255,.06);
 border:1px solid rgba(255,255,255,.07);
+cursor:pointer;
 }
-.create-row{display:flex;align-items:center;gap:11px}
-.avatar{
-width:42px;height:42px;border-radius:50%;
-background:linear-gradient(135deg,#6d9eff,#ae6dff);
-display:flex;align-items:center;justify-content:center;
-}
-.placeholder{color:#9494a8;font-size:14px}
 
-.feed{padding:0 18px 100px}
+.create-row{
+display:flex;
+align-items:center;
+gap:11px;
+}
+
+.avatar{
+width:42px;
+height:42px;
+border-radius:50%;
+background:linear-gradient(135deg,#6d9eff,#ae6dff);
+display:flex;
+align-items:center;
+justify-content:center;
+flex-shrink:0;
+}
+
+.placeholder{
+color:#9494a8;
+font-size:14px;
+}
+
+.feed{
+padding:0 18px 100px;
+}
+
 .post{
-margin-bottom:17px;padding:16px;border-radius:20px;
+margin-bottom:17px;
+padding:16px;
+border-radius:20px;
 background:rgba(255,255,255,.055);
 border:1px solid rgba(255,255,255,.075);
 }
-.user{display:flex;align-items:center;gap:10px}
-.user small{display:block;margin-top:3px;color:#858599;font-size:11px}
-.post-text{margin-top:14px;color:#dedee8;line-height:1.55;font-size:14px}
+
+.user{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.user small{
+display:block;
+margin-top:3px;
+color:#858599;
+font-size:11px;
+}
+
+.post-text{
+margin-top:14px;
+color:#dedee8;
+line-height:1.55;
+font-size:14px;
+white-space:pre-wrap;
+}
+
 .post-image{
-margin-top:14px;height:190px;border-radius:15px;
-display:flex;align-items:center;justify-content:center;
-font-size:42px;background:linear-gradient(135deg,#1c2850,#41264e);
+margin-top:14px;
+height:170px;
+border-radius:15px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:42px;
+background:linear-gradient(135deg,#1c2850,#41264e);
+}
+
+.post-actions{
+display:flex;
+justify-content:space-between;
+padding-top:14px;
+margin-top:13px;
+border-top:1px solid rgba(255,255,255,.07);
+}
+
+.action{
+color:#a6a6b8;
+font-size:13px;
+cursor:pointer;
 }
 
 /* EXPLORE */
+
 .search{
-margin:0 18px 18px;padding:14px 16px;
-border-radius:16px;background:rgba(255,255,255,.07);
+margin:0 18px 18px;
+padding:14px 16px;
+border-radius:16px;
+background:rgba(255,255,255,.07);
 color:#9090a3;
 }
+
 .topics{
-display:flex;gap:10px;padding:0 18px 18px;overflow-x:auto;
+display:flex;
+gap:10px;
+padding:0 18px 18px;
+overflow-x:auto;
 }
+
 .topic{
-padding:9px 15px;border-radius:20px;white-space:nowrap;
-background:rgba(255,255,255,.07);font-size:12px;color:#c7c7d6;
+padding:9px 15px;
+border-radius:20px;
+white-space:nowrap;
+background:rgba(255,255,255,.07);
+font-size:12px;
+color:#c7c7d6;
 }
-.topic.active{background:linear-gradient(90deg,#6f9fff,#a86cff);color:white}
+
+.topic.active{
+background:linear-gradient(90deg,#6f9fff,#a86cff);
+color:white;
+}
+
 .grid{
-display:grid;grid-template-columns:1fr 1fr;gap:10px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
 padding:0 18px 100px;
 }
+
 .card{
-height:150px;border-radius:18px;padding:15px;
-display:flex;flex-direction:column;justify-content:flex-end;
+height:150px;
+border-radius:18px;
+padding:15px;
+display:flex;
+flex-direction:column;
+justify-content:flex-end;
 background:linear-gradient(135deg,#202d59,#542c55);
 }
+
 .card:nth-child(2){background:linear-gradient(135deg,#253f38,#59442a)}
 .card:nth-child(3){background:linear-gradient(135deg,#342052,#263d68)}
 .card:nth-child(4){background:linear-gradient(135deg,#52263d,#303057)}
 .card:nth-child(5){background:linear-gradient(135deg,#244c59,#49326a)}
 .card:nth-child(6){background:linear-gradient(135deg,#533b25,#303d5d)}
-.emoji{font-size:30px;margin-bottom:auto}
-.card small{color:#c1c1d0;margin-top:4px}
 
-/* CREATE */
-.create-post{padding:0 18px 100px}
+.emoji{
+font-size:30px;
+margin-bottom:auto;
+}
+
+.card small{
+color:#c1c1d0;
+margin-top:4px;
+}
+
+/* CREATE POST */
+
+.create-post{
+padding:0 18px 100px;
+}
+
 .box{
 background:rgba(255,255,255,.055);
 border:1px solid rgba(255,255,255,.08);
-border-radius:20px;padding:16px;
+border-radius:20px;
+padding:16px;
 }
+
 textarea{
-width:100%;min-height:150px;resize:none;border:0;outline:0;
-border-radius:15px;padding:15px;background:rgba(255,255,255,.06);
-color:white;font-size:15px;font-family:inherit;
+width:100%;
+min-height:160px;
+resize:none;
+border:0;
+outline:0;
+border-radius:15px;
+padding:15px;
+background:rgba(255,255,255,.06);
+color:white;
+font-size:15px;
+font-family:inherit;
 }
-textarea::placeholder{color:#858598}
-.tools{display:flex;gap:10px;margin-top:14px}
+
+textarea::placeholder{
+color:#858598;
+}
+
+.tools{
+display:flex;
+gap:10px;
+margin-top:14px;
+}
+
 .tool{
-flex:1;padding:12px 5px;border-radius:13px;text-align:center;
-background:rgba(255,255,255,.06);color:#b8b8c8;font-size:12px;
+flex:1;
+padding:12px 5px;
+border-radius:13px;
+text-align:center;
+background:rgba(255,255,255,.06);
+color:#b8b8c8;
+font-size:12px;
 }
+
 .publish{
-width:100%;margin-top:16px;padding:14px;border:0;border-radius:15px;
-color:white;font-weight:700;background:linear-gradient(90deg,#6f9fff,#a86cff,#e976c8);
+width:100%;
+margin-top:16px;
+padding:14px;
+border:0;
+border-radius:15px;
+color:white;
+font-weight:700;
+font-size:15px;
+background:linear-gradient(90deg,#6f9fff,#a86cff,#e976c8);
+cursor:pointer;
+}
+
+.status{
+display:none;
+text-align:center;
+color:#8fd9ad;
+font-size:13px;
+margin-top:12px;
 }
 
 /* PROFILE */
-.profile{padding:10px 18px 100px}
+
+.profile{
+padding:10px 18px 100px;
+}
+
 .profile-card{
-text-align:center;padding:22px 18px;border-radius:22px;
+text-align:center;
+padding:22px 18px;
+border-radius:22px;
 background:rgba(255,255,255,.055);
 border:1px solid rgba(255,255,255,.075);
 }
+
 .profile-avatar{
-width:88px;height:88px;margin:auto;border-radius:50%;
-display:flex;align-items:center;justify-content:center;font-size:40px;
+width:88px;
+height:88px;
+margin:auto;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
 background:linear-gradient(135deg,#6f9fff,#a86cff,#e976c8);
 }
-.profile-name{font-size:22px;font-weight:700;margin-top:13px}
-.username{color:#9090a3;margin-top:5px;font-size:13px}
-.bio{color:#c7c7d5;font-size:13px;line-height:1.5;margin:13px auto}
-.stats{
-display:flex;justify-content:space-around;margin-top:18px;
-padding-top:17px;border-top:1px solid rgba(255,255,255,.07);
+
+.profile-name{
+font-size:22px;
+font-weight:700;
+margin-top:13px;
 }
-.stat strong{display:block;font-size:17px}
-.stat span{color:#9090a3;font-size:11px}
+
+.username{
+color:#9090a3;
+margin-top:5px;
+font-size:13px;
+}
+
+.bio{
+color:#c7c7d5;
+font-size:13px;
+line-height:1.5;
+margin:13px auto;
+}
+
+.stats{
+display:flex;
+justify-content:space-around;
+margin-top:18px;
+padding-top:17px;
+border-top:1px solid rgba(255,255,255,.07);
+}
+
+.stat strong{
+display:block;
+font-size:17px;
+}
+
+.stat span{
+color:#9090a3;
+font-size:11px;
+}
+
 .edit{
-margin-top:18px;width:100%;padding:12px;border-radius:13px;
+margin-top:18px;
+width:100%;
+padding:12px;
+border-radius:13px;
 border:1px solid rgba(255,255,255,.12);
-background:rgba(255,255,255,.06);color:white;
+background:rgba(255,255,255,.06);
+color:white;
 }
 
 /* ACTIVITY */
-.activity{padding:0 18px 100px}
+
+.activity{
+padding:0 18px 100px;
+}
 
 .activity-card{
 display:flex;
@@ -236,23 +464,49 @@ color:white;
 font-size:11px;
 }
 
+/* NAV */
+
 nav{
-position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-width:100%;max-width:480px;height:67px;
-display:flex;justify-content:space-around;align-items:center;
+position:fixed;
+bottom:0;
+left:50%;
+transform:translateX(-50%);
+width:100%;
+max-width:480px;
+height:67px;
+display:flex;
+justify-content:space-around;
+align-items:center;
 background:rgba(10,10,19,.96);
 backdrop-filter:blur(18px);
 border-top:1px solid rgba(255,255,255,.08);
 z-index:20;
 }
+
 .nav-item{
-text-align:center;color:#858597;font-size:10px;cursor:pointer;
+text-align:center;
+color:#858597;
+font-size:10px;
+cursor:pointer;
 }
-.nav-item span{display:block;font-size:20px;margin-bottom:4px}
-.nav-item.active{color:white}
+
+.nav-item span{
+display:block;
+font-size:20px;
+margin-bottom:4px;
+}
+
+.nav-item.active{
+color:white;
+}
+
 .create-nav{
-width:45px;height:45px;border-radius:15px;
-display:flex;align-items:center;justify-content:center;
+width:45px;
+height:45px;
+border-radius:15px;
+display:flex;
+align-items:center;
+justify-content:center;
 font-size:25px;
 background:linear-gradient(135deg,#719fff,#a76fff,#e976c8);
 cursor:pointer;
@@ -270,6 +524,7 @@ cursor:pointer;
 </header>
 
 <!-- HOME -->
+
 <section id="home" class="page active">
 
 <div class="welcome">
@@ -280,38 +535,74 @@ cursor:pointer;
 <div class="title">Stories</div>
 
 <div class="stories">
-<div class="story"><div class="story-avatar"><div class="story-inner">＋</div></div><div class="story-name">Your Story</div></div>
-<div class="story"><div class="story-avatar"><div class="story-inner">🌍</div></div><div class="story-name">World</div></div>
-<div class="story"><div class="story-avatar"><div class="story-inner">🎨</div></div><div class="story-name">Creative</div></div>
-<div class="story"><div class="story-avatar"><div class="story-inner">🎵</div></div><div class="story-name">Music</div></div>
+<div class="story">
+<div class="story-avatar"><div class="story-inner">＋</div></div>
+<div class="story-name">Your Story</div>
+</div>
+
+<div class="story">
+<div class="story-avatar"><div class="story-inner">🌍</div></div>
+<div class="story-name">World</div>
+</div>
+
+<div class="story">
+<div class="story-avatar"><div class="story-inner">🎨</div></div>
+<div class="story-name">Creative</div>
+</div>
+
+<div class="story">
+<div class="story-avatar"><div class="story-inner">🎵</div></div>
+<div class="story-name">Music</div>
+</div>
 </div>
 
 <div class="create" onclick="showPage('create')">
 <div class="create-row">
 <div class="avatar">👤</div>
-<div class="placeholder">Share something with your world...</div>
+<div class="placeholder">
+Share something with your world...
+</div>
 </div>
 </div>
 
 <div class="title">Your Feed</div>
 
-<main class="feed">
+<main id="feed" class="feed">
+
 <article class="post">
 <div class="user">
 <div class="avatar">🌎</div>
-<div><strong>YOCEWOR World</strong><small>2 min ago</small></div>
+<div>
+<strong>YOCEWOR World</strong>
+<small>2 min ago</small>
 </div>
-<div class="post-text">Welcome to YOCEWOR — your voice, your ideas and your world in one place.</div>
+</div>
+
+<div class="post-text">
+Welcome to YOCEWOR — your voice, your ideas and your world in one place.
+</div>
+
 <div class="post-image">🌎</div>
+
+<div class="post-actions">
+<div class="action">♡ Like</div>
+<div class="action">💬 Comment</div>
+<div class="action">↗ Share</div>
+</div>
 </article>
+
 </main>
 </section>
 
 <!-- EXPLORE -->
+
 <section id="explore" class="page">
 
 <div class="title">Explore</div>
-<div class="search">⌕ Search people, topics and ideas...</div>
+
+<div class="search">
+⌕ Search people, topics and ideas...
+</div>
 
 <div class="topics">
 <div class="topic active">For You</div>
@@ -321,29 +612,71 @@ cursor:pointer;
 </div>
 
 <div class="grid">
-<div class="card"><div class="emoji">🌍</div><strong>World</strong><small>Discover the world</small></div>
-<div class="card"><div class="emoji">🎨</div><strong>Creative</strong><small>Ideas & creativity</small></div>
-<div class="card"><div class="emoji">🎵</div><strong>Music</strong><small>Sounds & artists</small></div>
-<div class="card"><div class="emoji">⚽</div><strong>Sports</strong><small>What's happening</small></div>
-<div class="card"><div class="emoji">📚</div><strong>Learning</strong><small>Learn something new</small></div>
-<div class="card"><div class="emoji">🚀</div><strong>Technology</strong><small>Future & innovation</small></div>
+
+<div class="card">
+<div class="emoji">🌍</div>
+<strong>World</strong>
+<small>Discover the world</small>
+</div>
+
+<div class="card">
+<div class="emoji">🎨</div>
+<strong>Creative</strong>
+<small>Ideas & creativity</small>
+</div>
+
+<div class="card">
+<div class="emoji">🎵</div>
+<strong>Music</strong>
+<small>Sounds & artists</small>
+</div>
+
+<div class="card">
+<div class="emoji">⚽</div>
+<strong>Sports</strong>
+<small>What's happening</small>
+</div>
+
+<div class="card">
+<div class="emoji">📚</div>
+<strong>Learning</strong>
+<small>Learn something new</small>
+</div>
+
+<div class="card">
+<div class="emoji">🚀</div>
+<strong>Technology</strong>
+<small>Future & innovation</small>
+</div>
+
 </div>
 </section>
 
-<!-- CREATE -->
+<!-- CREATE POST -->
+
 <section id="create" class="page">
 
 <div class="title">Create Post</div>
 
 <div class="create-post">
+
 <div class="box">
 
 <div class="create-row" style="margin-bottom:18px">
+
 <div class="avatar">👤</div>
-<div><strong>Your Profile</strong><small style="display:block;color:#858598;margin-top:4px">Share with your world</small></div>
+
+<div>
+<strong>Your Profile</strong>
+<small style="display:block;color:#858598;margin-top:4px">
+Share with your world
+</small>
 </div>
 
-<textarea placeholder="What's on your mind? Share something with your world..."></textarea>
+</div>
+
+<textarea id="postInput"
+placeholder="What's on your mind? Share something with your world..."></textarea>
 
 <div class="tools">
 <div class="tool">📷 Photo</div>
@@ -351,13 +684,20 @@ cursor:pointer;
 <div class="tool">😊 Feeling</div>
 </div>
 
-<button class="publish">Publish Post</button>
+<button class="publish" onclick="publishPost()">
+Publish Post
+</button>
+
+<div id="status" class="status">
+✓ Post published successfully
+</div>
 
 </div>
 </div>
 </section>
 
 <!-- ACTIVITY -->
+
 <section id="activity" class="page">
 
 <div class="title">Activity</div>
@@ -386,6 +726,7 @@ cursor:pointer;
 <strong>World Explorer</strong> started following you.
 <span>32 minutes ago</span>
 </div>
+
 <button class="follow">Follow</button>
 </div>
 
@@ -397,27 +738,23 @@ cursor:pointer;
 </div>
 </div>
 
-<div class="activity-card">
-<div class="activity-icon">🌟</div>
-<div class="activity-text">
-Your post is getting attention in <strong>Creative</strong>.
-<span>2 hours ago</span>
-</div>
-</div>
-
 </div>
 </section>
 
 <!-- PROFILE -->
+
 <section id="profile" class="page">
 
 <div class="title">Profile</div>
 
 <div class="profile">
+
 <div class="profile-card">
 
 <div class="profile-avatar">👤</div>
+
 <div class="profile-name">Your Name</div>
+
 <div class="username">@yourworld</div>
 
 <div class="bio">
@@ -426,35 +763,63 @@ Welcome to my YOCEWOR profile.
 </div>
 
 <div class="stats">
-<div class="stat"><strong>0</strong><span>Posts</span></div>
-<div class="stat"><strong>0</strong><span>Followers</span></div>
-<div class="stat"><strong>0</strong><span>Following</span></div>
+
+<div class="stat">
+<strong id="postCount">0</strong>
+<span>Posts</span>
 </div>
 
-<button class="edit">Edit Profile</button>
+<div class="stat">
+<strong>0</strong>
+<span>Followers</span>
+</div>
+
+<div class="stat">
+<strong>0</strong>
+<span>Following</span>
+</div>
+
+</div>
+
+<button class="edit">
+Edit Profile
+</button>
 
 </div>
 </div>
 </section>
 
+<!-- NAV -->
+
 <nav>
 
-<div class="nav-item active" onclick="showPage('home',this)">
-<span>⌂</span>Home
+<div class="nav-item active"
+onclick="showPage('home',this)">
+<span>⌂</span>
+Home
 </div>
 
-<div class="nav-item" onclick="showPage('explore',this)">
-<span>◉</span>Explore
+<div class="nav-item"
+onclick="showPage('explore',this)">
+<span>◉</span>
+Explore
 </div>
 
-<div class="create-nav" onclick="showPage('create')">＋</div>
-
-<div class="nav-item" onclick="showPage('activity',this)">
-<span>♡</span>Activity
+<div class="create-nav"
+onclick="showPage('create')">
+＋
 </div>
 
-<div class="nav-item" onclick="showPage('profile',this)">
-<span>◯</span>Profile
+<div class="nav-item"
+onclick="showPage('activity',this)">
+<span>♡</span>
+Activity
+</div>
+
+<div class="nav-item"
+onclick="showPage('profile',this)">
+<span>◯</span>
+Profile
 </div>
 
 </nav>
@@ -462,6 +827,8 @@ Welcome to my YOCEWOR profile.
 </div>
 
 <script>
+
+let userPostCount = 0;
 
 function showPage(page,element){
 
@@ -480,6 +847,58 @@ element.classList.add('active');
 }
 
 window.scrollTo(0,0);
+}
+
+function publishPost(){
+
+const input = document.getElementById("postInput");
+const text = input.value.trim();
+
+if(text === ""){
+alert("Please write something first.");
+return;
+}
+
+const post = document.createElement("article");
+
+post.className = "post";
+
+post.innerHTML = `
+<div class="user">
+<div class="avatar">👤</div>
+<div>
+<strong>Your Name</strong>
+<small>Just now</small>
+</div>
+</div>
+
+<div class="post-text"></div>
+
+<div class="post-actions">
+<div class="action">♡ Like</div>
+<div class="action">💬 Comment</div>
+<div class="action">↗ Share</div>
+</div>
+`;
+
+post.querySelector(".post-text").textContent = text;
+
+document.getElementById("feed").prepend(post);
+
+input.value = "";
+
+userPostCount++;
+
+document.getElementById("postCount").textContent = userPostCount;
+
+document.getElementById("status").style.display = "block";
+
+setTimeout(function(){
+document.getElementById("status").style.display = "none";
+},2500);
+
+showPage("home");
+
 }
 
 </script>
