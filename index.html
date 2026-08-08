@@ -1230,26 +1230,37 @@ function toggleSave(button){
 
 let post = button.closest(".post");
 
+let saved = JSON.parse(localStorage.getItem("yocewor_saved_posts")) || [];
+
+let postHTML = post.outerHTML;
+
 if(button.classList.contains("saved")){
 
 button.classList.remove("saved");
 button.textContent = "🔖 Save";
 
-let index = savedPosts.indexOf(post);
+saved = saved.filter(function(item){
+return item !== postHTML;
+});
 
-if(index !== -1){
-savedPosts.splice(index,1);
-}
+localStorage.setItem(
+"yocewor_saved_posts",
+JSON.stringify(saved)
+);
 
 }else{
 
 button.classList.add("saved");
 button.textContent = "✓ Saved";
 
-if(!savedPosts.includes(post)){
-savedPosts.push(post);
-localStorage.setItem("yocewor_saved_posts", JSON.stringify(savedPosts.map(p => p.outerHTML)));
+if(!saved.includes(postHTML)){
+saved.push(postHTML);
 }
+
+localStorage.setItem(
+"yocewor_saved_posts",
+JSON.stringify(saved)
+);
 
 }
 
