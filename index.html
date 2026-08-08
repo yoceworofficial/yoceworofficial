@@ -1167,7 +1167,9 @@ comment.className = "comment-item";
 comment.textContent = "👤 Your Name: " + text;
 
 list.appendChild(comment);
-
+let countElement = button.querySelector(".comment-count");
+let count = parseInt(countElement.textContent);
+countElement.textContent = count + 1;
 input.value = "";
 
 };
