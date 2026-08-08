@@ -256,7 +256,7 @@ margin-bottom:auto;
 .explore-card strong{font-size:14px}
 .explore-card small{color:#c1c1d0;margin-top:4px}
 
-/* CREATE POST */
+/* CREATE */
 
 .create-post{
 padding:0 18px 100px;
@@ -290,9 +290,7 @@ font-size:15px;
 font-family:inherit;
 }
 
-textarea::placeholder{
-color:#858598;
-}
+textarea::placeholder{color:#858598}
 
 .post-tools{
 display:flex;
@@ -320,15 +318,99 @@ color:#fff;
 font-weight:700;
 font-size:15px;
 background:linear-gradient(90deg,#6f9fff,#a86cff,#e976c8);
-cursor:pointer;
 }
 
-.status{
+/* PROFILE */
+
+.profile{
+padding:10px 18px 100px;
+}
+
+.profile-card{
 text-align:center;
-margin-top:12px;
-color:#8fd9ad;
+padding:22px 18px;
+border-radius:22px;
+background:rgba(255,255,255,.055);
+border:1px solid rgba(255,255,255,.075);
+}
+
+.profile-avatar{
+width:88px;
+height:88px;
+margin:auto;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
+background:linear-gradient(135deg,#6f9fff,#a86cff,#e976c8);
+}
+
+.profile-name{
+font-size:22px;
+font-weight:700;
+margin-top:13px;
+}
+
+.username{
+color:#9090a3;
+margin-top:5px;
 font-size:13px;
-display:none;
+}
+
+.bio{
+color:#c7c7d5;
+font-size:13px;
+line-height:1.5;
+margin:13px auto;
+max-width:300px;
+}
+
+.profile-stats{
+display:flex;
+justify-content:space-around;
+margin-top:18px;
+padding-top:17px;
+border-top:1px solid rgba(255,255,255,.07);
+}
+
+.stat strong{
+display:block;
+font-size:17px;
+}
+
+.stat span{
+color:#9090a3;
+font-size:11px;
+margin-top:4px;
+display:block;
+}
+
+.edit-profile{
+margin-top:18px;
+width:100%;
+padding:12px;
+border-radius:13px;
+border:1px solid rgba(255,255,255,.12);
+background:rgba(255,255,255,.06);
+color:#fff;
+font-weight:600;
+}
+
+.profile-section{
+font-size:18px;
+font-weight:700;
+margin:25px 2px 12px;
+}
+
+.profile-post{
+padding:15px;
+border-radius:18px;
+background:rgba(255,255,255,.055);
+border:1px solid rgba(255,255,255,.07);
+color:#d5d5e0;
+font-size:14px;
+line-height:1.5;
 }
 
 /* NAV */
@@ -435,7 +517,6 @@ cursor:pointer;
 <main class="feed">
 
 <article class="post">
-
 <div class="post-head">
 <div class="user">
 <div class="avatar">🌎</div>
@@ -457,7 +538,6 @@ Welcome to YOCEWOR — your voice, your ideas and your world in one place.
 <div class="action">💬 Comment</div>
 <div class="action">↗ Share</div>
 </div>
-
 </article>
 
 </main>
@@ -517,10 +597,9 @@ Welcome to YOCEWOR — your voice, your ideas and your world in one place.
 </div>
 
 </div>
-
 </section>
 
-<!-- CREATE POST -->
+<!-- CREATE -->
 
 <section id="create" class="page">
 
@@ -539,8 +618,7 @@ Welcome to YOCEWOR — your voice, your ideas and your world in one place.
 </div>
 </div>
 
-<textarea id="postText"
-placeholder="What's on your mind? Share something with your world..."></textarea>
+<textarea placeholder="What's on your mind? Share something with your world..."></textarea>
 
 <div class="post-tools">
 <div class="tool">📷 Photo</div>
@@ -548,12 +626,61 @@ placeholder="What's on your mind? Share something with your world..."></textarea
 <div class="tool">😊 Feeling</div>
 </div>
 
-<button class="publish" onclick="publishPost()">Publish Post</button>
+<button class="publish">Publish Post</button>
 
-<div id="status" class="status">
-✓ Your post is ready!
+</div>
+</div>
+</section>
+
+<!-- PROFILE -->
+
+<section id="profile" class="page">
+
+<div class="section-title">Profile</div>
+
+<div class="profile">
+
+<div class="profile-card">
+
+<div class="profile-avatar">👤</div>
+
+<div class="profile-name">Your Name</div>
+
+<div class="username">@yourworld</div>
+
+<div class="bio">
+Your voice. Your ideas. Your world.
+Welcome to my YOCEWOR profile.
 </div>
 
+<div class="profile-stats">
+
+<div class="stat">
+<strong>0</strong>
+<span>Posts</span>
+</div>
+
+<div class="stat">
+<strong>0</strong>
+<span>Followers</span>
+</div>
+
+<div class="stat">
+<strong>0</strong>
+<span>Following</span>
+</div>
+
+</div>
+
+<button class="edit-profile">Edit Profile</button>
+
+</div>
+
+<div class="profile-section">Your Posts</div>
+
+<div class="profile-post">
+You haven't shared anything yet.
+Your first post can start your world here.
 </div>
 
 </div>
@@ -581,7 +708,7 @@ Explore
 Activity
 </div>
 
-<div class="nav-item">
+<div class="nav-item" onclick="showPage('profile',this)">
 <span>◯</span>
 Profile
 </div>
@@ -600,39 +727,18 @@ p.classList.remove('active');
 
 document.getElementById(page).classList.add('active');
 
-if(element){
-
 document.querySelectorAll('.nav-item').forEach(function(item){
 item.classList.remove('active');
 });
 
+if(element){
 element.classList.add('active');
-
 }
 
 window.scrollTo(0,0);
 }
 
-function publishPost(){
-
-let text=document.getElementById("postText").value.trim();
-
-if(text===""){
-alert("Please write something first.");
-return;
-}
-
-document.getElementById("status").style.display="block";
-
-document.getElementById("postText").value="";
-
-setTimeout(function(){
-document.getElementById("status").style.display="none";
-},3000);
-
-}
-
 </script>
 
 </body>
-</html>
+  </html>
