@@ -570,6 +570,42 @@ font-size:25px;
 background:linear-gradient(135deg,#719fff,#a76fff,#e976c8);
 cursor:pointer;
 }
+  .comment-box{
+margin-top:12px;
+padding:12px;
+border-radius:14px;
+background:rgba(255,255,255,.05);
+}
+
+.comment-input{
+width:calc(100% - 65px);
+padding:11px;
+border:0;
+outline:0;
+border-radius:10px;
+background:rgba(255,255,255,.08);
+color:white;
+}
+
+.comment-send{
+width:55px;
+margin-left:5px;
+padding:11px 5px;
+border:0;
+border-radius:10px;
+background:linear-gradient(90deg,#6f9fff,#a86cff);
+color:white;
+font-size:11px;
+}
+
+.comment-item{
+margin-top:9px;
+padding:10px;
+border-radius:10px;
+background:rgba(255,255,255,.06);
+color:#ddd;
+font-size:13px;
+}
 </style>
 </head>
 
@@ -1091,25 +1127,50 @@ countElement.textContent = count;
 }
 function toggleComment(button){
 
-let countElement = button.querySelector(".comment-count");
+let post = button.closest(".post");
 
-let count = parseInt(countElement.textContent);
+let oldBox = post.querySelector(".comment-box");
 
-if(button.classList.contains("commented")){
-
-count--;
-button.classList.remove("commented");
-button.firstChild.textContent = "💬 Comment ";
-
-}else{
-
-count++;
-button.classList.add("commented");
-button.firstChild.textContent = "💬 Commented ";
-
+if(oldBox){
+oldBox.remove();
+return;
 }
 
-countElement.textContent = count;
+let commentBox = document.createElement("div");
+
+commentBox.className = "comment-box";
+
+commentBox.innerHTML = `
+<input type="text" class="comment-input" placeholder="Write a comment...">
+<button class="comment-send">Post</button>
+<div class="comments-list"></div>
+`;
+
+post.querySelector(".post-actions").after(commentBox);
+
+let input = commentBox.querySelector(".comment-input");
+let send = commentBox.querySelector(".comment-send");
+let list = commentBox.querySelector(".comments-list");
+
+send.onclick = function(){
+
+let text = input.value.trim();
+
+if(text === ""){
+return;
+}
+
+let comment = document.createElement("div");
+
+comment.className = "comment-item";
+
+comment.textContent = "👤 Your Name: " + text;
+
+list.appendChild(comment);
+
+input.value = "";
+
+};
 
 }
 </script>
