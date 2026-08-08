@@ -32,7 +32,7 @@ padding:18px;
 position:sticky;
 top:0;
 z-index:10;
-background:rgba(9,9,18,.9);
+background:rgba(9,9,18,.92);
 backdrop-filter:blur(16px);
 }
 
@@ -44,8 +44,6 @@ background:linear-gradient(90deg,#76a9ff,#a878ff,#ef79ca);
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
 }
-
-.header-icons{display:flex;gap:9px}
 
 .circle{
 width:40px;
@@ -60,15 +58,15 @@ background:rgba(255,255,255,.08);
 .page{display:none}
 .page.active{display:block}
 
+.section-title{
+padding:20px 18px 15px;
+font-size:21px;
+font-weight:700;
+}
+
 .welcome{padding:25px 18px 12px}
 .welcome h1{font-size:29px;line-height:1.15}
 .welcome p{color:#a4a4b8;margin-top:9px;font-size:14px}
-
-.section-title{
-padding:18px;
-font-size:19px;
-font-weight:700;
-}
 
 .stories{
 display:flex;
@@ -80,10 +78,7 @@ scrollbar-width:none;
 
 .stories::-webkit-scrollbar{display:none}
 
-.story{
-min-width:68px;
-text-align:center;
-}
+.story{min-width:68px;text-align:center}
 
 .story-avatar{
 width:62px;
@@ -159,14 +154,13 @@ gap:10px;
 }
 
 .user strong{font-size:14px}
+
 .user small{
 display:block;
 margin-top:3px;
 color:#858599;
 font-size:11px;
 }
-
-.more{color:#88889b}
 
 .post-text{
 margin-top:14px;
@@ -199,8 +193,6 @@ color:#a6a6b8;
 font-size:13px;
 cursor:pointer;
 }
-
-.action.liked{color:#ff79c9}
 
 /* EXPLORE */
 
@@ -247,7 +239,6 @@ padding:15px;
 display:flex;
 flex-direction:column;
 justify-content:flex-end;
-overflow:hidden;
 background:linear-gradient(135deg,#202d59,#542c55);
 }
 
@@ -257,9 +248,90 @@ background:linear-gradient(135deg,#202d59,#542c55);
 .explore-card:nth-child(5){background:linear-gradient(135deg,#244c59,#49326a)}
 .explore-card:nth-child(6){background:linear-gradient(135deg,#533b25,#303d5d)}
 
-.explore-card .emoji{font-size:30px;margin-bottom:auto}
+.emoji{
+font-size:30px;
+margin-bottom:auto;
+}
+
 .explore-card strong{font-size:14px}
 .explore-card small{color:#c1c1d0;margin-top:4px}
+
+/* CREATE POST */
+
+.create-post{
+padding:0 18px 100px;
+}
+
+.post-box{
+background:rgba(255,255,255,.055);
+border:1px solid rgba(255,255,255,.08);
+border-radius:20px;
+padding:16px;
+}
+
+.user-row{
+display:flex;
+align-items:center;
+gap:11px;
+margin-bottom:18px;
+}
+
+textarea{
+width:100%;
+min-height:150px;
+resize:none;
+border:0;
+outline:none;
+border-radius:15px;
+padding:15px;
+background:rgba(255,255,255,.06);
+color:#fff;
+font-size:15px;
+font-family:inherit;
+}
+
+textarea::placeholder{
+color:#858598;
+}
+
+.post-tools{
+display:flex;
+gap:10px;
+margin-top:14px;
+}
+
+.tool{
+flex:1;
+padding:12px 8px;
+border-radius:13px;
+text-align:center;
+background:rgba(255,255,255,.06);
+color:#b8b8c8;
+font-size:12px;
+}
+
+.publish{
+width:100%;
+margin-top:16px;
+padding:14px;
+border:0;
+border-radius:15px;
+color:#fff;
+font-weight:700;
+font-size:15px;
+background:linear-gradient(90deg,#6f9fff,#a86cff,#e976c8);
+cursor:pointer;
+}
+
+.status{
+text-align:center;
+margin-top:12px;
+color:#8fd9ad;
+font-size:13px;
+display:none;
+}
+
+/* NAV */
 
 nav{
 position:fixed;
@@ -313,10 +385,7 @@ cursor:pointer;
 
 <header>
 <div class="logo">YOCEWOR</div>
-<div class="header-icons">
-<div class="circle">⌕</div>
 <div class="circle">♧</div>
-</div>
 </header>
 
 <!-- HOME -->
@@ -352,25 +421,21 @@ cursor:pointer;
 <div class="story-name">Music</div>
 </div>
 
-<div class="story">
-<div class="story-avatar"><div class="story-inner">⚽</div></div>
-<div class="story-name">Sports</div>
-</div>
-
 </section>
 
-<section class="create">
+<div class="create" onclick="showPage('create')">
 <div class="create-row">
 <div class="avatar">👤</div>
 <div class="placeholder">Share something with your world...</div>
 </div>
-</section>
+</div>
 
 <div class="section-title">Your Feed</div>
 
 <main class="feed">
 
 <article class="post">
+
 <div class="post-head">
 <div class="user">
 <div class="avatar">🌎</div>
@@ -379,7 +444,6 @@ cursor:pointer;
 <small>2 min ago</small>
 </div>
 </div>
-<div class="more">•••</div>
 </div>
 
 <div class="post-text">
@@ -389,35 +453,11 @@ Welcome to YOCEWOR — your voice, your ideas and your world in one place.
 <div class="post-image">🌎</div>
 
 <div class="post-actions">
-<div class="action" onclick="likePost(this)">♡ Like</div>
+<div class="action">♡ Like</div>
 <div class="action">💬 Comment</div>
 <div class="action">↗ Share</div>
 </div>
-</article>
 
-<article class="post">
-<div class="post-head">
-<div class="user">
-<div class="avatar">🎨</div>
-<div>
-<strong>Creative World</strong>
-<small>18 min ago</small>
-</div>
-</div>
-<div class="more">•••</div>
-</div>
-
-<div class="post-text">
-Every idea starts somewhere. Share what you create with your world.
-</div>
-
-<div class="post-image">✨</div>
-
-<div class="post-actions">
-<div class="action" onclick="likePost(this)">♡ Like</div>
-<div class="action">💬 Comment</div>
-<div class="action">↗ Share</div>
-</div>
 </article>
 
 </main>
@@ -429,7 +469,7 @@ Every idea starts somewhere. Share what you create with your world.
 
 <div class="section-title">Explore</div>
 
-<div class="explore-search">⌕  Search people, topics and ideas...</div>
+<div class="explore-search">⌕ Search people, topics and ideas...</div>
 
 <div class="topics">
 <div class="topic active">For You</div>
@@ -480,6 +520,48 @@ Every idea starts somewhere. Share what you create with your world.
 
 </section>
 
+<!-- CREATE POST -->
+
+<section id="create" class="page">
+
+<div class="section-title">Create Post</div>
+
+<div class="create-post">
+
+<div class="post-box">
+
+<div class="user-row">
+<div class="avatar">👤</div>
+<div>
+<strong>Your Profile</strong>
+<br>
+<small style="color:#858598">Share with your world</small>
+</div>
+</div>
+
+<textarea id="postText"
+placeholder="What's on your mind? Share something with your world..."></textarea>
+
+<div class="post-tools">
+<div class="tool">📷 Photo</div>
+<div class="tool">🎥 Video</div>
+<div class="tool">😊 Feeling</div>
+</div>
+
+<button class="publish" onclick="publishPost()">Publish Post</button>
+
+<div id="status" class="status">
+✓ Your post is ready!
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- NAV -->
+
 <nav>
 
 <div class="nav-item active" onclick="showPage('home',this)">
@@ -492,7 +574,7 @@ Home
 Explore
 </div>
 
-<div class="create-nav">＋</div>
+<div class="create-nav" onclick="showPage('create')">＋</div>
 
 <div class="nav-item">
 <span>♡</span>
@@ -518,24 +600,35 @@ p.classList.remove('active');
 
 document.getElementById(page).classList.add('active');
 
+if(element){
+
 document.querySelectorAll('.nav-item').forEach(function(item){
 item.classList.remove('active');
 });
 
 element.classList.add('active');
 
+}
+
 window.scrollTo(0,0);
 }
 
-function likePost(element){
+function publishPost(){
 
-element.classList.toggle("liked");
+let text=document.getElementById("postText").value.trim();
 
-if(element.classList.contains("liked")){
-element.innerHTML="♥ Liked";
-}else{
-element.innerHTML="♡ Like";
+if(text===""){
+alert("Please write something first.");
+return;
 }
+
+document.getElementById("status").style.display="block";
+
+document.getElementById("postText").value="";
+
+setTimeout(function(){
+document.getElementById("status").style.display="none";
+},3000);
 
 }
 
