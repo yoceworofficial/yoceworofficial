@@ -648,7 +648,7 @@ Welcome to YOCEWOR — your voice, your ideas and your world in one place.
 
 <div class="post-actions">
 <div class="action like-btn" onclick="toggleLike(this)">♡ Like <span class="like-count">0</span></div>
-<div class="action">💬 Comment</div>
+<div class="action comment-btn" onclick="toggleComment(this)">💬 Comment <span class="comment-count">0</span></div>
 <div class="action">↗ Share</div>
 </div>
 
@@ -971,7 +971,7 @@ post.innerHTML=`
 
 <div class="post-actions">
 <div class="action like-btn" onclick="toggleLike(this)">♡ Like <span class="like-count">0</span></div>
-<div class="action">💬 Comment</div>
+<div class="action comment-btn" onclick="toggleComment(this)">💬 Comment <span class="comment-count">0</span></div>
 <div class="action">↗ Share</div>
 </div>
 `;
@@ -1083,6 +1083,29 @@ button.firstChild.textContent = "♡ Like ";
 count++;
 button.classList.add("liked");
 button.firstChild.textContent = "♥ Liked ";
+
+}
+
+countElement.textContent = count;
+
+}
+function toggleComment(button){
+
+let countElement = button.querySelector(".comment-count");
+
+let count = parseInt(countElement.textContent);
+
+if(button.classList.contains("commented")){
+
+count--;
+button.classList.remove("commented");
+button.firstChild.textContent = "💬 Comment ";
+
+}else{
+
+count++;
+button.classList.add("commented");
+button.firstChild.textContent = "💬 Commented ";
 
 }
 
