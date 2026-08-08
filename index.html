@@ -981,7 +981,7 @@ Profile
 <script>
 
 let userPostCount=0;
-let savedPosts=[];
+let savedPosts=JSON.parse(localStorage.getItem("yocewor_saved_posts")) || [];
 localStorage.setItem("yocewor_test", "ready");
 
 function showPage(page,element){
@@ -1248,6 +1248,7 @@ button.textContent = "✓ Saved";
 
 if(!savedPosts.includes(post)){
 savedPosts.push(post);
+localStorage.setItem("yocewor_saved_posts", JSON.stringify(savedPosts.map(p => p.outerHTML)));
 }
 
 }
@@ -1273,7 +1274,19 @@ return;
 
 savedPosts.forEach(function(post){
 
-let copy = post.cloneNode(true);
+let copy;
+
+if(typeof post === "string"){
+
+let temp = document.createElement("div");
+temp.innerHTML = post;
+copy = temp.firstElementChild;
+
+}else{
+
+copy = post.cloneNode(true);
+
+}
 
 let saveButton = copy.querySelector(".save-btn");
 
