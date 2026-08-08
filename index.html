@@ -685,7 +685,7 @@ Welcome to YOCEWOR — your voice, your ideas and your world in one place.
 <div class="post-actions">
 <div class="action like-btn" onclick="toggleLike(this)">♡ Like <span class="like-count">0</span></div>
 <div class="action comment-btn" onclick="toggleComment(this)">💬 Comment <span class="comment-count">0</span></div>
-<div class="action">↗ Share</div>
+<div class="action share-btn" onclick="sharePost(this)">↗ Share</div>
 </div>
 
 </article>
@@ -1008,7 +1008,7 @@ post.innerHTML=`
 <div class="post-actions">
 <div class="action like-btn" onclick="toggleLike(this)">♡ Like <span class="like-count">0</span></div>
 <div class="action comment-btn" onclick="toggleComment(this)">💬 Comment <span class="comment-count">0</span></div>
-<div class="action">↗ Share</div>
+<div class="action share-btn" onclick="sharePost(this)">↗ Share</div>
 </div>
 `;
 
@@ -1173,6 +1173,33 @@ countElement.textContent = count + 1;
 input.value = "";
 
 };
+
+}
+function sharePost(button){
+
+let post = button.closest(".post");
+
+let text = post.querySelector(".post-text").textContent.trim();
+
+if(navigator.share){
+
+navigator.share({
+title:"YOCEWOR",
+text:text,
+url:window.location.href
+});
+
+}else{
+
+navigator.clipboard.writeText(window.location.href);
+
+button.textContent="✓ Link Copied";
+
+setTimeout(function(){
+button.textContent="↗ Share";
+},1500);
+
+}
 
 }
 </script>
