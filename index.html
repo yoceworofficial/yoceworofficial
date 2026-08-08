@@ -1066,6 +1066,29 @@ button.style.color="#fff";
 }
 
 }
+  function toggleLike(button){
+
+const countElement = button.querySelector(".like-count");
+
+let count = parseInt(countElement.textContent);
+
+if(button.classList.contains("liked")){
+
+count--;
+button.classList.remove("liked");
+button.firstChild.textContent = "♡ Like ";
+
+}else{
+
+count++;
+button.classList.add("liked");
+button.firstChild.textContent = "♥ Liked ";
+
+}
+
+countElement.textContent = count;
+
+}
 </script>
 
 </body>
