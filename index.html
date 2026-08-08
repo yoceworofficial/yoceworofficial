@@ -2,1338 +2,2448 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>YOCEWOR</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#080a12">
+<title>YOCEWOR — Your World, Your Voice</title>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-
-body{
-font-family:Arial,sans-serif;
-background:#090912;
-color:#fff;
+:root{
+  --bg:#070910;
+  --panel:#0d111b;
+  --panel2:#111722;
+  --border:rgba(255,255,255,.08);
+  --text:#f7f7fb;
+  --muted:#8e96a8;
+  --blue:#387cff;
+  --purple:#7b3ff2;
+  --pink:#e945a5;
+  --gradient:linear-gradient(135deg,#287cff,#773ff2,#e944a7);
 }
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  background:#030409;
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+  overflow-x:hidden;
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+/* ================= LOGIN ================= */
+
+.auth{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:
+    radial-gradient(circle at 20% 15%,rgba(56,124,255,.22),transparent 30%),
+    radial-gradient(circle at 80% 20%,rgba(225,67,170,.18),transparent 30%),
+    radial-gradient(circle at 50% 100%,rgba(118,63,242,.2),transparent 35%),
+    #05060b;
+}
+.auth-box{
+  width:100%;
+  max-width:430px;
+  padding:32px 26px;
+  border:1px solid var(--border);
+  border-radius:28px;
+  background:rgba(13,17,27,.86);
+  backdrop-filter:blur(25px);
+  box-shadow:0 30px 80px rgba(0,0,0,.45);
+}
+.brand{
+  text-align:center;
+  margin-bottom:28px;
+}
+.brand-logo{
+  width:72px;
+  height:72px;
+  margin:auto;
+  border-radius:22px;
+  display:grid;
+  place-items:center;
+  background:#05060b;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 0 35px rgba(122,63,242,.35);
+}
+.brand-logo span{
+  font-size:45px;
+  font-weight:900;
+  background:var(--gradient);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.brand h1{
+  margin-top:14px;
+  font-size:30px;
+  letter-spacing:-1px;
+}
+.brand h1 span{
+  background:var(--gradient);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.brand p{
+  color:var(--muted);
+  margin-top:7px;
+  font-size:13px;
+}
+.auth-tabs{
+  display:flex;
+  gap:5px;
+  padding:5px;
+  border-radius:14px;
+  background:rgba(255,255,255,.05);
+  margin-bottom:20px;
+}
+.auth-tabs button{
+  flex:1;
+  border:0;
+  padding:11px;
+  border-radius:10px;
+  color:var(--muted);
+  background:transparent;
+}
+.auth-tabs button.active{
+  color:white;
+  background:var(--gradient);
+}
+.field{
+  margin-bottom:13px;
+}
+.field label{
+  display:block;
+  font-size:12px;
+  color:#a8afbf;
+  margin-bottom:7px;
+}
+.field input,.field textarea{
+  width:100%;
+  border:1px solid var(--border);
+  outline:none;
+  border-radius:13px;
+  padding:13px;
+  background:rgba(255,255,255,.055);
+  color:white;
+}
+.field input:focus,.field textarea:focus{
+  border-color:rgba(119,79,255,.7);
+}
+.auth-btn{
+  width:100%;
+  border:0;
+  padding:14px;
+  border-radius:14px;
+  color:white;
+  font-weight:700;
+  background:var(--gradient);
+  margin-top:5px;
+}
+.auth-note{
+  text-align:center;
+  color:#777f91;
+  font-size:11px;
+  line-height:1.5;
+  margin-top:18px;
+}
+
+/* ================= APP ================= */
 
 .app{
-max-width:480px;
-min-height:100vh;
-margin:auto;
-background:
-radial-gradient(circle at 10% 0%,rgba(92,110,255,.18),transparent 32%),
-radial-gradient(circle at 100% 5%,rgba(218,76,190,.14),transparent 30%),
-#090912;
+  min-height:100vh;
+  max-width:1500px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:245px minmax(0,1fr) 300px;
+  background:
+    radial-gradient(circle at 45% 0%,rgba(80,78,200,.09),transparent 35%),
+    var(--bg);
 }
-
-header{
-height:70px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 18px;
-position:sticky;
-top:0;
-z-index:10;
-background:rgba(9,9,18,.92);
-backdrop-filter:blur(16px);
+.sidebar{
+  position:sticky;
+  top:0;
+  height:100vh;
+  padding:24px 16px;
+  border-right:1px solid var(--border);
+  background:rgba(5,7,12,.92);
 }
-
-.logo{
-font-size:25px;
-font-weight:800;
-letter-spacing:1px;
-background:linear-gradient(90deg,#76a9ff,#a878ff,#ef79ca);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
+.side-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 12px 27px;
 }
-
-.circle{
-width:40px;
-height:40px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-background:rgba(255,255,255,.08);
+.side-icon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:#05060b;
+  font-size:25px;
+  font-weight:900;
+  color:#8a50ff;
+  border:1px solid rgba(255,255,255,.1);
 }
-
-.page{display:none}
-.page.active{display:block}
-
-.title{
-padding:22px 18px 16px;
-font-size:22px;
-font-weight:700;
+.side-logo strong{
+  font-size:22px;
 }
-
-.welcome{
-padding:25px 18px 12px;
+.side-logo strong span{
+  background:var(--gradient);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
-
-.welcome h1{
-font-size:29px;
-line-height:1.15;
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
 }
-
-.welcome p{
-color:#a4a4b8;
-margin-top:9px;
-font-size:14px;
+.menu button{
+  border:0;
+  background:transparent;
+  color:#aab0bf;
+  border-radius:13px;
+  padding:12px 13px;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  font-size:14px;
 }
-
-.stories{
-display:flex;
-gap:14px;
-overflow-x:auto;
-padding:8px 18px 18px;
-scrollbar-width:none;
+.menu button:hover,.menu button.active{
+  color:white;
+  background:linear-gradient(90deg,rgba(82,71,220,.4),rgba(82,71,220,.08));
 }
-
-.stories::-webkit-scrollbar{display:none}
-
-.story{
-min-width:68px;
-text-align:center;
+.menu-icon{
+  width:23px;
+  text-align:center;
+  font-size:19px;
 }
-
-.story-avatar{
-width:62px;
-height:62px;
-padding:3px;
-border-radius:50%;
-background:linear-gradient(135deg,#6ca8ff,#a86fff,#ef70c8);
+.create-side{
+  width:100%;
+  border:0;
+  margin-top:20px;
+  padding:13px;
+  border-radius:14px;
+  color:white;
+  font-weight:700;
+  background:var(--gradient);
+  box-shadow:0 10px 30px rgba(91,61,240,.25);
 }
-
-.story-inner{
-width:100%;
-height:100%;
-border-radius:50%;
-background:#181827;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:24px;
+.side-user{
+  position:absolute;
+  bottom:20px;
+  left:16px;
+  right:16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
 }
-
-.story-name{
-margin-top:7px;
-font-size:11px;
-color:#c8c8d7;
-}
-
-.create{
-margin:5px 18px 18px;
-padding:14px;
-border-radius:18px;
-background:rgba(255,255,255,.06);
-border:1px solid rgba(255,255,255,.07);
-cursor:pointer;
-}
-
-.create-row{
-display:flex;
-align-items:center;
-gap:11px;
-}
-
 .avatar{
-width:42px;
-height:42px;
-border-radius:50%;
-background:linear-gradient(135deg,#6d9eff,#ae6dff);
-display:flex;
-align-items:center;
-justify-content:center;
-flex-shrink:0;
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  background:var(--gradient);
+  color:white;
+  font-weight:800;
 }
-
-.placeholder{
-color:#9494a8;
-font-size:14px;
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
-
-.feed{
-padding:0 18px 100px;
+.side-user small{
+  display:block;
+  color:var(--muted);
+  margin-top:2px;
+  font-size:11px;
 }
-
-.post{
-margin-bottom:17px;
-padding:16px;
-border-radius:20px;
-background:rgba(255,255,255,.055);
-border:1px solid rgba(255,255,255,.075);
+.main{
+  min-width:0;
+  border-right:1px solid var(--border);
 }
-
-.user{
-display:flex;
-align-items:center;
-gap:10px;
+.topbar{
+  height:70px;
+  position:sticky;
+  top:0;
+  z-index:30;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:0 24px;
+  background:rgba(7,9,16,.86);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
 }
-
-.user small{
-display:block;
-margin-top:3px;
-color:#858599;
-font-size:11px;
+.mobile-logo{
+  display:none;
+  font-weight:800;
+  font-size:21px;
 }
-
-.post-text{
-margin-top:14px;
-color:#dedee8;
-line-height:1.55;
-font-size:14px;
-white-space:pre-wrap;
+.mobile-logo span{
+  background:var(--gradient);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
-
-.post-image{
-margin-top:14px;
-height:170px;
-border-radius:15px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:42px;
-background:linear-gradient(135deg,#1c2850,#41264e);
-}
-
-.post-actions{
-display:flex;
-justify-content:space-between;
-padding-top:14px;
-margin-top:13px;
-border-top:1px solid rgba(255,255,255,.07);
-}
-
-.action{
-color:#a6a6b8;
-font-size:13px;
-cursor:pointer;
-}
-
-/* EXPLORE */
-
 .search{
-margin:0 18px 18px;
-padding:14px 16px;
-border-radius:16px;
-background:rgba(255,255,255,.07);
-color:#9090a3;
+  width:min(360px,100%);
+  position:relative;
+}
+.search input{
+  width:100%;
+  border:0;
+  outline:0;
+  color:white;
+  background:#111823;
+  border-radius:25px;
+  padding:11px 42px 11px 17px;
+}
+.search span{
+  position:absolute;
+  right:15px;
+  top:10px;
+  color:#8b93a5;
+}
+.top-actions{
+  display:flex;
+  gap:9px;
+}
+.icon-btn{
+  width:39px;
+  height:39px;
+  border:1px solid var(--border);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  color:#cbd0dc;
+  background:rgba(255,255,255,.04);
+}
+.page{
+  display:none;
+  padding-bottom:100px;
+}
+.page.active{display:block}
+.page-title{
+  font-size:24px;
+  font-weight:800;
+  padding:25px 24px 18px;
 }
 
-.topics{
-display:flex;
-gap:10px;
-padding:0 18px 18px;
-overflow-x:auto;
+/* ================= HOME ================= */
+
+.hero{
+  padding:28px 24px 16px;
+}
+.hero h1{
+  font-size:31px;
+  line-height:1.1;
+  letter-spacing:-1.3px;
+}
+.hero h1 span{
+  background:var(--gradient);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:13px;
+}
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 24px;
+}
+.section-head strong{font-size:16px}
+.section-head button{
+  border:0;
+  background:transparent;
+  color:#779cff;
+  font-size:12px;
+}
+.stories{
+  display:flex;
+  gap:16px;
+  padding:5px 24px 20px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.stories::-webkit-scrollbar{display:none}
+.story{
+  min-width:62px;
+  text-align:center;
+}
+.story-ring{
+  width:62px;
+  height:62px;
+  padding:2px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#3284ff,#893cff,#ec4da5);
+}
+.story-inner{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#141925;
+  font-size:22px;
+  overflow:hidden;
+}
+.story-inner img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.story-name{
+  color:#b6bcc9;
+  margin-top:6px;
+  font-size:10px;
+}
+.composer{
+  margin:0 24px 20px;
+  padding:14px;
+  border-radius:19px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.045);
+}
+.composer-top{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+.composer-input{
+  flex:1;
+  border:0;
+  outline:0;
+  color:#929aaa;
+  background:#111722;
+  border-radius:14px;
+  padding:12px;
+  font-size:13px;
+}
+.composer-tools{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  border-top:1px solid var(--border);
+  padding-top:11px;
+}
+.composer-tools button{
+  flex:1;
+  border:0;
+  background:transparent;
+  color:#a9afbd;
+  font-size:12px;
+}
+.feed{
+  padding:0 24px;
+}
+.post{
+  padding:17px;
+  margin-bottom:15px;
+  border:1px solid var(--border);
+  border-radius:21px;
+  background:rgba(14,18,28,.86);
+}
+.post-user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.post-user-info{
+  flex:1;
+}
+.post-user-info strong{
+  font-size:13px;
+}
+.post-user-info small{
+  display:block;
+  color:#747d8e;
+  margin-top:3px;
+  font-size:10px;
+}
+.more{
+  border:0;
+  background:transparent;
+  color:#87909f;
+  font-size:18px;
+}
+.post-text{
+  color:#d9dce5;
+  font-size:14px;
+  line-height:1.55;
+  margin-top:13px;
+  white-space:pre-wrap;
+}
+.post-img{
+  width:100%;
+  max-height:390px;
+  object-fit:cover;
+  border-radius:15px;
+  margin-top:13px;
+}
+.fake-img{
+  height:230px;
+  margin-top:13px;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  font-size:65px;
+  background:
+    radial-gradient(circle at 30% 25%,rgba(255,255,255,.35),transparent 8%),
+    linear-gradient(135deg,#253c72,#522c71,#171d39);
+}
+.post-stats{
+  display:flex;
+  justify-content:space-between;
+  color:#777f91;
+  font-size:11px;
+  padding:11px 2px 8px;
+}
+.post-actions{
+  display:flex;
+  border-top:1px solid var(--border);
+  padding-top:9px;
+}
+.post-actions button{
+  flex:1;
+  border:0;
+  background:transparent;
+  color:#a4abb9;
+  padding:8px 3px;
+  font-size:12px;
+}
+.post-actions button:hover,.post-actions button.active{
+  color:#fff;
+}
+.post-actions button.liked{color:#ff4d91}
+.post-actions button.saved{color:#a978ff}
+.comments{
+  margin-top:10px;
+  border-top:1px solid var(--border);
+  padding-top:10px;
+}
+.comment-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:8px;
+}
+.comment-row input{
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  border-radius:12px;
+  padding:10px;
+  color:white;
+  background:rgba(255,255,255,.06);
+}
+.comment-row button{
+  border:0;
+  border-radius:12px;
+  padding:0 13px;
+  color:white;
+  background:var(--gradient);
+}
+.comment{
+  font-size:12px;
+  padding:8px 10px;
+  background:rgba(255,255,255,.04);
+  border-radius:10px;
+  margin-top:6px;
+  color:#cdd1dc;
 }
 
-.topic{
-padding:9px 15px;
-border-radius:20px;
-white-space:nowrap;
-background:rgba(255,255,255,.07);
-font-size:12px;
-color:#c7c7d6;
+/* ================= EXPLORE ================= */
+
+.explore-search{
+  margin:0 24px 15px;
 }
-
-.topic.active{
-background:linear-gradient(90deg,#6f9fff,#a86cff);
-color:white;
+.explore-search input{
+  width:100%;
+  padding:13px 16px;
+  border:1px solid var(--border);
+  border-radius:15px;
+  outline:0;
+  color:white;
+  background:rgba(255,255,255,.05);
 }
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-padding:0 18px 100px;
+.chips{
+  display:flex;
+  gap:8px;
+  padding:0 24px 17px;
+  overflow-x:auto;
+  scrollbar-width:none;
 }
-
-.card{
-height:150px;
-border-radius:18px;
-padding:15px;
-display:flex;
-flex-direction:column;
-justify-content:flex-end;
-background:linear-gradient(135deg,#202d59,#542c55);
+.chips button{
+  white-space:nowrap;
+  border:0;
+  color:#aeb5c4;
+  background:rgba(255,255,255,.06);
+  border-radius:20px;
+  padding:9px 14px;
+  font-size:11px;
 }
-
-.card:nth-child(2){background:linear-gradient(135deg,#253f38,#59442a)}
-.card:nth-child(3){background:linear-gradient(135deg,#342052,#263d68)}
-.card:nth-child(4){background:linear-gradient(135deg,#52263d,#303057)}
-.card:nth-child(5){background:linear-gradient(135deg,#244c59,#49326a)}
-.card:nth-child(6){background:linear-gradient(135deg,#533b25,#303d5d)}
-
-.emoji{
-font-size:30px;
-margin-bottom:auto;
+.chips button.active{
+  color:white;
+  background:var(--gradient);
 }
-
-.card small{
-color:#c1c1d0;
-margin-top:4px;
+.explore-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:0 24px;
 }
-
-/* CREATE */
-
-.create-post{
-padding:0 18px 100px;
+.explore-card{
+  min-height:170px;
+  border-radius:18px;
+  padding:15px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  overflow:hidden;
+  position:relative;
+  background:linear-gradient(135deg,#18294e,#42245a);
 }
+.explore-card:nth-child(2){background:linear-gradient(135deg,#173d3c,#4d3b25)}
+.explore-card:nth-child(3){background:linear-gradient(135deg,#342050,#253e69)}
+.explore-card:nth-child(4){background:linear-gradient(135deg,#54253e,#292b53)}
+.explore-card:nth-child(5){background:linear-gradient(135deg,#204b58,#46316a)}
+.explore-card:nth-child(6){background:linear-gradient(135deg,#573b24,#283a5a)}
+.explore-card .big{font-size:38px;position:absolute;top:15px;left:15px}
+.explore-card strong{font-size:15px}
+.explore-card small{color:#b1b7c5;margin-top:4px;font-size:10px}
 
-.box{
-background:rgba(255,255,255,.055);
-border:1px solid rgba(255,255,255,.08);
-border-radius:20px;
-padding:16px;
+/* ================= CREATE ================= */
+
+.create-box{
+  margin:0 24px;
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:20px;
+  background:rgba(255,255,255,.04);
 }
-
-textarea{
-width:100%;
-min-height:160px;
-resize:none;
-border:0;
-outline:0;
-border-radius:15px;
-padding:15px;
-background:rgba(255,255,255,.06);
-color:white;
-font-size:15px;
-font-family:inherit;
+.create-box textarea{
+  width:100%;
+  min-height:170px;
+  resize:none;
+  border:0;
+  outline:0;
+  border-radius:15px;
+  padding:15px;
+  color:white;
+  background:rgba(255,255,255,.055);
 }
-
-textarea::placeholder{color:#858598}
-
-.tools{
-display:flex;
-gap:10px;
-margin-top:14px;
+.create-options{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
 }
-
-.tool{
-flex:1;
-padding:12px 5px;
-border-radius:13px;
-text-align:center;
-background:rgba(255,255,255,.06);
-color:#b8b8c8;
-font-size:12px;
+.create-options button{
+  flex:1;
+  padding:12px 4px;
+  border:0;
+  border-radius:12px;
+  color:#b9bfca;
+  background:rgba(255,255,255,.055);
+  font-size:11px;
 }
-
 .publish{
-width:100%;
-margin-top:16px;
-padding:14px;
-border:0;
-border-radius:15px;
-color:white;
-font-weight:700;
-font-size:15px;
-background:linear-gradient(90deg,#6f9fff,#a86cff,#e976c8);
-cursor:pointer;
+  width:100%;
+  margin-top:13px;
+  padding:14px;
+  border:0;
+  border-radius:13px;
+  color:white;
+  font-weight:700;
+  background:var(--gradient);
+}
+.success{
+  display:none;
+  color:#82dfa9;
+  text-align:center;
+  margin-top:10px;
+  font-size:12px;
 }
 
-.status{
-display:none;
-text-align:center;
-color:#8fd9ad;
-font-size:13px;
-margin-top:12px;
+/* ================= PROFILE ================= */
+
+.profile-cover{
+  height:180px;
+  background:
+    linear-gradient(180deg,transparent,rgba(5,7,12,.7)),
+    linear-gradient(135deg,#1c3060,#51245b,#14192d);
+  position:relative;
 }
-
-/* PROFILE */
-
-.profile{
-padding:10px 18px 100px;
+.profile-info{
+  margin-top:-45px;
+  position:relative;
+  padding:0 24px;
 }
-
-.profile-card{
-text-align:center;
-padding:22px 18px;
-border-radius:22px;
-background:rgba(255,255,255,.055);
-border:1px solid rgba(255,255,255,.075);
+.profile-big-avatar{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  border:4px solid var(--bg);
+  overflow:hidden;
+  background:var(--gradient);
+  display:grid;
+  place-items:center;
+  font-size:40px;
 }
-
-.profile-avatar{
-width:88px;
-height:88px;
-margin:auto;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:40px;
-background:linear-gradient(135deg,#6f9fff,#a86cff,#e976c8);
+.profile-big-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
-
+.profile-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+}
 .profile-name{
-font-size:22px;
-font-weight:700;
-margin-top:13px;
+  margin-top:11px;
+  font-size:22px;
+  font-weight:800;
 }
-
-.username{
-color:#9090a3;
-margin-top:5px;
-font-size:13px;
+.verified{
+  color:#56a7ff;
 }
-
-.bio{
-color:#c7c7d5;
-font-size:13px;
-line-height:1.5;
-margin:13px auto;
+.profile-username{
+  color:#838c9d;
+  font-size:12px;
+  margin-top:4px;
 }
-
+.profile-bio{
+  color:#c2c7d1;
+  font-size:13px;
+  line-height:1.5;
+  margin-top:11px;
+}
+.profile-actions{
+  display:flex;
+  gap:8px;
+  margin-top:15px;
+}
+.profile-actions button{
+  flex:1;
+  border:0;
+  border-radius:12px;
+  padding:11px;
+  color:white;
+  background:var(--gradient);
+}
+.profile-actions button.secondary{
+  color:#c9ced9;
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--border);
+}
 .stats{
-display:flex;
-justify-content:space-around;
-margin-top:18px;
-padding-top:17px;
-border-top:1px solid rgba(255,255,255,.07);
+  display:flex;
+  justify-content:space-around;
+  margin:18px 0;
+  padding:15px 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.stat{text-align:center}
+.stat strong{display:block;font-size:17px}
+.stat small{color:#81899a;font-size:10px}
+.profile-tabs{
+  display:flex;
+  border-bottom:1px solid var(--border);
+  margin-bottom:15px;
+}
+.profile-tabs button{
+  flex:1;
+  border:0;
+  padding:12px 4px;
+  color:#81899a;
+  background:transparent;
+}
+.profile-tabs button.active{
+  color:white;
+  border-bottom:2px solid #7c5cff;
+}
+.photo-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:4px;
+  padding:0 24px;
+}
+.photo-tile{
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+  font-size:28px;
+  background:linear-gradient(135deg,#243968,#552653);
+}
+.edit-profile{
+  display:none;
+  margin:0 24px;
+  padding:18px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+}
+.edit-profile input,.edit-profile textarea{
+  width:100%;
+  margin-bottom:10px;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  outline:0;
+  color:white;
+  background:rgba(255,255,255,.06);
+}
+.edit-profile textarea{height:90px;resize:none}
+.edit-profile button{
+  width:100%;
+  padding:12px;
+  border:0;
+  border-radius:12px;
+  color:white;
+  background:var(--gradient);
 }
 
-.stat strong{
-display:block;
-font-size:17px;
+/* ================= OTHER PAGES ================= */
+
+.list{
+  padding:0 24px;
+}
+.list-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:15px 3px;
+  border-bottom:1px solid var(--border);
+}
+.list-item-content{
+  flex:1;
+}
+.list-item strong{font-size:13px}
+.list-item small{
+  display:block;
+  color:#858e9e;
+  margin-top:4px;
+  font-size:10px;
+}
+.follow-btn{
+  border:0;
+  border-radius:10px;
+  padding:8px 12px;
+  color:white;
+  background:var(--gradient);
+  font-size:11px;
+}
+.message-box{
+  margin:0 24px;
+  border:1px solid var(--border);
+  border-radius:18px;
+  min-height:450px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#81899a;
+  text-align:center;
+}
+.settings{
+  padding:0 24px;
+}
+.setting{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:16px 4px;
+  border-bottom:1px solid var(--border);
+}
+.setting-info{flex:1}
+.setting-info strong{font-size:13px}
+.setting-info small{
+  display:block;
+  color:#7e8797;
+  margin-top:3px;
+  font-size:10px;
+}
+.setting button{
+  border:0;
+  border-radius:10px;
+  padding:8px 11px;
+  color:#cbd0da;
+  background:rgba(255,255,255,.06);
+}
+.logout{
+  width:100%;
+  margin-top:20px;
+  border:1px solid rgba(255,80,100,.2);
+  border-radius:13px;
+  padding:13px;
+  color:#ff8798;
+  background:rgba(255,60,80,.06);
 }
 
-.stat span{
-color:#9090a3;
-font-size:11px;
+/* ================= RIGHT PANEL ================= */
+
+.rightbar{
+  padding:24px 18px;
+}
+.right-card{
+  padding:18px;
+  border:1px solid var(--border);
+  border-radius:18px;
+  background:rgba(255,255,255,.035);
+  margin-bottom:14px;
+}
+.right-card h3{
+  font-size:14px;
+  margin-bottom:15px;
+}
+.trend{
+  padding:10px 0;
+  border-bottom:1px solid var(--border);
+}
+.trend:last-child{border:0}
+.trend small{color:#777f90;font-size:10px}
+.trend strong{
+  display:block;
+  font-size:12px;
+  margin-top:4px;
+}
+.person{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:12px 0;
+}
+.person-info{flex:1}
+.person-info strong{display:block;font-size:11px}
+.person-info small{color:#7c8595;font-size:9px}
+.person button{
+  border:0;
+  border-radius:9px;
+  padding:7px 9px;
+  color:white;
+  background:var(--gradient);
+  font-size:9px;
 }
 
-.edit{
-margin-top:18px;
-width:100%;
-padding:12px;
-border-radius:13px;
-border:1px solid rgba(255,255,255,.12);
-background:rgba(255,255,255,.06);
-color:white;
-cursor:pointer;
+/* ================= MOBILE NAV ================= */
+
+.mobile-nav{
+  display:none;
+}
+.mobile-create{
+  width:46px!important;
+  height:46px!important;
+  border-radius:15px!important;
+  color:white!important;
+  background:var(--gradient)!important;
+  font-size:24px!important;
 }
 
-/* EDIT PROFILE */
+/* ================= RESPONSIVE ================= */
 
-.edit-box{
-margin-top:15px;
-padding:18px;
-border-radius:20px;
-background:rgba(255,255,255,.055);
-border:1px solid rgba(255,255,255,.08);
+@media(max-width:1050px){
+  .app{
+    grid-template-columns:82px minmax(0,1fr);
+  }
+  .sidebar{padding:20px 10px}
+  .side-logo{justify-content:center;padding:0 0 25px}
+  .side-logo strong,.menu button .label,.side-user>div:not(.avatar){display:none}
+  .menu button{justify-content:center;padding:13px}
+  .menu-icon{font-size:20px}
+  .create-side{font-size:0;height:45px}
+  .create-side:after{content:"＋";font-size:24px}
+  .side-user{left:18px;right:18px;justify-content:center;background:transparent}
+  .rightbar{display:none}
 }
 
-.field{
-margin-bottom:14px;
+@media(max-width:700px){
+  body{background:var(--bg)}
+  .app{
+    display:block;
+    width:100%;
+  }
+  .sidebar{display:none}
+  .main{border:0}
+  .topbar{
+    height:60px;
+    padding:0 15px;
+  }
+  .mobile-logo{display:block}
+  .search{display:none}
+  .top-actions{margin-left:auto}
+  .top-actions .icon-btn:nth-child(1){display:none}
+  .page{padding-bottom:86px}
+  .hero{padding:22px 16px 12px}
+  .hero h1{font-size:27px}
+  .section-head{padding:12px 16px}
+  .stories{padding:4px 16px 17px;gap:14px}
+  .composer{margin:0 16px 17px}
+  .feed{padding:0 16px}
+  .post{padding:14px;border-radius:18px}
+  .fake-img{height:190px}
+  .page-title{padding:20px 16px 15px;font-size:22px}
+  .explore-search{margin:0 16px 14px}
+  .chips{padding:0 16px 15px}
+  .explore-grid{padding:0 16px;gap:8px}
+  .explore-card{min-height:145px}
+  .create-box{margin:0 16px}
+  .profile-info{padding:0 16px}
+  .photo-grid{padding:0 16px}
+  .edit-profile{margin:0 16px}
+  .list{padding:0 16px}
+  .message-box{margin:0 16px}
+  .settings{padding:0 16px}
+
+  .mobile-nav{
+    position:fixed;
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    bottom:0;
+    left:0;
+    right:0;
+    height:68px;
+    padding-bottom:env(safe-area-inset-bottom);
+    background:rgba(7,9,16,.96);
+    backdrop-filter:blur(20px);
+    border-top:1px solid var(--border);
+    z-index:100;
+  }
+  .mobile-nav button{
+    min-width:48px;
+    border:0;
+    background:transparent;
+    color:#788193;
+    font-size:10px;
+  }
+  .mobile-nav button.active{color:white}
+  .mobile-nav button span{
+    display:block;
+    font-size:20px;
+    margin-bottom:3px;
+  }
+  .mobile-create{
+    display:grid!important;
+    place-items:center;
+  }
 }
 
-.field label{
-display:block;
-font-size:12px;
-color:#9999aa;
-margin-bottom:7px;
-}
-
-.field input,
-.field textarea{
-width:100%;
-min-height:auto;
-padding:13px;
-border:1px solid rgba(255,255,255,.08);
-border-radius:13px;
-background:rgba(255,255,255,.06);
-color:white;
-outline:none;
-font-family:inherit;
-font-size:14px;
-}
-
-.field textarea{
-height:90px;
-resize:none;
-}
-
-.save{
-width:100%;
-padding:13px;
-border:0;
-border-radius:13px;
-color:white;
-font-weight:700;
-background:linear-gradient(90deg,#6f9fff,#a86cff,#e976c8);
-cursor:pointer;
-}
-
-.cancel{
-width:100%;
-margin-top:9px;
-padding:12px;
-border:1px solid rgba(255,255,255,.1);
-border-radius:13px;
-background:transparent;
-color:#aaaabd;
-cursor:pointer;
-}
-
-/* ACTIVITY */
-
-.activity{
-padding:0 18px 100px;
-}
-
-.activity-card{
-display:flex;
-align-items:center;
-gap:12px;
-padding:15px 5px;
-border-bottom:1px solid rgba(255,255,255,.07);
-}
-
-.activity-icon{
-width:45px;
-height:45px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:21px;
-background:rgba(255,255,255,.07);
-}
-
-.activity-text{
-flex:1;
-font-size:13px;
-line-height:1.45;
-color:#d8d8e3;
-}
-
-.activity-text span{
-color:#88889b;
-font-size:11px;
-display:block;
-margin-top:4px;
-}
-
-.follow{
-padding:8px 13px;
-border:0;
-border-radius:10px;
-background:linear-gradient(90deg,#6f9fff,#a86cff);
-color:white;
-font-size:11px;
-}
-
-/* NAV */
-
-nav{
-position:fixed;
-bottom:0;
-left:50%;
-transform:translateX(-50%);
-width:100%;
-max-width:480px;
-height:67px;
-display:flex;
-justify-content:space-around;
-align-items:center;
-background:rgba(10,10,19,.96);
-backdrop-filter:blur(18px);
-border-top:1px solid rgba(255,255,255,.08);
-z-index:20;
-}
-
-.nav-item{
-text-align:center;
-color:#858597;
-font-size:10px;
-cursor:pointer;
-}
-
-.nav-item span{
-display:block;
-font-size:20px;
-margin-bottom:4px;
-}
-
-.nav-item.active{
-color:white;
-}
-
-.create-nav{
-width:45px;
-height:45px;
-border-radius:15px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:25px;
-background:linear-gradient(135deg,#719fff,#a76fff,#e976c8);
-cursor:pointer;
-}
-  .comment-box{
-margin-top:12px;
-padding:12px;
-border-radius:14px;
-background:rgba(255,255,255,.05);
-}
-
-.comment-input{
-width:calc(100% - 65px);
-padding:11px;
-border:0;
-outline:0;
-border-radius:10px;
-background:rgba(255,255,255,.08);
-color:white;
-}
-
-.comment-send{
-width:55px;
-margin-left:5px;
-padding:11px 5px;
-border:0;
-border-radius:10px;
-background:linear-gradient(90deg,#6f9fff,#a86cff);
-color:white;
-font-size:11px;
-}
-
-.comment-item{
-margin-top:9px;
-padding:10px;
-border-radius:10px;
-background:rgba(255,255,255,.06);
-color:#ddd;
-font-size:13px;
+@media(max-width:380px){
+  .post-actions button{font-size:10px}
+  .post-actions button:nth-child(3){display:none}
+  .stories{gap:11px}
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<!-- ================= AUTH ================= -->
 
-<header>
-<div class="logo">YOCEWOR</div>
-<div class="circle">♧</div>
-</header>
+<div id="auth" class="auth">
+  <div class="auth-box">
 
-<!-- HOME -->
+    <div class="brand">
+      <div class="brand-logo"><span>Y</span></div>
+      <h1>YOCE<span>WOR</span></h1>
+      <p>Your World, Your Voice</p>
+    </div>
 
-<section id="home" class="page active">
+    <div class="auth-tabs">
+      <button id="loginTab" class="active" onclick="authMode('login')">Login</button>
+      <button id="registerTab" onclick="authMode('register')">Create Account</button>
+    </div>
 
-<div class="welcome">
-<h1>Your Voice.<br>Your World.</h1>
-<p>Discover people, ideas and moments from your world.</p>
+    <form id="loginForm" onsubmit="login(event)">
+      <div class="field">
+        <label>Username or Email</label>
+        <input id="loginUser" required placeholder="Enter username">
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="loginPass" type="password" required placeholder="Enter password">
+      </div>
+
+      <button class="auth-btn">Login to YOCEWOR</button>
+    </form>
+
+    <form id="registerForm" class="hidden" onsubmit="register(event)">
+      <div class="field">
+        <label>Your Name</label>
+        <input id="regName" required placeholder="Your name">
+      </div>
+
+      <div class="field">
+        <label>Username</label>
+        <input id="regUsername" required placeholder="yourworld">
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input id="regEmail" type="email" required placeholder="you@example.com">
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="regPass" type="password" required minlength="4" placeholder="Create password">
+      </div>
+
+      <button class="auth-btn">Create YOCEWOR Account</button>
+    </form>
+
+    <div class="auth-note">
+      YOCEWOR · Your World, Your Voice<br>
+      Front-end demo account data is stored on this device.
+    </div>
+
+  </div>
 </div>
 
-<div class="title">Stories</div>
 
-<div class="stories">
+<!-- ================= MAIN APP ================= -->
 
-<div class="story">
-<div class="story-avatar"><div class="story-inner">＋</div></div>
-<div class="story-name">Your Story</div>
+<div id="app" class="app hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="side-logo">
+      <div class="side-icon">Y</div>
+      <strong>YOCE<span>WOR</span></strong>
+    </div>
+
+    <div class="menu">
+
+      <button class="active" onclick="showPage('home',this)">
+        <span class="menu-icon">⌂</span><span class="label">Home</span>
+      </button>
+
+      <button onclick="showPage('explore',this)">
+        <span class="menu-icon">⌕</span><span class="label">Explore</span>
+      </button>
+
+      <button onclick="showPage('notifications',this)">
+        <span class="menu-icon">♧</span><span class="label">Notifications</span>
+      </button>
+
+      <button onclick="showPage('messages',this)">
+        <span class="menu-icon">✉</span><span class="label">Messages</span>
+      </button>
+
+      <button onclick="showPage('saved',this)">
+        <span class="menu-icon">♡</span><span class="label">Bookmarks</span>
+      </button>
+
+      <button onclick="showPage('communities',this)">
+        <span class="menu-icon">♧</span><span class="label">Communities</span>
+      </button>
+
+      <button onclick="showPage('profile',this)">
+        <span class="menu-icon">◯</span><span class="label">Profile</span>
+      </button>
+
+      <button onclick="showPage('settings',this)">
+        <span class="menu-icon">⚙</span><span class="label">Settings</span>
+      </button>
+
+    </div>
+
+    <button class="create-side" onclick="showPage('create')">
+      + Create Post
+    </button>
+
+    <div class="side-user">
+      <div class="avatar" id="sideAvatar">👤</div>
+      <div>
+        <strong id="sideName">Your Name</strong>
+        <small id="sideUsername">@yourworld</small>
+      </div>
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <header class="topbar">
+
+      <div class="mobile-logo">YOCE<span>WOR</span></div>
+
+      <div class="search">
+        <input id="globalSearch" placeholder="Search YOCEWOR" oninput="globalSearch(this.value)">
+        <span>⌕</span>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn" onclick="showPage('home')">⌂</button>
+        <button class="icon-btn" onclick="showPage('notifications')">♧</button>
+        <button class="icon-btn" onclick="showPage('messages')">✉</button>
+        <button class="icon-btn" onclick="showPage('profile')">◯</button>
+      </div>
+
+    </header>
+
+
+    <!-- HOME -->
+    <section id="home" class="page active">
+
+      <div class="hero">
+        <h1>Your Voice.<br><span>Your World.</span></h1>
+        <p>Discover people, ideas and moments from your world.</p>
+      </div>
+
+      <div class="section-head">
+        <strong>Stories</strong>
+        <button>See All</button>
+      </div>
+
+      <div class="stories">
+
+        <div class="story">
+          <div class="story-ring">
+            <div class="story-inner">＋</div>
+          </div>
+          <div class="story-name">Your Story</div>
+        </div>
+
+        <div class="story">
+          <div class="story-ring">
+            <div class="story-inner">🌍</div>
+          </div>
+          <div class="story-name">Aarav</div>
+        </div>
+
+        <div class="story">
+          <div class="story-ring">
+            <div class="story-inner">👩</div>
+          </div>
+          <div class="story-name">Neha</div>
+        </div>
+
+        <div class="story">
+          <div class="story-ring">
+            <div class="story-inner">🧑</div>
+          </div>
+          <div class="story-name">Rohan</div>
+        </div>
+
+        <div class="story">
+          <div class="story-ring">
+            <div class="story-inner">👩‍🎨</div>
+          </div>
+          <div class="story-name">Priya</div>
+        </div>
+
+        <div class="story">
+          <div class="story-ring">
+            <div class="story-inner">🧑‍💻</div>
+          </div>
+          <div class="story-name">Karan</div>
+        </div>
+
+      </div>
+
+
+      <div class="composer">
+
+        <div class="composer-top">
+          <div class="avatar" id="composerAvatar">👤</div>
+
+          <button class="composer-input" onclick="showPage('create')">
+            What's on your mind?
+          </button>
+        </div>
+
+        <div class="composer-tools">
+          <button onclick="showPage('create')">▣ Photo</button>
+          <button onclick="showPage('create')">▶ Video</button>
+          <button onclick="showPage('create')">☺ Feeling</button>
+          <button onclick="showPage('create')">▥ Poll</button>
+        </div>
+
+      </div>
+
+
+      <div class="section-head">
+        <strong>Your Feed</strong>
+        <button onclick="loadPosts()">Refresh</button>
+      </div>
+
+      <div id="feed" class="feed"></div>
+
+    </section>
+
+
+    <!-- EXPLORE -->
+    <section id="explore" class="page">
+
+      <div class="page-title">Explore</div>
+
+      <div class="explore-search">
+        <input id="exploreInput" placeholder="Search people, topics and ideas..." oninput="filterExplore(this.value)">
+      </div>
+
+      <div class="chips">
+        <button class="active">For You</button>
+        <button>Trending</button>
+        <button>People</button>
+        <button>Videos</button>
+        <button>Photos</button>
+        <button>Technology</button>
+      </div>
+
+      <div id="exploreGrid" class="explore-grid">
+
+        <div class="explore-card" data-name="world">
+          <div class="big">🌍</div>
+          <strong>World</strong>
+          <small>Discover the world</small>
+        </div>
+
+        <div class="explore-card" data-name="creative">
+          <div class="big">🎨</div>
+          <strong>Creative</strong>
+          <small>Ideas & creativity</small>
+        </div>
+
+        <div class="explore-card" data-name="music">
+          <div class="big">🎵</div>
+          <strong>Music</strong>
+          <small>Sounds & artists</small>
+        </div>
+
+        <div class="explore-card" data-name="sports">
+          <div class="big">⚽</div>
+          <strong>Sports</strong>
+          <small>What's happening</small>
+        </div>
+
+        <div class="explore-card" data-name="learning">
+          <div class="big">📚</div>
+          <strong>Learning</strong>
+          <small>Learn something new</small>
+        </div>
+
+        <div class="explore-card" data-name="technology">
+          <div class="big">🚀</div>
+          <strong>Technology</strong>
+          <small>Future & innovation</small>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CREATE -->
+    <section id="create" class="page">
+
+      <div class="page-title">Create Post</div>
+
+      <div class="create-box">
+
+        <div class="post-user">
+          <div class="avatar" id="createAvatar">👤</div>
+          <div class="post-user-info">
+            <strong id="createName">Your Name</strong>
+            <small>Share with your world</small>
+          </div>
+        </div>
+
+        <textarea id="postInput" placeholder="What's on your mind? Share something with your world..."></textarea>
+
+        <div class="create-options">
+          <button>▣ Photo</button>
+          <button>▶ Video</button>
+          <button>☺ Feeling</button>
+          <button>▥ Poll</button>
+        </div>
+
+        <button class="publish" onclick="publishPost()">Publish Post</button>
+
+        <div id="publishSuccess" class="success">
+          ✓ Post published successfully
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- NOTIFICATIONS -->
+    <section id="notifications" class="page">
+
+      <div class="page-title">Notifications</div>
+
+      <div class="list">
+
+        <div class="list-item">
+          <div class="avatar">❤️</div>
+          <div class="list-item-content">
+            <strong>Creative World liked your post</strong>
+            <small>2 minutes ago</small>
+          </div>
+        </div>
+
+        <div class="list-item">
+          <div class="avatar">💬</div>
+          <div class="list-item-content">
+            <strong>Music World commented on your post</strong>
+            <small>15 minutes ago</small>
+          </div>
+        </div>
+
+        <div class="list-item">
+          <div class="avatar">👤</div>
+          <div class="list-item-content">
+            <strong>World Explorer started following you</strong>
+            <small>32 minutes ago</small>
+          </div>
+          <button class="follow-btn">Follow</button>
+        </div>
+
+        <div class="list-item">
+          <div class="avatar">↗</div>
+          <div class="list-item-content">
+            <strong>Creative World shared your post</strong>
+            <small>1 hour ago</small>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- MESSAGES -->
+    <section id="messages" class="page">
+
+      <div class="page-title">Messages</div>
+
+      <div class="message-box">
+        <div>
+          <div style="font-size:45px">✉</div>
+          <h3 style="color:white;margin-top:10px">Your Messages</h3>
+          <p style="margin-top:6px;font-size:12px">
+            Connect and chat with people around your world.
+          </p>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- SAVED -->
+    <section id="saved" class="page">
+
+      <div class="page-title">Saved Posts</div>
+
+      <div id="savedFeed" class="feed"></div>
+
+    </section>
+
+
+    <!-- COMMUNITIES -->
+    <section id="communities" class="page">
+
+      <div class="page-title">Communities</div>
+
+      <div class="explore-grid">
+
+        <div class="explore-card">
+          <div class="big">🌍</div>
+          <strong>World Community</strong>
+          <small>2.4M members</small>
+        </div>
+
+        <div class="explore-card">
+          <div class="big">🎨</div>
+          <strong>Creators</strong>
+          <small>840K members</small>
+        </div>
+
+        <div class="explore-card">
+          <div class="big">🎵</div>
+          <strong>Music Lovers</strong>
+          <small>1.2M members</small>
+        </div>
+
+        <div class="explore-card">
+          <div class="big">🚀</div>
+          <strong>Technology</strong>
+          <small>960K members</small>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PROFILE -->
+    <section id="profile" class="page">
+
+      <div class="profile-cover"></div>
+
+      <div class="profile-info">
+
+        <div class="profile-head">
+
+          <div>
+            <div class="profile-big-avatar" id="profileAvatar">👤</div>
+          </div>
+
+          <button class="icon-btn" onclick="toggleEditProfile()">⚙</button>
+
+        </div>
+
+        <div class="profile-name">
+          <span id="profileName">Your Name</span>
+          <span class="verified">✓</span>
+        </div>
+
+        <div class="profile-username" id="profileUsername">@yourworld</div>
+
+        <div class="profile-bio" id="profileBio">
+          Your voice. Your ideas. Your world.<br>
+          Welcome to my YOCEWOR profile. 🌎
+        </div>
+
+        <div class="profile-actions">
+          <button onclick="toggleEditProfile()">Edit Profile</button>
+          <button class="secondary" onclick="showPage('saved')">🔖 Saved</button>
+        </div>
+
+        <div class="stats">
+
+          <div class="stat">
+            <strong id="postCount">0</strong>
+            <small>Posts</small>
+          </div>
+
+          <div class="stat">
+            <strong>2.5K</strong>
+            <small>Followers</small>
+          </div>
+
+          <div class="stat">
+            <strong>150</strong>
+            <small>Following</small>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div id="editProfile" class="edit-profile">
+
+        <input id="editName" placeholder="Name">
+        <input id="editUsername" placeholder="Username">
+        <textarea id="editBio" placeholder="Bio"></textarea>
+
+        <button onclick="saveProfile()">Save Profile</button>
+
+      </div>
+
+
+      <div class="profile-tabs">
+        <button class="active">Posts</button>
+        <button>Media</button>
+        <button onclick="showPage('saved')">Saved</button>
+        <button>Likes</button>
+      </div>
+
+      <div class="photo-grid">
+        <div class="photo-tile">🏔️</div>
+        <div class="photo-tile">🌄</div>
+        <div class="photo-tile">🏍️</div>
+        <div class="photo-tile">🏙️</div>
+        <div class="photo-tile">🌆</div>
+        <div class="photo-tile">🌅</div>
+      </div>
+
+    </section>
+
+
+    <!-- SETTINGS -->
+    <section id="settings" class="page">
+
+      <div class="page-title">Settings</div>
+
+      <div class="settings">
+
+        <div class="setting">
+          <div class="avatar">🔔</div>
+          <div class="setting-info">
+            <strong>Notifications</strong>
+            <small>Manage your notifications</small>
+          </div>
+          <button>On</button>
+        </div>
+
+        <div class="setting">
+          <div class="avatar">🔒</div>
+          <div class="setting-info">
+            <strong>Privacy</strong>
+            <small>Control your privacy</small>
+          </div>
+          <button>Open</button>
+        </div>
+
+        <div class="setting">
+          <div class="avatar">🌙</div>
+          <div class="setting-info">
+            <strong>Dark Mode</strong>
+            <small>YOCEWOR dark experience</small>
+          </div>
+          <button>On</button>
+        </div>
+
+        <div class="setting">
+          <div class="avatar">🌐</div>
+          <div class="setting-info">
+            <strong>Language</strong>
+            <small>Choose your language</small>
+          </div>
+          <button>English</button>
+        </div>
+
+        <button class="logout" onclick="logout()">Log Out</button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- RIGHT PANEL -->
+  <aside class="rightbar">
+
+    <div class="right-card">
+
+      <h3>Trending on YOCEWOR</h3>
+
+      <div class="trend">
+        <small>Trending · World</small>
+        <strong>#YourWorld</strong>
+      </div>
+
+      <div class="trend">
+        <small>Trending · Technology</small>
+        <strong>#FutureTech</strong>
+      </div>
+
+      <div class="trend">
+        <small>Trending · Creative</small>
+        <strong>#CreateSomething</strong>
+      </div>
+
+      <div class="trend">
+        <small>Trending · India</small>
+        <strong>#MadeInIndia 🇮🇳</strong>
+      </div>
+
+    </div>
+
+
+    <div class="right-card">
+
+      <h3>People You May Know</h3>
+
+      <div class="person">
+        <div class="avatar">👨</div>
+        <div class="person-info">
+          <strong>Aarav Sharma</strong>
+          <small>@aarav</small>
+        </div>
+        <button>Follow</button>
+      </div>
+
+      <div class="person">
+        <div class="avatar">👩</div>
+        <div class="person-info">
+          <strong>Neha Sharma</strong>
+          <small>@neha</small>
+        </div>
+        <button>Follow</button>
+      </div>
+
+      <div class="person">
+        <div class="avatar">🧑</div>
+        <div class="person-info">
+          <strong>Rohan Verma</strong>
+          <small>@rohan</small>
+        </div>
+        <button>Follow</button>
+      </div>
+
+    </div>
+
+  </aside>
+
 </div>
 
-<div class="story">
-<div class="story-avatar"><div class="story-inner">🌍</div></div>
-<div class="story-name">World</div>
-</div>
 
-<div class="story">
-<div class="story-avatar"><div class="story-inner">🎨</div></div>
-<div class="story-name">Creative</div>
-</div>
+<!-- MOBILE NAV -->
+<nav class="mobile-nav">
 
-<div class="story">
-<div class="story-avatar"><div class="story-inner">🎵</div></div>
-<div class="story-name">Music</div>
-</div>
+  <button class="active" onclick="showPage('home',this)">
+    <span>⌂</span>Home
+  </button>
 
-</div>
+  <button onclick="showPage('explore',this)">
+    <span>⌕</span>Explore
+  </button>
 
-<div class="create" onclick="showPage('create')">
-<div class="create-row">
-<div class="avatar">👤</div>
-<div class="placeholder">
-Share something with your world...
-</div>
-</div>
-</div>
+  <button class="mobile-create" onclick="showPage('create',this)">
+    ＋
+  </button>
 
-<div class="title">Your Feed</div>
+  <button onclick="showPage('notifications',this)">
+    <span>♧</span>Alerts
+  </button>
 
-<main id="feed" class="feed">
-
-<article class="post">
-
-<div class="user">
-<div class="avatar">🌎</div>
-<div>
-<strong>YOCEWOR World</strong>
-<small>2 min ago</small>
-</div>
-</div>
-
-<div class="post-text">
-Welcome to YOCEWOR — your voice, your ideas and your world in one place.
-</div>
-
-<div class="post-image">🌎</div>
-
-<div class="post-actions">
-<div class="action like-btn" onclick="toggleLike(this)">♡ Like <span class="like-count">0</span></div>
-<div class="action comment-btn" onclick="toggleComment(this)">💬 Comment <span class="comment-count">0</span></div>
-<div class="action share-btn" onclick="sharePost(this)">↗ Share</div>
-<div class="action save-btn" onclick="toggleSave(this)">🔖 Save</div>
-</div>
-
-</article>
-
-</main>
-</section>
-
-<!-- EXPLORE -->
-
-<section id="explore" class="page">
-
-<div class="title">Explore</div>
-
-<div class="search">
-⌕ Search people, topics and ideas...
-</div>
-
-<div class="topics">
-<div class="topic active">For You</div>
-<div class="topic">Trending</div>
-<div class="topic">People</div>
-<div class="topic">Topics</div>
-</div>
-
-<div class="grid">
-
-<div class="card">
-<div class="emoji">🌍</div>
-<strong>World</strong>
-<small>Discover the world</small>
-</div>
-
-<div class="card">
-<div class="emoji">🎨</div>
-<strong>Creative</strong>
-<small>Ideas & creativity</small>
-</div>
-
-<div class="card">
-<div class="emoji">🎵</div>
-<strong>Music</strong>
-<small>Sounds & artists</small>
-</div>
-
-<div class="card">
-<div class="emoji">⚽</div>
-<strong>Sports</strong>
-<small>What's happening</small>
-</div>
-
-<div class="card">
-<div class="emoji">📚</div>
-<strong>Learning</strong>
-<small>Learn something new</small>
-</div>
-
-<div class="card">
-<div class="emoji">🚀</div>
-<strong>Technology</strong>
-<small>Future & innovation</small>
-</div>
-
-</div>
-</section>
-
-<!-- CREATE -->
-
-<section id="create" class="page">
-
-<div class="title">Create Post</div>
-
-<div class="create-post">
-
-<div class="box">
-
-<div class="create-row" style="margin-bottom:18px">
-
-<div class="avatar">👤</div>
-
-<div>
-<strong id="createUserName">Your Profile</strong>
-<small style="display:block;color:#858598;margin-top:4px">
-Share with your world
-</small>
-</div>
-
-</div>
-
-<textarea id="postInput"
-placeholder="What's on your mind? Share something with your world..."></textarea>
-
-<div class="tools">
-<div class="tool">📷 Photo</div>
-<div class="tool">🎥 Video</div>
-<div class="tool">😊 Feeling</div>
-</div>
-
-<button class="publish" onclick="publishPost()">
-Publish Post
-</button>
-
-<div id="status" class="status">
-✓ Post published successfully
-</div>
-
-</div>
-</div>
-</section>
-
-<!-- ACTIVITY -->
-
-<section id="activity" class="page">
-
-<div class="title">Activity</div>
-
-<div class="activity">
-
-<div class="activity-card">
-<div class="activity-icon">❤️</div>
-<div class="activity-text">
-<strong>Creative World</strong> liked your post.
-<span>2 minutes ago</span>
-</div>
-</div>
-
-<div class="activity-card">
-<div class="activity-icon">💬</div>
-<div class="activity-text">
-<strong>Music World</strong> commented on your post.
-<span>15 minutes ago</span>
-</div>
-</div>
-
-<div class="activity-card">
-<div class="activity-icon">👤</div>
-<div class="activity-text">
-<strong>World Explorer</strong> started following you.
-<span>32 minutes ago</span>
-</div>
-<button class="follow" onclick="toggleFollow(this)">Follow</button>
-</div>
-
-<div class="activity-card">
-<div class="activity-icon">↗</div>
-<div class="activity-text">
-<strong>Creative World</strong> shared your post.
-<span>1 hour ago</span>
-</div>
-</div>
-
-</div>
-</section>
-
-<!-- PROFILE -->
-
-<section id="profile" class="page">
-
-<div class="title">Profile</div>
-
-<div class="profile">
-
-<div id="profileView">
-
-<div class="profile-card">
-
-<div class="profile-avatar">👤</div>
-
-<div id="profileName" class="profile-name">
-Your Name
-</div>
-
-<div id="profileUsername" class="username">
-@yourworld
-</div>
-
-<div id="profileBio" class="bio">
-Your voice. Your ideas. Your world.
-Welcome to my YOCEWOR profile.
-</div>
-
-<div class="stats">
-
-<div class="stat">
-<strong id="postCount">0</strong>
-<span>Posts</span>
-</div>
-
-<div class="stat">
-<strong>0</strong>
-<span>Followers</span>
-</div>
-
-<div class="stat">
-<strong>0</strong>
-<span>Following</span>
-</div>
-
-</div>
-
-<button class="edit" onclick="openEditor()">
-Edit Profile
-</button>
-
-<button class="edit" onclick="showPage('saved');showSavedPosts()">
-🔖 Saved Posts
-</button>
-  
-</div>
-
-</div>
-
-<!-- EDITOR -->
-
-<div id="profileEditor" class="edit-box" style="display:none">
-
-<div class="field">
-<label>Name</label>
-<input id="editName" type="text" placeholder="Your name">
-</div>
-
-<div class="field">
-<label>Username</label>
-<input id="editUsername" type="text" placeholder="yourworld">
-</div>
-
-<div class="field">
-<label>Bio</label>
-<textarea id="editBio" placeholder="Tell people about yourself"></textarea>
-</div>
-
-<button class="save" onclick="saveProfile()">
-Save Profile
-</button>
-
-<button class="cancel" onclick="closeEditor()">
-Cancel
-</button>
-
-</div>
-
-</div>
-</section>
-  
-<!-- SAVED POSTS -->
-
-<section id="saved" class="page">
-
-<div class="title">Saved Posts</div>
-
-<div id="savedPosts" class="feed">
-
-<div style="text-align:center;color:#858598;padding:40px 20px;">
-🔖 Your saved posts will appear here.
-</div>
-
-</div>
-
-</section>
-  
-<!-- NAV -->
-
-<nav>
-
-<div class="nav-item active" onclick="showPage('home',this)">
-<span>⌂</span>
-Home
-</div>
-
-<div class="nav-item" onclick="showPage('explore',this)">
-<span>◉</span>
-Explore
-</div>
-
-<div class="create-nav" onclick="showPage('create')">
-＋
-</div>
-
-<div class="nav-item" onclick="showPage('activity',this)">
-<span>♡</span>
-Activity
-</div>
-
-<div class="nav-item" onclick="showPage('profile',this)">
-<span>◯</span>
-Profile
-</div>
+  <button onclick="showPage('profile',this)">
+    <span>◯</span>Profile
+  </button>
 
 </nav>
 
-</div>
 
 <script>
 
-let userPostCount=0;
-let savedPosts=JSON.parse(localStorage.getItem("yocewor_saved_posts")) || [];
-localStorage.setItem("yocewor_test", "ready");
+/* =========================================================
+   YOCEWOR — FRONTEND APP ENGINE
+   ========================================================= */
+
+const USER_KEY="yocewor_user";
+const POSTS_KEY="yocewor_posts";
+const SAVED_KEY="yocewor_saved";
+
+let currentUser=null;
+
+
+/* ================= START ================= */
+
+document.addEventListener("DOMContentLoaded",function(){
+
+  currentUser=JSON.parse(localStorage.getItem(USER_KEY));
+
+  if(currentUser){
+    openApp();
+  }
+
+  loadPosts();
+  loadSaved();
+
+});
+
+
+/* ================= AUTH ================= */
+
+function authMode(mode){
+
+  const login=document.getElementById("loginForm");
+  const register=document.getElementById("registerForm");
+
+  document.getElementById("loginTab").classList.toggle("active",mode==="login");
+  document.getElementById("registerTab").classList.toggle("active",mode==="register");
+
+  login.classList.toggle("hidden",mode!=="login");
+  register.classList.toggle("hidden",mode!=="register");
+}
+
+
+function register(e){
+
+  e.preventDefault();
+
+  const name=document.getElementById("regName").value.trim();
+  const username=document.getElementById("regUsername").value.trim().replace("@","");
+  const email=document.getElementById("regEmail").value.trim();
+  const password=document.getElementById("regPass").value;
+
+  if(!name || !username || !email || !password){
+    alert("Please complete all fields.");
+    return;
+  }
+
+  const user={
+    name:name,
+    username:username,
+    email:email,
+    password:password,
+    bio:"Your voice. Your ideas. Your world.",
+    avatar:""
+  };
+
+  localStorage.setItem(USER_KEY,JSON.stringify(user));
+
+  currentUser=user;
+
+  openApp();
+
+}
+
+
+function login(e){
+
+  e.preventDefault();
+
+  const value=document.getElementById("loginUser").value.trim().toLowerCase();
+  const password=document.getElementById("loginPass").value;
+
+  const saved=JSON.parse(localStorage.getItem(USER_KEY));
+
+  if(!saved){
+    alert("No account found on this device. Please create an account first.");
+    authMode("register");
+    return;
+  }
+
+  if(
+    (saved.username.toLowerCase()===value ||
+     saved.email.toLowerCase()===value) &&
+    saved.password===password
+  ){
+
+    currentUser=saved;
+    openApp();
+
+  }else{
+    alert("Incorrect username/email or password.");
+  }
+
+}
+
+
+function logout(){
+
+  currentUser=null;
+
+  document.getElementById("app").classList.add("hidden");
+  document.getElementById("auth").classList.remove("hidden");
+
+  document.getElementById("loginPass").value="";
+
+}
+
+
+/* ================= APP ================= */
+
+function openApp(){
+
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+
+  updateUserUI();
+  loadPosts();
+  loadSaved();
+
+}
+
+
+function updateUserUI(){
+
+  if(!currentUser)return;
+
+  document.getElementById("sideName").textContent=currentUser.name;
+  document.getElementById("sideUsername").textContent="@"+currentUser.username;
+
+  document.getElementById("profileName").textContent=currentUser.name;
+  document.getElementById("profileUsername").textContent="@"+currentUser.username;
+  document.getElementById("profileBio").innerHTML=
+    escapeHTML(currentUser.bio).replace(/\n/g,"<br>");
+
+  document.getElementById("createName").textContent=currentUser.name;
+
+}
+
+
+/* ================= PAGE NAVIGATION ================= */
 
 function showPage(page,element){
 
-document.querySelectorAll(".page").forEach(function(p){
-p.classList.remove("active");
-});
+  document.querySelectorAll(".page").forEach(function(p){
+    p.classList.remove("active");
+  });
 
-document.getElementById(page).classList.add("active");
+  const target=document.getElementById(page);
 
-document.querySelectorAll(".nav-item").forEach(function(item){
-item.classList.remove("active");
-});
+  if(target){
+    target.classList.add("active");
+  }
 
-if(element){
-element.classList.add("active");
+  document.querySelectorAll(".menu button").forEach(function(b){
+    b.classList.remove("active");
+  });
+
+  document.querySelectorAll(".mobile-nav button").forEach(function(b){
+    b.classList.remove("active");
+  });
+
+  if(element){
+    element.classList.add("active");
+  }
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+  if(page==="saved"){
+    loadSaved();
+  }
+
 }
 
-window.scrollTo(0,0);
+
+/* ================= POSTS ================= */
+
+function getPosts(){
+
+  return JSON.parse(localStorage.getItem(POSTS_KEY)||"[]");
+
 }
+
+
+function savePosts(posts){
+
+  localStorage.setItem(POSTS_KEY,JSON.stringify(posts));
+
+}
+
+
+function defaultPosts(){
+
+  return [
+
+    {
+      id:"welcome",
+      user:"YOCEWOR World",
+      username:"yocewor",
+      text:"Welcome to YOCEWOR — your voice, your ideas and your world in one place. 🌎",
+      image:"",
+      likes:125,
+      comments:24,
+      shares:12,
+      saved:false,
+      created:"2h"
+    },
+
+    {
+      id:"mountain",
+      user:"Rahul Prajapat",
+      username:"rahulprajapat",
+      text:"Life is a journey, not a destination. ✨\nKeep going, keep growing. 🚀",
+      image:"",
+      likes:125,
+      comments:24,
+      shares:12,
+      saved:false,
+      created:"2h"
+    },
+
+    {
+      id:"sunset",
+      user:"Neha Sharma",
+      username:"nehasharma",
+      text:"Sunsets are proof that endings can be beautiful. 🌅",
+      image:"",
+      likes:87,
+      comments:12,
+      shares:7,
+      saved:false,
+      created:"4h"
+    }
+
+  ];
+
+}
+
+
+function loadPosts(){
+
+  let posts=getPosts();
+
+  if(posts.length===0){
+    posts=defaultPosts();
+    savePosts(posts);
+  }
+
+  renderPosts(posts);
+
+}
+
+
+function renderPosts(posts){
+
+  const feed=document.getElementById("feed");
+
+  if(!feed)return;
+
+  feed.innerHTML="";
+
+  posts.forEach(function(post){
+    feed.appendChild(createPostElement(post));
+  });
+
+  updatePostCount();
+
+}
+
+
+function createPostElement(post){
+
+  const article=document.createElement("article");
+
+  article.className="post";
+  article.dataset.id=post.id;
+
+  const saved=isSaved(post.id);
+
+  article.innerHTML=`
+
+    <div class="post-user">
+
+      <div class="avatar">
+        ${post.user==="YOCEWOR World"?"🌎":"👤"}
+      </div>
+
+      <div class="post-user-info">
+        <strong>${escapeHTML(post.user)}</strong>
+        <small>@${escapeHTML(post.username)} · ${post.created||"Just now"}</small>
+      </div>
+
+      <button class="more">•••</button>
+
+    </div>
+
+    <div class="post-text">${escapeHTML(post.text)}</div>
+
+    ${
+      post.image
+      ? `<img class="post-img" src="${post.image}">`
+      : post.id==="mountain"
+      ? `<div class="fake-img">🏔️</div>`
+      : post.id==="sunset"
+      ? `<div class="fake-img">🌅</div>`
+      : post.id==="welcome"
+      ? `<div class="fake-img">🌎</div>`
+      : ""
+    }
+
+    <div class="post-stats">
+      <span>♥ ${post.likes||0} likes</span>
+      <span>${post.comments||0} comments · ${post.shares||0} shares</span>
+    </div>
+
+    <div class="post-actions">
+
+      <button onclick="likePost('${post.id}',this)">
+        ♥ Like
+      </button>
+
+      <button onclick="toggleComments('${post.id}')">
+        ♡ Comment
+      </button>
+
+      <button onclick="sharePost('${post.id}')">
+        ↗ Share
+      </button>
+
+      <button class="${saved?"saved":""}" onclick="savePost('${post.id}',this)">
+        ${saved?"✓ Saved":"♡ Save"}
+      </button>
+
+    </div>
+
+    <div id="comments-${post.id}" class="comments hidden">
+
+      <div class="comment-row">
+        <input id="comment-input-${post.id}" placeholder="Write a comment...">
+        <button onclick="addComment('${post.id}')">Post</button>
+      </div>
+
+      <div id="comment-list-${post.id}"></div>
+
+    </div>
+  `;
+
+  return article;
+
+}
+
+
+/* ================= LIKE ================= */
+
+function likePost(id,button){
+
+  const posts=getPosts();
+  const post=posts.find(p=>p.id===id);
+
+  if(!post)return;
+
+  const liked=button.classList.contains("active");
+
+  if(liked){
+    post.likes=Math.max(0,(post.likes||0)-1);
+    button.classList.remove("active");
+  }else{
+    post.likes=(post.likes||0)+1;
+    button.classList.add("active");
+  }
+
+  savePosts(posts);
+
+  button.parentElement.previousElementSibling.querySelector("span") &&
+  (button.parentElement.previousElementSibling.querySelector("span").textContent="");
+
+  loadPosts();
+
+}
+
+
+/* ================= COMMENTS ================= */
+
+function toggleComments(id){
+
+  const box=document.getElementById("comments-"+id);
+
+  if(box){
+    box.classList.toggle("hidden");
+  }
+
+}
+
+
+function addComment(id){
+
+  const input=document.getElementById("comment-input-"+id);
+
+  if(!input)return;
+
+  const text=input.value.trim();
+
+  if(!text)return;
+
+  const list=document.getElementById("comment-list-"+id);
+
+  const div=document.createElement("div");
+
+  div.className="comment";
+  div.textContent=currentUser.name+": "+text;
+
+  list.appendChild(div);
+
+  input.value="";
+
+  const posts=getPosts();
+  const post=posts.find(p=>p.id===id);
+
+  if(post){
+    post.comments=(post.comments||0)+1;
+    savePosts(posts);
+  }
+
+}
+
+
+/* ================= SAVE ================= */
+
+function getSaved(){
+
+  return JSON.parse(localStorage.getItem(SAVED_KEY)||"[]");
+
+}
+
+
+function isSaved(id){
+
+  return getSaved().includes(id);
+
+}
+
+
+function savePost(id,button){
+
+  let saved=getSaved();
+
+  if(saved.includes(id)){
+
+    saved=saved.filter(x=>x!==id);
+
+    button.classList.remove("saved");
+    button.textContent="♡ Save";
+
+  }else{
+
+    saved.push(id);
+
+    button.classList.add("saved");
+    button.textContent="✓ Saved";
+
+  }
+
+  localStorage.setItem(SAVED_KEY,JSON.stringify(saved));
+
+  loadSaved();
+
+}
+
+
+function loadSaved(){
+
+  const container=document.getElementById("savedFeed");
+
+  if(!container)return;
+
+  const saved=getSaved();
+  const posts=getPosts();
+
+  container.innerHTML="";
+
+  const savedPosts=posts.filter(p=>saved.includes(p.id));
+
+  if(savedPosts.length===0){
+
+    container.innerHTML=`
+      <div style="text-align:center;color:#858d9e;padding:60px 20px">
+        <div style="font-size:45px">♡</div>
+        <div style="margin-top:12px">Your saved posts will appear here.</div>
+      </div>
+    `;
+
+    return;
+  }
+
+  savedPosts.forEach(function(post){
+    container.appendChild(createPostElement(post));
+  });
+
+}
+
+
+/* ================= SHARE ================= */
+
+function sharePost(id){
+
+  const posts=getPosts();
+  const post=posts.find(p=>p.id===id);
+
+  if(!post)return;
+
+  if(navigator.share){
+
+    navigator.share({
+      title:"YOCEWOR",
+      text:post.text,
+      url:location.href
+    }).catch(()=>{});
+
+  }else{
+
+    navigator.clipboard.writeText(location.href);
+
+    alert("YOCEWOR link copied.");
+
+  }
+
+}
+
+
+/* ================= CREATE POST ================= */
 
 function publishPost(){
 
-const input=document.getElementById("postInput");
-const text=input.value.trim();
+  const input=document.getElementById("postInput");
+  const text=input.value.trim();
 
-if(text===""){
-alert("Please write something first.");
-return;
+  if(!text){
+    alert("Please write something first.");
+    return;
+  }
+
+  const posts=getPosts();
+
+  posts.unshift({
+
+    id:"post-"+Date.now(),
+
+    user:currentUser.name,
+
+    username:currentUser.username,
+
+    text:text,
+
+    image:"",
+
+    likes:0,
+
+    comments:0,
+
+    shares:0,
+
+    created:"Just now"
+
+  });
+
+  savePosts(posts);
+
+  input.value="";
+
+  const success=document.getElementById("publishSuccess");
+
+  success.style.display="block";
+
+  setTimeout(function(){
+    success.style.display="none";
+  },2200);
+
+  loadPosts();
+
+  showPage("home");
+
 }
 
-const post=document.createElement("article");
 
-post.className="post";
+/* ================= PROFILE ================= */
 
-post.innerHTML=`
-<div class="user">
-<div class="avatar">👤</div>
-<div>
-<strong id="newPostName">Your Name</strong>
-<small>Just now</small>
-</div>
-</div>
+function toggleEditProfile(){
 
-<div class="post-text"></div>
+  const box=document.getElementById("editProfile");
 
-<div class="post-actions">
-<div class="action like-btn" onclick="toggleLike(this)">♡ Like <span class="like-count">0</span></div>
-<div class="action comment-btn" onclick="toggleComment(this)">💬 Comment <span class="comment-count">0</span></div>
-<div class="action share-btn" onclick="sharePost(this)">↗ Share</div>
-<div class="action save-btn" onclick="toggleSave(this)">🔖 Save</div>
-</div>
-`;
+  if(box.style.display==="block"){
 
-post.querySelector(".post-text").textContent=text;
+    box.style.display="none";
 
-document.getElementById("feed").prepend(post);
+  }else{
 
-input.value="";
+    document.getElementById("editName").value=currentUser.name;
+    document.getElementById("editUsername").value=currentUser.username;
+    document.getElementById("editBio").value=currentUser.bio;
 
-userPostCount++;
+    box.style.display="block";
 
-document.getElementById("postCount").textContent=userPostCount;
+    setTimeout(function(){
+      box.scrollIntoView({behavior:"smooth",block:"center"});
+    },50);
 
-document.getElementById("status").style.display="block";
+  }
 
-setTimeout(function(){
-document.getElementById("status").style.display="none";
-},2500);
-
-showPage("home");
 }
 
-function openEditor(){
-
-document.getElementById("editName").value=
-document.getElementById("profileName").textContent.trim();
-
-document.getElementById("editUsername").value=
-document.getElementById("profileUsername").textContent.trim().replace("@","");
-
-document.getElementById("editBio").value=
-document.getElementById("profileBio").textContent.trim();
-
-document.getElementById("profileEditor").style.display="block";
-
-window.scrollTo(0,document.body.scrollHeight);
-}
-
-function closeEditor(){
-
-document.getElementById("profileEditor").style.display="none";
-}
 
 function saveProfile(){
 
-let name=document.getElementById("editName").value.trim();
-let username=document.getElementById("editUsername").value.trim();
-let bio=document.getElementById("editBio").value.trim();
+  const name=document.getElementById("editName").value.trim();
+  const username=document.getElementById("editUsername").value.trim().replace("@","");
+  const bio=document.getElementById("editBio").value.trim();
 
-if(name===""){
-alert("Please enter your name.");
-return;
-}
+  if(!name||!username){
+    alert("Name and username are required.");
+    return;
+  }
 
-if(username===""){
-alert("Please enter a username.");
-return;
-}
+  currentUser.name=name;
+  currentUser.username=username;
+  currentUser.bio=bio||"Your voice. Your ideas. Your world.";
 
-if(bio===""){
-bio="Your voice. Your ideas. Your world.";
-}
+  localStorage.setItem(USER_KEY,JSON.stringify(currentUser));
 
-document.getElementById("profileName").textContent=name;
+  updateUserUI();
 
-document.getElementById("profileUsername").textContent=
-"@"+username.replace("@","");
-
-document.getElementById("profileBio").textContent=bio;
-
-document.getElementById("createUserName").textContent=name;
-
-document.getElementById("profileEditor").style.display="none";
-
-alert("Profile updated successfully!");
-}
-function toggleFollow(button){
-
-if(button.textContent.trim()==="Follow"){
-
-button.textContent="Following ✓";
-button.style.background="rgba(255,255,255,.10)";
-button.style.color="#9ee7bd";
-
-}else{
-
-button.textContent="Follow";
-button.style.background="linear-gradient(90deg,#6f9fff,#a86cff)";
-button.style.color="#fff";
+  document.getElementById("editProfile").style.display="none";
 
 }
 
-}
-  function toggleLike(button){
 
-const countElement = button.querySelector(".like-count");
+/* ================= SEARCH ================= */
 
-let count = parseInt(countElement.textContent);
+function filterExplore(value){
 
-if(button.classList.contains("liked")){
+  value=value.toLowerCase();
 
-count--;
-button.classList.remove("liked");
-button.firstChild.textContent = "♡ Like ";
+  document.querySelectorAll(".explore-card").forEach(function(card){
 
-}else{
+    const name=card.dataset.name||"";
 
-count++;
-button.classList.add("liked");
-button.firstChild.textContent = "♥ Liked ";
+    card.style.display=
+      !value||name.includes(value)
+      ?"flex"
+      :"none";
 
-}
-
-countElement.textContent = count;
-
-}
-function toggleComment(button){
-
-let post = button.closest(".post");
-
-let oldBox = post.querySelector(".comment-box");
-
-if(oldBox){
-oldBox.remove();
-return;
-}
-
-let commentBox = document.createElement("div");
-
-commentBox.className = "comment-box";
-
-commentBox.innerHTML = `
-<input type="text" class="comment-input" placeholder="Write a comment...">
-<button class="comment-send">Post</button>
-<div class="comments-list"></div>
-`;
-
-post.querySelector(".post-actions").after(commentBox);
-
-let input = commentBox.querySelector(".comment-input");
-let send = commentBox.querySelector(".comment-send");
-let list = commentBox.querySelector(".comments-list");
-
-send.onclick = function(){
-
-let text = input.value.trim();
-
-if(text === ""){
-return;
-}
-
-let comment = document.createElement("div");
-
-comment.className = "comment-item";
-
-comment.textContent = "👤 Your Name: " + text;
-
-list.appendChild(comment);
-let countElement = button.querySelector(".comment-count");
-let count = parseInt(countElement.textContent);
-countElement.textContent = count + 1;
-input.value = "";
-
-};
-
-}
-function sharePost(button){
-
-let post = button.closest(".post");
-
-let text = post.querySelector(".post-text").textContent.trim();
-
-if(navigator.share){
-
-navigator.share({
-title:"YOCEWOR",
-text:text,
-url:window.location.href
-});
-
-}else{
-
-navigator.clipboard.writeText(window.location.href);
-
-button.textContent="✓ Link Copied";
-
-setTimeout(function(){
-button.textContent="↗ Share";
-},1500);
+  });
 
 }
 
-}
-function toggleSave(button){
 
-    const post = button.closest(".post");
-    const text = post.querySelector(".post-text").textContent.trim();
+function globalSearch(value){
 
-    let savedPosts =
-        JSON.parse(localStorage.getItem("yocewor_saved_posts") || "[]");
+  if(!value.trim())return;
 
-    const index = savedPosts.findIndex(function(item){
-        return item.text === text;
-    });
+  showPage("explore");
 
-    if(index !== -1){
+  document.getElementById("exploreInput").value=value;
 
-        savedPosts.splice(index,1);
-
-        button.classList.remove("saved");
-        button.textContent = "🔖 Save";
-
-    }else{
-
-        savedPosts.push({
-            text: text,
-            savedAt: Date.now()
-        });
-
-        button.classList.add("saved");
-        button.textContent = "✓ Saved";
-
-    }
-
-    localStorage.setItem(
-        "yocewor_saved_posts",
-        JSON.stringify(savedPosts)
-    );
-
-    showSavedPosts();
-}
-function showSavedPosts(){
-
-    const savedPosts =
-        JSON.parse(localStorage.getItem("yocewor_saved_posts") || "[]");
-
-    const container = document.getElementById("savedPosts");
-
-    container.innerHTML = "";
-
-    if(savedPosts.length === 0){
-
-        container.innerHTML = `
-        <div style="text-align:center;color:#858598;padding:40px 20px;">
-        🔖 No saved posts yet.
-        </div>
-        `;
-
-        return;
-    }
-
-    savedPosts.forEach(function(item){
-
-        const post = document.createElement("article");
-
-        post.className = "post";
-
-        post.innerHTML = `
-        <div class="user">
-            <div class="avatar">👤</div>
-            <div>
-                <strong>Your Name</strong>
-                <small>Saved Post</small>
-            </div>
-        </div>
-
-        <div class="post-text"></div>
-
-        <div class="post-actions">
-
-            <div class="action like-btn"
-            onclick="toggleLike(this)">
-            ♡ Like <span class="like-count">0</span>
-            </div>
-
-            <div class="action comment-btn"
-            onclick="toggleComment(this)">
-            💬 Comment <span class="comment-count">0</span>
-            </div>
-
-            <div class="action share-btn"
-            onclick="sharePost(this)">
-            ↗ Share
-            </div>
-
-            <div class="action save-btn saved"
-            onclick="toggleSave(this)">
-            ✓ Saved
-            </div>
-
-        </div>
-        `;
-
-        post.querySelector(".post-text").textContent = item.text;
-
-        container.appendChild(post);
-
-    });
+  filterExplore(value);
 
 }
+
+
+/* ================= COUNT ================= */
+
+function updatePostCount(){
+
+  if(!currentUser)return;
+
+  const posts=getPosts();
+
+  const count=posts.filter(function(p){
+    return p.username===currentUser.username;
+  }).length;
+
+  const el=document.getElementById("postCount");
+
+  if(el)el.textContent=count;
+
+}
+
+
+/* ================= SECURITY / TEXT ================= */
+
+function escapeHTML(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
 </script>
 
 </body>
-  </html>
+        </html>
