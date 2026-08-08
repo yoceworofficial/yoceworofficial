@@ -686,6 +686,7 @@ Welcome to YOCEWOR — your voice, your ideas and your world in one place.
 <div class="action like-btn" onclick="toggleLike(this)">♡ Like <span class="like-count">0</span></div>
 <div class="action comment-btn" onclick="toggleComment(this)">💬 Comment <span class="comment-count">0</span></div>
 <div class="action share-btn" onclick="sharePost(this)">↗ Share</div>
+<div class="action save-btn" onclick="toggleSave(this)">🔖 Save</div>
 </div>
 
 </article>
@@ -1009,6 +1010,7 @@ post.innerHTML=`
 <div class="action like-btn" onclick="toggleLike(this)">♡ Like <span class="like-count">0</span></div>
 <div class="action comment-btn" onclick="toggleComment(this)">💬 Comment <span class="comment-count">0</span></div>
 <div class="action share-btn" onclick="sharePost(this)">↗ Share</div>
+<div class="action save-btn" onclick="toggleSave(this)">🔖 Save</div>
 </div>
 `;
 
@@ -1198,6 +1200,21 @@ button.textContent="✓ Link Copied";
 setTimeout(function(){
 button.textContent="↗ Share";
 },1500);
+
+}
+
+}
+function toggleSave(button){
+
+if(button.classList.contains("saved")){
+
+button.classList.remove("saved");
+button.textContent = "🔖 Save";
+
+}else{
+
+button.classList.add("saved");
+button.textContent = "✓ Saved";
 
 }
 
