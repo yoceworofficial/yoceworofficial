@@ -44858,3 +44858,5079 @@
 <!-- =====================================================
      YOCEWOR — END OF ALL 32 CODING PARTS
      ===================================================== -->
+  <!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 1
+     SUPABASE CLIENT INITIALIZATION
+     ===================================================== -->
+
+<script>
+
+  /*
+   * SUPABASE CONFIGURATION
+   *
+   * अभी इन दोनों values को मत बदलना।
+   * अगले step में सही values Supabase से copy करेंगे।
+   */
+
+  const SUPABASE_URL =
+    "YOUR_SUPABASE_URL";
+
+  const SUPABASE_ANON_KEY =
+    "YOUR_SUPABASE_ANON_KEY";
+
+
+  /*
+   * SUPABASE CLIENT
+   */
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+
+  /*
+   * YOCEWOR GLOBAL STATE
+   */
+
+  const MEDIA_BUCKET =
+    "yocewor-media";
+
+  let currentUser = null;
+
+  let currentProfile = null;
+
+
+  /*
+   * CONNECTION INITIALIZATION
+   */
+
+  console.log(
+    "================================"
+  );
+
+  console.log(
+    "YOCEWOR SUPABASE PART 1"
+  );
+
+  console.log(
+    "Supabase client created"
+  );
+
+  console.log(
+    "Media bucket:",
+    MEDIA_BUCKET
+  );
+
+  console.log(
+    "================================"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 2
+     SUPABASE CONNECTION HELPERS
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // SUPABASE CONNECTION HELPERS
+  // =====================================================
+
+  window.YOCEWOR = window.YOCEWOR || {};
+
+  window.YOCEWOR.supabase =
+    supabaseClient;
+
+  window.YOCEWOR.mediaBucket =
+    MEDIA_BUCKET;
+
+
+  // =====================================================
+  // GET CURRENT SESSION
+  // =====================================================
+
+  window.YOCEWOR.getSession =
+    async function () {
+
+      const {
+        data,
+        error
+      } = await supabaseClient.auth.getSession();
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR session error:",
+          error
+        );
+
+        return null;
+      }
+
+      return data.session;
+    };
+
+
+  // =====================================================
+  // GET CURRENT USER
+  // =====================================================
+
+  window.YOCEWOR.getCurrentUser =
+    async function () {
+
+      const {
+        data,
+        error
+      } = await supabaseClient.auth.getUser();
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR user error:",
+          error
+        );
+
+        return null;
+      }
+
+      return data.user;
+    };
+
+
+  // =====================================================
+  // AUTH STATE LISTENER
+  // =====================================================
+
+  supabaseClient.auth.onAuthStateChange(
+    (
+      event,
+      session
+    ) => {
+
+      currentUser =
+        session
+          ? session.user
+          : null;
+
+      console.log(
+        "YOCEWOR auth state:",
+        event
+      );
+
+    }
+  );
+
+
+  // =====================================================
+  // CONNECTION STATUS
+  // =====================================================
+
+  window.YOCEWOR.connection =
+    {
+
+      initialized: true,
+
+      getSession:
+        window.YOCEWOR.getSession,
+
+      getCurrentUser:
+        window.YOCEWOR.getCurrentUser
+
+    };
+
+
+  console.log(
+    "YOCEWOR CONNECTION PART 2 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 3
+     SUPABASE CONNECTION TEST
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // TEST SUPABASE CONNECTION
+  // =====================================================
+
+  window.YOCEWOR.testConnection =
+    async function () {
+
+      console.log(
+        "================================"
+      );
+
+      console.log(
+        "YOCEWOR SUPABASE CONNECTION TEST"
+      );
+
+      console.log(
+        "Testing connection..."
+      );
+
+
+      try {
+
+        const {
+          data,
+          error
+        } = await supabaseClient
+          .from("profiles")
+          .select("id")
+          .limit(1);
+
+
+        if (error) {
+
+          console.error(
+            "YOCEWOR CONNECTION ERROR:",
+            error
+          );
+
+          return {
+            success: false,
+            error: error
+          };
+
+        }
+
+
+        console.log(
+          "YOCEWOR SUPABASE CONNECTION SUCCESS"
+        );
+
+        console.log(
+          "Profiles table is accessible."
+        );
+
+        console.log(
+          "================================"
+        );
+
+
+        return {
+          success: true,
+          data: data
+        };
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "YOCEWOR CONNECTION EXCEPTION:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+    };
+
+
+  // =====================================================
+  // GLOBAL CONNECTION TEST
+  // =====================================================
+
+  window.YOCEWOR.connectionTest =
+    window.YOCEWOR.testConnection;
+
+
+  console.log(
+    "YOCEWOR CONNECTION PART 3 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 4
+     SUPABASE CREDENTIALS + CONFIGURATION
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // SUPABASE CONFIGURATION CHECK
+  // =====================================================
+
+  window.YOCEWOR.supabaseConfig = {
+
+    urlConfigured:
+      SUPABASE_URL !==
+      "YOUR_SUPABASE_URL",
+
+    keyConfigured:
+      SUPABASE_ANON_KEY !==
+      "YOUR_SUPABASE_ANON_KEY"
+
+  };
+
+
+  // =====================================================
+  // CONFIGURATION STATUS
+  // =====================================================
+
+  window.YOCEWOR.isSupabaseConfigured =
+    function () {
+
+      return (
+        SUPABASE_URL !==
+          "YOUR_SUPABASE_URL"
+        &&
+        SUPABASE_ANON_KEY !==
+          "YOUR_SUPABASE_ANON_KEY"
+      );
+
+    };
+
+
+  // =====================================================
+  // SAFE CONFIGURATION LOG
+  // =====================================================
+
+  console.log(
+    "YOCEWOR SUPABASE CONFIGURATION"
+  );
+
+  console.log(
+    "URL configured:",
+    window.YOCEWOR.supabaseConfig.urlConfigured
+  );
+
+  console.log(
+    "ANON KEY configured:",
+    window.YOCEWOR.supabaseConfig.keyConfigured
+  );
+
+
+  // =====================================================
+  // IMPORTANT
+  // =====================================================
+
+  /*
+   * SUPABASE SERVICE ROLE KEY
+   * कभी भी यहाँ नहीं डालनी है।
+   *
+   * केवल Supabase project's public
+   * anon/publishable key का उपयोग होगा।
+   */
+
+  console.log(
+    "YOCEWOR CONNECTION PART 4 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 5
+     AUTHENTICATION SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // AUTHENTICATION HELPERS
+  // =====================================================
+
+  window.YOCEWOR.auth = {
+
+    // ---------------------------------------------------
+    // SIGN UP
+    // ---------------------------------------------------
+
+    signUp: async function (
+      email,
+      password
+    ) {
+
+      if (
+        !email ||
+        !password
+      ) {
+
+        return {
+          success: false,
+          error: "Email and password are required."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } = await supabaseClient.auth.signUp({
+
+        email: email,
+
+        password: password
+
+      });
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR signup error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      console.log(
+        "YOCEWOR signup successful"
+      );
+
+
+      return {
+        success: true,
+        data: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // LOGIN
+    // ---------------------------------------------------
+
+    signIn: async function (
+      email,
+      password
+    ) {
+
+      if (
+        !email ||
+        !password
+      ) {
+
+        return {
+          success: false,
+          error: "Email and password are required."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth
+          .signInWithPassword({
+
+            email: email,
+
+            password: password
+
+          });
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR login error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      currentUser =
+        data.user || null;
+
+
+      console.log(
+        "YOCEWOR login successful"
+      );
+
+
+      return {
+        success: true,
+        data: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // LOGOUT
+    // ---------------------------------------------------
+
+    signOut: async function () {
+
+      const {
+        error
+      } =
+        await supabaseClient.auth
+          .signOut();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR logout error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      currentUser = null;
+
+      currentProfile = null;
+
+
+      console.log(
+        "YOCEWOR logout successful"
+      );
+
+
+      return {
+        success: true
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // GET SESSION
+    // ---------------------------------------------------
+
+    getSession: async function () {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth
+          .getSession();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR session error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      currentUser =
+        data.session
+          ? data.session.user
+          : null;
+
+
+      return {
+        success: true,
+        session: data.session
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // PASSWORD RESET
+    // ---------------------------------------------------
+
+    resetPassword: async function (
+      email
+    ) {
+
+      if (!email) {
+
+        return {
+          success: false,
+          error: "Email is required."
+        };
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient.auth
+          .resetPasswordForEmail(
+            email
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR password reset error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      console.log(
+        "YOCEWOR password reset request sent"
+      );
+
+
+      return {
+        success: true
+      };
+
+    }
+
+  };
+
+
+  // =====================================================
+  // AUTH STATE MONITOR
+  // =====================================================
+
+  supabaseClient.auth.onAuthStateChange(
+    (
+      event,
+      session
+    ) => {
+
+      currentUser =
+        session
+          ? session.user
+          : null;
+
+
+      console.log(
+        "YOCEWOR AUTH EVENT:",
+        event
+      );
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-auth-change",
+          {
+            detail: {
+              event: event,
+              session: session,
+              user: currentUser
+            }
+          }
+        )
+      );
+
+    }
+  );
+
+
+  // =====================================================
+  // AUTH SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR AUTHENTICATION PART 5 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 6
+     PROFILE SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // PROFILE SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.profile = {
+
+    // ---------------------------------------------------
+    // GET PROFILE
+    // ---------------------------------------------------
+
+    get: async function (
+      userId
+    ) {
+
+      const id =
+        userId ||
+        currentUser?.id;
+
+
+      if (!id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("profiles")
+          .select("*")
+          .eq("id", id)
+          .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR profile fetch error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      currentProfile =
+        data || null;
+
+
+      return {
+        success: true,
+        profile: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // UPDATE PROFILE
+    // ---------------------------------------------------
+
+    update: async function (
+      updates
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (
+        !updates ||
+        typeof updates !== "object"
+      ) {
+
+        return {
+          success: false,
+          error: "Profile data is required."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("profiles")
+          .update(updates)
+          .eq(
+            "id",
+            currentUser.id
+          )
+          .select()
+          .single();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR profile update error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      currentProfile =
+        data;
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-profile-updated",
+          {
+            detail: data
+          }
+        )
+      );
+
+
+      return {
+        success: true,
+        profile: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // CREATE PROFILE IF MISSING
+    // ---------------------------------------------------
+
+    ensure: async function () {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      const existing =
+        await this.get(
+          currentUser.id
+        );
+
+
+      if (
+        existing.success &&
+        existing.profile
+      ) {
+
+        return existing;
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("profiles")
+          .insert({
+
+            id: currentUser.id,
+
+            username:
+              currentUser.email
+                ? currentUser.email
+                    .split("@")[0]
+                : "user",
+
+            full_name:
+              currentUser.email
+                ? currentUser.email
+                    .split("@")[0]
+                : "YOCEWOR User"
+
+          })
+          .select()
+          .single();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR profile creation error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      currentProfile =
+        data;
+
+
+      return {
+        success: true,
+        profile: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // REFRESH PROFILE
+    // ---------------------------------------------------
+
+    refresh: async function () {
+
+      return await this.get();
+
+    }
+
+  };
+
+
+  // =====================================================
+  // PROFILE AUTH SYNC
+  // =====================================================
+
+  window.addEventListener(
+    "yocewor-auth-change",
+    async function (
+      event
+    ) {
+
+      const user =
+        event.detail?.user;
+
+
+      if (!user) {
+
+        currentProfile =
+          null;
+
+        return;
+
+      }
+
+
+      currentUser =
+        user;
+
+
+      await window.YOCEWOR.profile
+        .ensure();
+
+    }
+  );
+
+
+  // =====================================================
+  // PROFILE SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR PROFILE PART 6 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 7
+     POSTS + FEED SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // POSTS / FEED SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.posts = {
+
+    // ---------------------------------------------------
+    // GET FEED
+    // ---------------------------------------------------
+
+    getFeed: async function (
+      limit = 20,
+      offset = 0
+    ) {
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("posts")
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        )
+        .range(
+          offset,
+          offset + limit - 1
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR feed error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          posts: []
+        };
+
+      }
+
+
+      return {
+        success: true,
+        posts: data || []
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // GET SINGLE POST
+    // ---------------------------------------------------
+
+    get: async function (
+      postId
+    ) {
+
+      if (!postId) {
+
+        return {
+          success: false,
+          error: "Post ID is required."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("posts")
+        .select("*")
+        .eq(
+          "id",
+          postId
+        )
+        .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR post fetch error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true,
+        post: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // CREATE POST
+    // ---------------------------------------------------
+
+    create: async function (
+      postData
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (
+        !postData ||
+        typeof postData !== "object"
+      ) {
+
+        return {
+          success: false,
+          error: "Post data is required."
+        };
+
+      }
+
+
+      const payload = {
+
+        ...postData,
+
+        user_id:
+          currentUser.id
+
+      };
+
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("posts")
+        .insert(payload)
+        .select()
+        .single();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR post creation error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-post-created",
+          {
+            detail: data
+          }
+        )
+      );
+
+
+      return {
+        success: true,
+        post: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // UPDATE POST
+    // ---------------------------------------------------
+
+    update: async function (
+      postId,
+      updates
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (!postId) {
+
+        return {
+          success: false,
+          error: "Post ID is required."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("posts")
+        .update(updates)
+        .eq(
+          "id",
+          postId
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        )
+        .select()
+        .single();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR post update error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true,
+        post: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // DELETE POST
+    // ---------------------------------------------------
+
+    delete: async function (
+      postId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (!postId) {
+
+        return {
+          success: false,
+          error: "Post ID is required."
+        };
+
+      }
+
+
+      const {
+        error
+      } = await supabaseClient
+        .from("posts")
+        .delete()
+        .eq(
+          "id",
+          postId
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR post delete error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-post-deleted",
+          {
+            detail: {
+              postId: postId
+            }
+          }
+        )
+      );
+
+
+      return {
+        success: true
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // USER POSTS
+    // ---------------------------------------------------
+
+    getUserPosts: async function (
+      userId,
+      limit = 20,
+      offset = 0
+    ) {
+
+      if (!userId) {
+
+        return {
+          success: false,
+          error: "User ID is required.",
+          posts: []
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("posts")
+        .select("*")
+        .eq(
+          "user_id",
+          userId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        )
+        .range(
+          offset,
+          offset + limit - 1
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR user posts error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          posts: []
+        };
+
+      }
+
+
+      return {
+        success: true,
+        posts: data || []
+      };
+
+    }
+
+  };
+
+
+  // =====================================================
+  // POSTS SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR POSTS PART 7 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 8
+     MEDIA UPLOAD SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // MEDIA UPLOAD SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.media = {
+
+    // ---------------------------------------------------
+    // UPLOAD FILE
+    // ---------------------------------------------------
+
+    upload: async function (
+      file,
+      folder = "uploads"
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (!file) {
+
+        return {
+          success: false,
+          error: "File is required."
+        };
+
+      }
+
+
+      // -------------------------------------------------
+      // BASIC FILE SIZE CHECK
+      // -------------------------------------------------
+
+      const maxSize =
+        50 * 1024 * 1024;
+
+      if (
+        file.size > maxSize
+      ) {
+
+        return {
+          success: false,
+          error:
+            "File size must be 50 MB or less."
+        };
+
+      }
+
+
+      // -------------------------------------------------
+      // FILE NAME
+      // -------------------------------------------------
+
+      const extension =
+        file.name.includes(".")
+          ? file.name
+              .split(".")
+              .pop()
+              .toLowerCase()
+          : "";
+
+
+      const randomName =
+        crypto.randomUUID();
+
+
+      const fileName =
+        extension
+          ? randomName + "." + extension
+          : randomName;
+
+
+      // -------------------------------------------------
+      // SECURE USER FOLDER
+      // -------------------------------------------------
+
+      const filePath =
+        currentUser.id +
+        "/" +
+        folder +
+        "/" +
+        fileName;
+
+
+      // -------------------------------------------------
+      // UPLOAD
+      // -------------------------------------------------
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .storage
+          .from(MEDIA_BUCKET)
+          .upload(
+            filePath,
+            file,
+            {
+              cacheControl:
+                "3600",
+
+              upsert:
+                false,
+
+              contentType:
+                file.type || undefined
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR media upload error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      console.log(
+        "YOCEWOR media uploaded:",
+        data.path
+      );
+
+
+      return {
+        success: true,
+        path: data.path,
+        bucket:
+          MEDIA_BUCKET
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // GET PRIVATE MEDIA URL
+    // ---------------------------------------------------
+
+    getUrl: async function (
+      path,
+      expiresIn = 3600
+    ) {
+
+      if (!path) {
+
+        return {
+          success: false,
+          error: "Media path is required."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .storage
+          .from(MEDIA_BUCKET)
+          .createSignedUrl(
+            path,
+            expiresIn
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR signed URL error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true,
+        url:
+          data.signedUrl
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // DELETE MEDIA
+    // ---------------------------------------------------
+
+    delete: async function (
+      path
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (!path) {
+
+        return {
+          success: false,
+          error: "Media path is required."
+        };
+
+      }
+
+
+      // Make sure the path belongs
+      // to the current user's folder.
+
+      if (
+        !path.startsWith(
+          currentUser.id + "/"
+        )
+      ) {
+
+        return {
+          success: false,
+          error:
+            "You can only delete your own media."
+        };
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .storage
+          .from(MEDIA_BUCKET)
+          .remove([
+            path
+          ]);
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR media delete error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true
+      };
+
+    }
+
+  };
+
+
+  // =====================================================
+  // MEDIA SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR MEDIA PART 8 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 9
+     STORIES SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // STORIES SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.stories = {
+
+    // ---------------------------------------------------
+    // GET ACTIVE STORIES
+    // ---------------------------------------------------
+
+    getActive: async function (
+      limit = 50
+    ) {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("stories")
+          .select("*")
+          .gt(
+            "expires_at",
+            new Date().toISOString()
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          )
+          .limit(
+            limit
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR stories fetch error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          stories: []
+        };
+
+      }
+
+
+      return {
+        success: true,
+        stories: data || []
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // GET USER STORIES
+    // ---------------------------------------------------
+
+    getUserStories: async function (
+      userId
+    ) {
+
+      if (!userId) {
+
+        return {
+          success: false,
+          error: "User ID is required.",
+          stories: []
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("stories")
+          .select("*")
+          .eq(
+            "user_id",
+            userId
+          )
+          .gt(
+            "expires_at",
+            new Date().toISOString()
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR user stories error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          stories: []
+        };
+
+      }
+
+
+      return {
+        success: true,
+        stories: data || []
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // CREATE STORY
+    // ---------------------------------------------------
+
+    create: async function (
+      storyData,
+      durationHours = 24
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (
+        !storyData ||
+        typeof storyData !== "object"
+      ) {
+
+        return {
+          success: false,
+          error: "Story data is required."
+        };
+
+      }
+
+
+      const expiresAt =
+        new Date(
+          Date.now() +
+          durationHours *
+          60 *
+          60 *
+          1000
+        ).toISOString();
+
+
+      const payload = {
+
+        ...storyData,
+
+        user_id:
+          currentUser.id,
+
+        expires_at:
+          expiresAt
+
+      };
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("stories")
+          .insert(
+            payload
+          )
+          .select()
+          .single();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR story creation error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-story-created",
+          {
+            detail: data
+          }
+        )
+      );
+
+
+      return {
+        success: true,
+        story: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // DELETE STORY
+    // ---------------------------------------------------
+
+    delete: async function (
+      storyId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (!storyId) {
+
+        return {
+          success: false,
+          error: "Story ID is required."
+        };
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("stories")
+          .delete()
+          .eq(
+            "id",
+            storyId
+          )
+          .eq(
+            "user_id",
+            currentUser.id
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR story delete error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // RECORD STORY VIEW
+    // ---------------------------------------------------
+
+    view: async function (
+      storyId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (!storyId) {
+
+        return {
+          success: false,
+          error: "Story ID is required."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("story_views")
+          .insert({
+
+            story_id:
+              storyId,
+
+            viewer_id:
+              currentUser.id
+
+          })
+          .select()
+          .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR story view error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true,
+        view: data
+      };
+
+    }
+
+  };
+
+
+  // =====================================================
+  // STORIES SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR STORIES PART 9 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 10
+     LIKES + COMMENTS SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // LIKES SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.likes = {
+
+    // ---------------------------------------------------
+    // LIKE POST
+    // ---------------------------------------------------
+
+    add: async function (
+      postId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      if (!postId) {
+
+        return {
+          success: false,
+          error: "Post ID is required."
+        };
+
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("likes")
+        .insert({
+
+          post_id: postId,
+
+          user_id:
+            currentUser.id
+
+        })
+        .select()
+        .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR like error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true,
+        like: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // UNLIKE POST
+    // ---------------------------------------------------
+
+    remove: async function (
+      postId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      if (!postId) {
+
+        return {
+          success: false,
+          error: "Post ID is required."
+        };
+
+      }
+
+      const {
+        error
+      } = await supabaseClient
+        .from("likes")
+        .delete()
+        .eq(
+          "post_id",
+          postId
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR unlike error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // CHECK CURRENT USER LIKE
+    // ---------------------------------------------------
+
+    hasLiked: async function (
+      postId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return false;
+
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("likes")
+        .select("id")
+        .eq(
+          "post_id",
+          postId
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        )
+        .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR like check error:",
+          error
+        );
+
+        return false;
+
+      }
+
+
+      return !!data;
+
+    },
+
+
+    // ---------------------------------------------------
+    // LIKE COUNT
+    // ---------------------------------------------------
+
+    count: async function (
+      postId
+    ) {
+
+      const {
+        count,
+        error
+      } = await supabaseClient
+        .from("likes")
+        .select(
+          "id",
+          {
+            count: "exact",
+            head: true
+          }
+        )
+        .eq(
+          "post_id",
+          postId
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR like count error:",
+          error
+        );
+
+        return 0;
+
+      }
+
+
+      return count || 0;
+
+    }
+
+  };
+
+
+  // =====================================================
+  // COMMENTS SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.comments = {
+
+    // ---------------------------------------------------
+    // GET COMMENTS
+    // ---------------------------------------------------
+
+    get: async function (
+      postId,
+      limit = 50
+    ) {
+
+      if (!postId) {
+
+        return {
+          success: false,
+          error: "Post ID is required.",
+          comments: []
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("comments")
+        .select("*")
+        .eq(
+          "post_id",
+          postId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: true
+          }
+        )
+        .limit(
+          limit
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR comments fetch error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          comments: []
+        };
+
+      }
+
+
+      return {
+        success: true,
+        comments:
+          data || []
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // ADD COMMENT
+    // ---------------------------------------------------
+
+    add: async function (
+      postId,
+      content
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      if (!postId) {
+
+        return {
+          success: false,
+          error: "Post ID is required."
+        };
+
+      }
+
+      if (
+        !content ||
+        !content.trim()
+      ) {
+
+        return {
+          success: false,
+          error:
+            "Comment cannot be empty."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("comments")
+        .insert({
+
+          post_id:
+            postId,
+
+          user_id:
+            currentUser.id,
+
+          content:
+            content.trim()
+
+        })
+        .select()
+        .single();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR comment error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-comment-created",
+          {
+            detail: data
+          }
+        )
+      );
+
+
+      return {
+        success: true,
+        comment: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // DELETE OWN COMMENT
+    // ---------------------------------------------------
+
+    delete: async function (
+      commentId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      if (!commentId) {
+
+        return {
+          success: false,
+          error:
+            "Comment ID is required."
+        };
+
+      }
+
+
+      const {
+        error
+      } = await supabaseClient
+        .from("comments")
+        .delete()
+        .eq(
+          "id",
+          commentId
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR comment delete error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // COMMENT COUNT
+    // ---------------------------------------------------
+
+    count: async function (
+      postId
+    ) {
+
+      const {
+        count,
+        error
+      } = await supabaseClient
+        .from("comments")
+        .select(
+          "id",
+          {
+            count: "exact",
+            head: true
+          }
+        )
+        .eq(
+          "post_id",
+          postId
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR comment count error:",
+          error
+        );
+
+        return 0;
+
+      }
+
+
+      return count || 0;
+
+    }
+
+  };
+
+
+  // =====================================================
+  // LIKES + COMMENTS READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR LIKES + COMMENTS PART 10 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 11
+     FOLLOW SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // FOLLOW SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.follow = {
+
+    // ---------------------------------------------------
+    // FOLLOW USER
+    // ---------------------------------------------------
+
+    add: async function (
+      followingId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      if (!followingId) {
+
+        return {
+          success: false,
+          error: "User ID is required."
+        };
+
+      }
+
+      if (
+        followingId ===
+        currentUser.id
+      ) {
+
+        return {
+          success: false,
+          error:
+            "You cannot follow yourself."
+        };
+
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("follows")
+        .insert({
+
+          follower_id:
+            currentUser.id,
+
+          following_id:
+            followingId
+
+        })
+        .select()
+        .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR follow error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-follow-created",
+          {
+            detail: data
+          }
+        )
+      );
+
+
+      return {
+        success: true,
+        follow: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // UNFOLLOW USER
+    // ---------------------------------------------------
+
+    remove: async function (
+      followingId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      if (!followingId) {
+
+        return {
+          success: false,
+          error: "User ID is required."
+        };
+
+      }
+
+      const {
+        error
+      } = await supabaseClient
+        .from("follows")
+        .delete()
+        .eq(
+          "follower_id",
+          currentUser.id
+        )
+        .eq(
+          "following_id",
+          followingId
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR unfollow error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-follow-removed",
+          {
+            detail: {
+              userId:
+                followingId
+            }
+          }
+        )
+      );
+
+
+      return {
+        success: true
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // CHECK FOLLOW STATUS
+    // ---------------------------------------------------
+
+    isFollowing: async function (
+      followingId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return false;
+
+      }
+
+      if (!followingId) {
+
+        return false;
+
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("follows")
+        .select("id")
+        .eq(
+          "follower_id",
+          currentUser.id
+        )
+        .eq(
+          "following_id",
+          followingId
+        )
+        .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR follow check error:",
+          error
+        );
+
+        return false;
+
+      }
+
+
+      return !!data;
+
+    },
+
+
+    // ---------------------------------------------------
+    // GET FOLLOWERS
+    // ---------------------------------------------------
+
+    getFollowers: async function (
+      userId,
+      limit = 50
+    ) {
+
+      if (!userId) {
+
+        return {
+          success: false,
+          error: "User ID is required.",
+          followers: []
+        };
+
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("follows")
+        .select("*")
+        .eq(
+          "following_id",
+          userId
+        )
+        .limit(
+          limit
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR followers error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          followers: []
+        };
+
+      }
+
+
+      return {
+        success: true,
+        followers:
+          data || []
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // GET FOLLOWING
+    // ---------------------------------------------------
+
+    getFollowing: async function (
+      userId,
+      limit = 50
+    ) {
+
+      if (!userId) {
+
+        return {
+          success: false,
+          error: "User ID is required.",
+          following: []
+        };
+
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("follows")
+        .select("*")
+        .eq(
+          "follower_id",
+          userId
+        )
+        .limit(
+          limit
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR following error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          following: []
+        };
+
+      }
+
+
+      return {
+        success: true,
+        following:
+          data || []
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // FOLLOWER COUNT
+    // ---------------------------------------------------
+
+    followerCount: async function (
+      userId
+    ) {
+
+      if (!userId) {
+
+        return 0;
+
+      }
+
+      const {
+        count,
+        error
+      } = await supabaseClient
+        .from("follows")
+        .select(
+          "id",
+          {
+            count: "exact",
+            head: true
+          }
+        )
+        .eq(
+          "following_id",
+          userId
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR follower count error:",
+          error
+        );
+
+        return 0;
+
+      }
+
+
+      return count || 0;
+
+    },
+
+
+    // ---------------------------------------------------
+    // FOLLOWING COUNT
+    // ---------------------------------------------------
+
+    followingCount: async function (
+      userId
+    ) {
+
+      if (!userId) {
+
+        return 0;
+
+      }
+
+      const {
+        count,
+        error
+      } = await supabaseClient
+        .from("follows")
+        .select(
+          "id",
+          {
+            count: "exact",
+            head: true
+          }
+        )
+        .eq(
+          "follower_id",
+          userId
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR following count error:",
+          error
+        );
+
+        return 0;
+
+      }
+
+
+      return count || 0;
+
+    }
+
+  };
+
+
+  // =====================================================
+  // FOLLOW SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR FOLLOW PART 11 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 12
+     MESSAGES + CONVERSATIONS SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // MESSAGES SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.messages = {
+
+    // ---------------------------------------------------
+    // GET CONVERSATIONS
+    // ---------------------------------------------------
+
+    getConversations: async function (
+      limit = 50
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in.",
+          conversations: []
+        };
+
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("conversations")
+        .select("*")
+        .or(
+          "user_one.eq." +
+          currentUser.id +
+          ",user_two.eq." +
+          currentUser.id
+        )
+        .order(
+          "updated_at",
+          {
+            ascending: false
+          }
+        )
+        .limit(
+          limit
+        );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR conversations error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          conversations: []
+        };
+
+      }
+
+      return {
+        success: true,
+        conversations:
+          data || []
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // GET OR CREATE CONVERSATION
+    // ---------------------------------------------------
+
+    getOrCreateConversation:
+      async function (
+        otherUserId
+      ) {
+
+        if (!currentUser?.id) {
+
+          return {
+            success: false,
+            error: "User is not logged in."
+          };
+
+        }
+
+        if (!otherUserId) {
+
+          return {
+            success: false,
+            error:
+              "Other user ID is required."
+          };
+
+        }
+
+        if (
+          otherUserId ===
+          currentUser.id
+        ) {
+
+          return {
+            success: false,
+            error:
+              "You cannot message yourself."
+          };
+
+        }
+
+
+        const firstUser =
+          currentUser.id <
+          otherUserId
+            ? currentUser.id
+            : otherUserId;
+
+        const secondUser =
+          currentUser.id <
+          otherUserId
+            ? otherUserId
+            : currentUser.id;
+
+
+        const existing =
+          await supabaseClient
+            .from("conversations")
+            .select("*")
+            .eq(
+              "user_one",
+              firstUser
+            )
+            .eq(
+              "user_two",
+              secondUser
+            )
+            .maybeSingle();
+
+
+        if (
+          existing.error
+        ) {
+
+          console.error(
+            "YOCEWOR conversation lookup error:",
+            existing.error
+          );
+
+          return {
+            success: false,
+            error: existing.error
+          };
+
+        }
+
+
+        if (
+          existing.data
+        ) {
+
+          return {
+            success: true,
+            conversation:
+              existing.data
+          };
+
+        }
+
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .from("conversations")
+            .insert({
+
+              user_one:
+                firstUser,
+
+              user_two:
+                secondUser
+
+            })
+            .select()
+            .single();
+
+
+        if (error) {
+
+          console.error(
+            "YOCEWOR conversation creation error:",
+            error
+          );
+
+          return {
+            success: false,
+            error: error
+          };
+
+        }
+
+
+        return {
+          success: true,
+          conversation: data
+        };
+
+      },
+
+
+    // ---------------------------------------------------
+    // GET MESSAGES
+    // ---------------------------------------------------
+
+    get: async function (
+      conversationId,
+      limit = 100
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in.",
+          messages: []
+        };
+
+      }
+
+      if (!conversationId) {
+
+        return {
+          success: false,
+          error:
+            "Conversation ID is required.",
+          messages: []
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("messages")
+          .select("*")
+          .eq(
+            "conversation_id",
+            conversationId
+          )
+          .order(
+            "created_at",
+            {
+              ascending: true
+            }
+          )
+          .limit(
+            limit
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR messages fetch error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          messages: []
+        };
+
+      }
+
+
+      return {
+        success: true,
+        messages:
+          data || []
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // SEND MESSAGE
+    // ---------------------------------------------------
+
+    send: async function (
+      conversationId,
+      content
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      if (!conversationId) {
+
+        return {
+          success: false,
+          error:
+            "Conversation ID is required."
+        };
+
+      }
+
+      if (
+        !content ||
+        !content.trim()
+      ) {
+
+        return {
+          success: false,
+          error:
+            "Message cannot be empty."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("messages")
+          .insert({
+
+            conversation_id:
+              conversationId,
+
+            sender_id:
+              currentUser.id,
+
+            content:
+              content.trim()
+
+          })
+          .select()
+          .single();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR message send error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-message-sent",
+          {
+            detail: data
+          }
+        )
+      );
+
+
+      return {
+        success: true,
+        message: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // DELETE OWN MESSAGE
+    // ---------------------------------------------------
+
+    delete: async function (
+      messageId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      if (!messageId) {
+
+        return {
+          success: false,
+          error:
+            "Message ID is required."
+        };
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("messages")
+          .delete()
+          .eq(
+            "id",
+            messageId
+          )
+          .eq(
+            "sender_id",
+            currentUser.id
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR message delete error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true
+      };
+
+    }
+
+  };
+
+
+  // =====================================================
+  // MESSAGES SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR MESSAGES PART 12 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 13
+     NOTIFICATIONS SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // NOTIFICATIONS SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.notifications = {
+
+    // ---------------------------------------------------
+    // GET NOTIFICATIONS
+    // ---------------------------------------------------
+
+    get: async function (
+      limit = 50
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in.",
+          notifications: []
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("notifications")
+          .select("*")
+          .eq(
+            "user_id",
+            currentUser.id
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          )
+          .limit(
+            limit
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR notifications fetch error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error,
+          notifications: []
+        };
+
+      }
+
+
+      return {
+        success: true,
+        notifications:
+          data || []
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // GET UNREAD COUNT
+    // ---------------------------------------------------
+
+    unreadCount: async function () {
+
+      if (!currentUser?.id) {
+
+        return 0;
+
+      }
+
+
+      const {
+        count,
+        error
+      } =
+        await supabaseClient
+          .from("notifications")
+          .select(
+            "id",
+            {
+              count: "exact",
+              head: true
+            }
+          )
+          .eq(
+            "user_id",
+            currentUser.id
+          )
+          .eq(
+            "read",
+            false
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR unread notification error:",
+          error
+        );
+
+        return 0;
+
+      }
+
+
+      return count || 0;
+
+    },
+
+
+    // ---------------------------------------------------
+    // MARK ONE AS READ
+    // ---------------------------------------------------
+
+    markRead: async function (
+      notificationId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (!notificationId) {
+
+        return {
+          success: false,
+          error:
+            "Notification ID is required."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("notifications")
+          .update({
+            read: true
+          })
+          .eq(
+            "id",
+            notificationId
+          )
+          .eq(
+            "user_id",
+            currentUser.id
+          )
+          .select()
+          .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR mark notification error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true,
+        notification: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // MARK ALL AS READ
+    // ---------------------------------------------------
+
+    markAllRead: async function () {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("notifications")
+          .update({
+            read: true
+          })
+          .eq(
+            "user_id",
+            currentUser.id
+          )
+          .eq(
+            "read",
+            false
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR mark all notifications error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-notifications-read-all"
+        )
+      );
+
+
+      return {
+        success: true
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // DELETE NOTIFICATION
+    // ---------------------------------------------------
+
+    delete: async function (
+      notificationId
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      if (!notificationId) {
+
+        return {
+          success: false,
+          error:
+            "Notification ID is required."
+        };
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("notifications")
+          .delete()
+          .eq(
+            "id",
+            notificationId
+          )
+          .eq(
+            "user_id",
+            currentUser.id
+          );
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR notification delete error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true
+      };
+
+    }
+
+  };
+
+
+  // =====================================================
+  // NOTIFICATIONS SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR NOTIFICATIONS PART 13 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 14
+     VERIFICATION / BLUE TICK SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // VERIFICATION SYSTEM
+  // =====================================================
+
+  window.YOCEWOR.verification = {
+
+    // ---------------------------------------------------
+    // GET VERIFICATION STATUS
+    // ---------------------------------------------------
+
+    getStatus: async function (
+      userId
+    ) {
+
+      const id =
+        userId ||
+        currentUser?.id;
+
+
+      if (!id) {
+
+        return {
+          success: false,
+          error: "User ID is required."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("profiles")
+          .select(
+            "id, is_verified, verification_status"
+          )
+          .eq(
+            "id",
+            id
+          )
+          .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR verification status error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true,
+        verification:
+          data || null
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // REQUEST VERIFICATION
+    // ---------------------------------------------------
+
+    request: async function (
+      reason = ""
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("verification_requests")
+          .insert({
+
+            user_id:
+              currentUser.id,
+
+            reason:
+              reason.trim(),
+
+            status:
+              "pending"
+
+          })
+          .select()
+          .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR verification request error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      return {
+        success: true,
+        request:
+          data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // CHECK CURRENT USER
+    // ---------------------------------------------------
+
+    isVerified: async function () {
+
+      if (!currentUser?.id) {
+
+        return false;
+
+      }
+
+
+      const result =
+        await this.getStatus(
+          currentUser.id
+        );
+
+
+      if (
+        !result.success ||
+        !result.verification
+      ) {
+
+        return false;
+
+      }
+
+
+      return (
+        result.verification
+          .is_verified === true
+      );
+
+    }
+
+  };
+
+
+  // =====================================================
+  // VERIFICATION SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR VERIFICATION PART 14 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 15
+     SETTINGS + PRIVACY SYSTEM
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // SETTINGS + PRIVACY
+  // =====================================================
+
+  window.YOCEWOR.settings = {
+
+    // ---------------------------------------------------
+    // GET SETTINGS
+    // ---------------------------------------------------
+
+    get: async function () {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("profiles")
+        .select(
+          "id, username, full_name, avatar_url, bio, is_private"
+        )
+        .eq(
+          "id",
+          currentUser.id
+        )
+        .maybeSingle();
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR settings fetch error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+      return {
+        success: true,
+        settings: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // UPDATE SETTINGS
+    // ---------------------------------------------------
+
+    update: async function (
+      updates
+    ) {
+
+      if (!currentUser?.id) {
+
+        return {
+          success: false,
+          error: "User is not logged in."
+        };
+
+      }
+
+      if (
+        !updates ||
+        typeof updates !== "object"
+      ) {
+
+        return {
+          success: false,
+          error: "Settings data is required."
+        };
+
+      }
+
+      const allowedFields = [
+        "username",
+        "full_name",
+        "avatar_url",
+        "bio",
+        "is_private"
+      ];
+
+      const safeUpdates = {};
+
+      allowedFields.forEach(
+        function (field) {
+
+          if (
+            Object.prototype
+              .hasOwnProperty
+              .call(
+                updates,
+                field
+              )
+          ) {
+
+            safeUpdates[field] =
+              updates[field];
+
+          }
+
+        }
+      );
+
+
+      if (
+        Object.keys(
+          safeUpdates
+        ).length === 0
+      ) {
+
+        return {
+          success: false,
+          error:
+            "No valid settings were provided."
+        };
+
+      }
+
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("profiles")
+        .update(
+          safeUpdates
+        )
+        .eq(
+          "id",
+          currentUser.id
+        )
+        .select()
+        .single();
+
+
+      if (error) {
+
+        console.error(
+          "YOCEWOR settings update error:",
+          error
+        );
+
+        return {
+          success: false,
+          error: error
+        };
+
+      }
+
+
+      currentProfile =
+        data;
+
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-settings-updated",
+          {
+            detail: data
+          }
+        )
+      );
+
+
+      return {
+        success: true,
+        settings: data
+      };
+
+    },
+
+
+    // ---------------------------------------------------
+    // SET PRIVATE ACCOUNT
+    // ---------------------------------------------------
+
+    setPrivate: async function (
+      value
+    ) {
+
+      return await this.update({
+
+        is_private:
+          Boolean(value)
+
+      });
+
+    },
+
+
+    // ---------------------------------------------------
+    // DELETE ACCOUNT DATA
+    // ---------------------------------------------------
+
+    clearLocalState: function () {
+
+      currentUser = null;
+
+      currentProfile = null;
+
+      console.log(
+        "YOCEWOR local account state cleared."
+      );
+
+      return {
+        success: true
+      };
+
+    }
+
+  };
+
+
+  // =====================================================
+  // SETTINGS SYSTEM READY
+  // =====================================================
+
+  console.log(
+    "YOCEWOR SETTINGS PART 15 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 16
+     FULL SYSTEM HEALTH CHECK
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // YOCEWOR SYSTEM HEALTH CHECK
+  // =====================================================
+
+  window.YOCEWOR.health = {
+
+    run: async function () {
+
+      const result = {
+
+        supabaseClient:
+          !!supabaseClient,
+
+        supabaseConfigured:
+          window.YOCEWOR
+            .isSupabaseConfigured(),
+
+        authentication:
+          !!window.YOCEWOR.auth,
+
+        profile:
+          !!window.YOCEWOR.profile,
+
+        posts:
+          !!window.YOCEWOR.posts,
+
+        media:
+          !!window.YOCEWOR.media,
+
+        stories:
+          !!window.YOCEWOR.stories,
+
+        likes:
+          !!window.YOCEWOR.likes,
+
+        comments:
+          !!window.YOCEWOR.comments,
+
+        follow:
+          !!window.YOCEWOR.follow,
+
+        messages:
+          !!window.YOCEWOR.messages,
+
+        notifications:
+          !!window.YOCEWOR.notifications,
+
+        verification:
+          !!window.YOCEWOR.verification,
+
+        settings:
+          !!window.YOCEWOR.settings
+
+      };
+
+
+      result.coreSystemsReady =
+        Object.values(result)
+          .every(
+            value => value === true
+          );
+
+
+      console.log(
+        "================================"
+      );
+
+      console.log(
+        "YOCEWOR SYSTEM HEALTH CHECK"
+      );
+
+      console.table(
+        result
+      );
+
+      console.log(
+        "================================"
+      );
+
+
+      return result;
+
+    }
+
+  };
+
+
+  // =====================================================
+  // QUICK HEALTH CHECK
+  // =====================================================
+
+  window.YOCEWOR.checkHealth =
+    window.YOCEWOR.health.run;
+
+
+  console.log(
+    "YOCEWOR HEALTH CHECK PART 16 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 17
+     SECURITY TESTING / CONFIGURATION AUDIT
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // SECURITY AUDIT
+  // =====================================================
+
+  window.YOCEWOR.security = {
+
+    run: async function () {
+
+      const report = {
+
+        supabaseConfigured: false,
+
+        usingAnonKey: false,
+
+        usingServiceRoleKey: false,
+
+        httpsPage: false,
+
+        authAvailable: false,
+
+        storageAvailable: false,
+
+        securityStatus: "CHECKING"
+
+      };
+
+
+      // -------------------------------------------------
+      // SUPABASE CONFIGURATION
+      // -------------------------------------------------
+
+      report.supabaseConfigured =
+        !!(
+          window.YOCEWOR
+            .isSupabaseConfigured()
+        );
+
+
+      // -------------------------------------------------
+      // KEY SAFETY CHECK
+      // -------------------------------------------------
+
+      const key =
+        typeof SUPABASE_ANON_KEY ===
+        "string"
+          ? SUPABASE_ANON_KEY
+          : "";
+
+
+      report.usingAnonKey =
+        key.length > 0;
+
+
+      report.usingServiceRoleKey =
+        /service_role/i.test(
+          key
+        );
+
+
+      // -------------------------------------------------
+      // HTTPS CHECK
+      // -------------------------------------------------
+
+      report.httpsPage =
+        location.protocol ===
+        "https:" ||
+        location.hostname ===
+        "localhost" ||
+        location.hostname ===
+        "127.0.0.1";
+
+
+      // -------------------------------------------------
+      // AUTH CHECK
+      // -------------------------------------------------
+
+      report.authAvailable =
+        !!(
+          supabaseClient &&
+          supabaseClient.auth
+        );
+
+
+      // -------------------------------------------------
+      // STORAGE CHECK
+      // -------------------------------------------------
+
+      report.storageAvailable =
+        !!(
+          supabaseClient &&
+          supabaseClient.storage
+        );
+
+
+      // -------------------------------------------------
+      // FINAL STATUS
+      // -------------------------------------------------
+
+      const criticalFailure =
+        report.usingServiceRoleKey ||
+        !report.supabaseConfigured ||
+        !report.authAvailable ||
+        !report.storageAvailable;
+
+
+      if (
+        criticalFailure
+      ) {
+
+        report.securityStatus =
+          "REVIEW REQUIRED";
+
+      } else {
+
+        report.securityStatus =
+          "BASIC CHECK PASSED";
+
+      }
+
+
+      // -------------------------------------------------
+      // CONSOLE REPORT
+      // -------------------------------------------------
+
+      console.log(
+        "================================"
+      );
+
+      console.log(
+        "YOCEWOR SECURITY AUDIT"
+      );
+
+      console.table(
+        report
+      );
+
+      console.log(
+        "================================"
+      );
+
+
+      // -------------------------------------------------
+      // IMPORTANT WARNING
+      // -------------------------------------------------
+
+      if (
+        report.usingServiceRoleKey
+      ) {
+
+        console.error(
+          "SECURITY WARNING: " +
+          "A service-role key must NEVER " +
+          "be exposed in frontend code."
+        );
+
+      }
+
+
+      return report;
+
+    }
+
+  };
+
+
+  // =====================================================
+  // SECURITY CHECK SHORTCUT
+  // =====================================================
+
+  window.YOCEWOR.checkSecurity =
+    window.YOCEWOR.security.run;
+
+
+  console.log(
+    "YOCEWOR SECURITY PART 17 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 18
+     FINAL INTEGRATION
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // YOCEWOR FINAL INTEGRATION
+  // =====================================================
+
+  window.YOCEWOR.initialize =
+    async function () {
+
+      console.log(
+        "================================"
+      );
+
+      console.log(
+        "YOCEWOR FINAL INTEGRATION"
+      );
+
+      console.log(
+        "Starting system..."
+      );
+
+
+      // -------------------------------------------------
+      // CHECK SUPABASE CLIENT
+      // -------------------------------------------------
+
+      if (
+        !window.YOCEWOR
+          .isSupabaseConfigured()
+      ) {
+
+        console.warn(
+          "YOCEWOR: Supabase credentials are not configured yet."
+        );
+
+      }
+
+
+      // -------------------------------------------------
+      // GET CURRENT SESSION
+      // -------------------------------------------------
+
+      if (
+        window.YOCEWOR.auth
+      ) {
+
+        const sessionResult =
+          await window.YOCEWOR.auth
+            .getSession();
+
+
+        if (
+          sessionResult.success &&
+          sessionResult.session
+        ) {
+
+          currentUser =
+            sessionResult.session.user;
+
+
+          // ---------------------------------------------
+          // ENSURE PROFILE
+          // ---------------------------------------------
+
+          if (
+            window.YOCEWOR.profile
+          ) {
+
+            await window.YOCEWOR.profile
+              .ensure();
+
+          }
+
+        }
+
+      }
+
+
+      // -------------------------------------------------
+      // SYSTEM HEALTH
+      // -------------------------------------------------
+
+      let health = null;
+
+
+      if (
+        window.YOCEWOR.health
+      ) {
+
+        health =
+          await window.YOCEWOR.health
+            .run();
+
+      }
+
+
+      // -------------------------------------------------
+      // FINAL STATUS
+      // -------------------------------------------------
+
+      const status = {
+
+        initialized:
+          true,
+
+        authenticated:
+          !!currentUser,
+
+        profileLoaded:
+          !!currentProfile,
+
+        health:
+          health || null
+
+      };
+
+
+      window.YOCEWOR.status =
+        status;
+
+
+      console.log(
+        "YOCEWOR FINAL STATUS:",
+        status
+      );
+
+
+      console.log(
+        "YOCEWOR FINAL INTEGRATION READY"
+      );
+
+      console.log(
+        "================================"
+      );
+
+
+      // -------------------------------------------------
+      // FRONTEND EVENT
+      // -------------------------------------------------
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "yocewor-ready",
+          {
+            detail: status
+          }
+        )
+      );
+
+
+      return status;
+
+    };
+
+
+  // =====================================================
+  // AUTOMATIC INITIALIZATION
+  // =====================================================
+
+  window.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+      setTimeout(
+        function () {
+
+          if (
+            window.YOCEWOR &&
+            window.YOCEWOR.initialize
+          ) {
+
+            window.YOCEWOR
+              .initialize()
+              .catch(
+                function (error) {
+
+                  console.error(
+                    "YOCEWOR initialization error:",
+                    error
+                  );
+
+                }
+              );
+
+          }
+
+        },
+        500
+      );
+
+    },
+    {
+      once: true
+    }
+  );
+
+
+  console.log(
+    "YOCEWOR FINAL INTEGRATION PART 18 READY"
+  );
+
+</script>
+<!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 19
+     FINAL POLISH + COMPLETE SYSTEM READY
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // FINAL SYSTEM STATUS
+  // =====================================================
+
+  window.YOCEWOR.finalize =
+    async function () {
+
+      console.log(
+        "================================"
+      );
+
+      console.log(
+        "YOCEWOR FINAL SYSTEM CHECK"
+      );
+
+
+      const systems = {
+
+        auth:
+          !!window.YOCEWOR.auth,
+
+        profile:
+          !!window.YOCEWOR.profile,
+
+        posts:
+          !!window.YOCEWOR.posts,
+
+        media:
+          !!window.YOCEWOR.media,
+
+        stories:
+          !!window.YOCEWOR.stories,
+
+        likes:
+          !!window.YOCEWOR.likes,
+
+        comments:
+          !!window.YOCEWOR.comments,
+
+        follow:
+          !!window.YOCEWOR.follow,
+
+        messages:
+          !!window.YOCEWOR.messages,
+
+        notifications:
+          !!window.YOCEWOR.notifications,
+
+        verification:
+          !!window.YOCEWOR.verification,
+
+        settings:
+          !!window.YOCEWOR.settings,
+
+        health:
+          !!window.YOCEWOR.health,
+
+        security:
+          !!window.YOCEWOR.security,
+
+        initialize:
+          !!window.YOCEWOR.initialize
+
+      };
+
+
+      const total =
+        Object.keys(
+          systems
+        ).length;
+
+
+      const ready =
+        Object.values(
+          systems
+        ).filter(
+          value => value === true
+        ).length;
+
+
+      const complete =
+        ready === total;
+
+
+      window.YOCEWOR.finalStatus = {
+
+        complete:
+          complete,
+
+        readySystems:
+          ready,
+
+        totalSystems:
+          total,
+
+        percentage:
+          Math.round(
+            (ready / total) * 100
+          )
+
+      };
+
+
+      console.table(
+        systems
+      );
+
+
+      console.log(
+        "YOCEWOR SYSTEMS:",
+        ready +
+        "/" +
+        total
+      );
+
+
+      if (complete) {
+
+        console.log(
+          "YOCEWOR FINAL SYSTEM CHECK PASSED"
+        );
+
+      } else {
+
+        console.warn(
+          "YOCEWOR SYSTEM CHECK NEEDS REVIEW"
+        );
+
+      }
+
+
+      console.log(
+        "================================"
+      );
+
+
+      return {
+        success:
+          complete,
+
+        systems:
+          systems,
+
+        status:
+          window.YOCEWOR.finalStatus
+
+      };
+
+    };
+
+
+  // =====================================================
+  // FINAL READY EVENT
+  // =====================================================
+
+  window.addEventListener(
+    "yocewor-ready",
+    function () {
+
+      setTimeout(
+        function () {
+
+          window.YOCEWOR
+            .finalize()
+            .catch(
+              function (error) {
+
+                console.error(
+                  "YOCEWOR final check error:",
+                  error
+                );
+
+              }
+            );
+
+        },
+        300
+      );
+
+    },
+    {
+      once: true
+    }
+  );
+
+
+  // =====================================================
+  // PROJECT VERSION
+  // =====================================================
+
+  window.YOCEWOR.version =
+    window.YOCEWOR.version ||
+    "1.0.0";
+
+
+  console.log(
+    "YOCEWOR FRONTEND + SUPABASE"
+  );
+
+  console.log(
+    "VERSION:",
+    window.YOCEWOR.version
+  );
+
+  console.log(
+    "PART 19 READY"
+  );
+
+</script>
