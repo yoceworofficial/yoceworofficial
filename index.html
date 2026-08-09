@@ -9217,10 +9217,7 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
       await client
         .from("posts")
         .select("*")
-        .eq(
-          "is_public",
-          true
-        )
+        
         .order(
           "created_at",
           {
@@ -14207,10 +14204,7 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
         .select(
           "id,media_url,media_type,created_at"
         )
-        .eq(
-          "is_public",
-          true
-        )
+        
         .order(
           "created_at",
           {
@@ -15782,10 +15776,7 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
       await client
         .from("posts")
         .select("*")
-        .eq(
-          "is_public",
-          true
-        )
+        
         .order(
           "created_at",
           {
@@ -27601,10 +27592,7 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
           )
           `
         )
-        .eq(
-          "is_public",
-          true
-        )
+        
         .order(
           "created_at",
           {
@@ -31556,10 +31544,7 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
           )
           `
         )
-        .eq(
-          "is_public",
-          true
-        )
+        
         .ilike(
           "caption",
           `%${clean}%`
@@ -35438,11 +35423,8 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
             `
             id,
             user_id,
-            caption,
-            media_url,
-            media_type,
-            privacy,
-            is_public,
+            caption:body,
+            media_url:image_url,
             created_at,
             profiles:profiles!posts_user_id_fkey(
               id,
@@ -35473,19 +35455,7 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
          * Public posts + user's own posts.
          */
 
-        query =
-          query.or(
-            "is_public.eq.true,user_id.eq." +
-            currentUser.id
-          );
-
       }else{
-
-        query =
-          query.eq(
-            "is_public",
-            true
-          );
 
       }
 
