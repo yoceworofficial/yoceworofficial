@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Move Supabase initialization before Part 2
+      - name: Move Supabase initialization before all app parts
         shell: python
         run: |
           from pathlib import Path
@@ -23,10 +23,6 @@ jobs:
 
           path = Path("index.html")
           text = path.read_text(encoding="utf-8")
-
-          early_marker = "<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->"
-          late_marker = "<!-- YOCEWOR — FRONTEND + SUPABASE CONNECTION\n     PART 1\n     SUPABASE CLIENT INITIALIZATION"
-          part2_marker = "<!--\n    =======================================================\n    PART 2 WILL BE PASTED DIRECTLY BELOW THIS LINE.\n    =======================================================\n  -->"
 
           bootstrap = '''<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->
           <script>
@@ -38,27 +34,34 @@ jobs:
               return;
             }
 
-            window.SUPABASE_URL = "https://mzntgjyecymcpzciklfk.supabase.co";
-            window.SUPABASE_ANON_KEY = "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
+            const SUPABASE_URL = "https://mzntgjyecymcpzciklfk.supabase.co";
+            const SUPABASE_ANON_KEY = "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
 
-            window.yoceworSupabase = window.supabase.createClient(
-              window.SUPABASE_URL,
-              window.SUPABASE_ANON_KEY
+            const yoceworSupabase = window.supabase.createClient(
+              SUPABASE_URL,
+              SUPABASE_ANON_KEY
             );
+            const supabaseClient = yoceworSupabase;
 
-            window.supabaseClient = window.yoceworSupabase;
-            window.currentUser = null;
-            window.currentProfile = null;
-            window.MEDIA_BUCKET = "yocewor-media";
+            let currentUser = null;
+            let currentProfile = null;
+            const MEDIA_BUCKET = "yocewor-media";
+
+            window.SUPABASE_URL = SUPABASE_URL;
+            window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
+            window.yoceworSupabase = yoceworSupabase;
+            window.supabaseClient = supabaseClient;
+            window.currentUser = currentUser;
+            window.currentProfile = currentProfile;
+            window.MEDIA_BUCKET = MEDIA_BUCKET;
 
             window.YOCEWOR = window.YOCEWOR || {};
             window.YOCEWOR.supabaseConfig = {
-              urlConfigured: !!window.SUPABASE_URL,
-              keyConfigured: !!window.SUPABASE_ANON_KEY
+              urlConfigured: true,
+              keyConfigured: true
             };
-
             window.YOCEWOR.isSupabaseConfigured = function () {
-              return !!window.SUPABASE_URL && !!window.SUPABASE_ANON_KEY;
+              return true;
             };
 
             console.log("YOCEWOR: Supabase bootstrap ready");
@@ -67,13 +70,11 @@ jobs:
           <!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->
           '''
 
-          # Remove a previous copy of the safe bootstrap, if this workflow is re-run.
           text = re.sub(
               r'<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->.*?<!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->\s*',
               '', text, flags=re.S
           )
 
-          # Remove the late Part 1 initialization block only.
           late_re = (
               r'<!-- =====================================================\s*'
               r'YOCEWOR — FRONTEND \+ SUPABASE CONNECTION\s*'
@@ -84,14 +85,26 @@ jobs:
           )
           text, removed = re.subn(late_re, '', text, count=1, flags=re.S)
 
-          # Insert the bootstrap immediately before Part 2, after the original Part 1 foundation.
-          if part2_marker not in text:
-              raise SystemExit("Part 2 marker not found; aborting without changes.")
+          part2_marker = "<!-- =====================================================\n     YOCEWOR — FRONTEND + SUPABASE CONNECTION\n     PART 2"
+          pos = text.find(part2_marker)
+          if pos < 0:
+              raise SystemExit("First Part 2 marker not found; aborting without changes.")
 
-          text = text.replace(part2_marker, bootstrap + "\n" + part2_marker, 1)
-
+          text = text[:pos] + bootstrap + "\n" + text[pos:]
           path.write_text(text, encoding="utf-8")
-          print(f"Late Part 1 block removed: {removed}")
+          print(f"Late Part 1 blocks removed: {removed}")
+
+      - name: Validate initialization order
+        shell: python
+        run: |
+          from pathlib import Path
+          text = Path("index.html").read_text(encoding="utf-8")
+          bootstrap = text.index("<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->")
+          part2 = text.index("<!-- =====================================================\n     YOCEWOR — FRONTEND + SUPABASE CONNECTION\n     PART 2")
+          assert bootstrap < part2, "Bootstrap must execute before Part 2"
+          assert text.count("<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->") == 1
+          assert text.count("const yoceworSupabase") == 1
+          print("Supabase bootstrap order validated.")
 
       - name: Commit fix
         shell: bash
