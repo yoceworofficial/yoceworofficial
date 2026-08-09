@@ -1,0 +1,107 @@
+name: Fix YOCEWOR Supabase initialization order
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-supabase-order:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Move Supabase initialization before Part 2
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+
+          early_marker = "<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->"
+          late_marker = "<!-- YOCEWOR — FRONTEND + SUPABASE CONNECTION\n     PART 1\n     SUPABASE CLIENT INITIALIZATION"
+          part2_marker = "<!--\n    =======================================================\n    PART 2 WILL BE PASTED DIRECTLY BELOW THIS LINE.\n    =======================================================\n  -->"
+
+          bootstrap = '''<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->
+          <script>
+          (function () {
+            "use strict";
+
+            if (!window.supabase || typeof window.supabase.createClient !== "function") {
+              console.error("YOCEWOR: Supabase CDN did not load before initialization.");
+              return;
+            }
+
+            window.SUPABASE_URL = "https://mzntgjyecymcpzciklfk.supabase.co";
+            window.SUPABASE_ANON_KEY = "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
+
+            window.yoceworSupabase = window.supabase.createClient(
+              window.SUPABASE_URL,
+              window.SUPABASE_ANON_KEY
+            );
+
+            window.supabaseClient = window.yoceworSupabase;
+            window.currentUser = null;
+            window.currentProfile = null;
+            window.MEDIA_BUCKET = "yocewor-media";
+
+            window.YOCEWOR = window.YOCEWOR || {};
+            window.YOCEWOR.supabaseConfig = {
+              urlConfigured: !!window.SUPABASE_URL,
+              keyConfigured: !!window.SUPABASE_ANON_KEY
+            };
+
+            window.YOCEWOR.isSupabaseConfigured = function () {
+              return !!window.SUPABASE_URL && !!window.SUPABASE_ANON_KEY;
+            };
+
+            console.log("YOCEWOR: Supabase bootstrap ready");
+          })();
+          </script>
+          <!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->
+          '''
+
+          # Remove a previous copy of the safe bootstrap, if this workflow is re-run.
+          text = re.sub(
+              r'<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->.*?<!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->\s*',
+              '', text, flags=re.S
+          )
+
+          # Remove the late Part 1 initialization block only.
+          late_re = (
+              r'<!-- =====================================================\s*'
+              r'YOCEWOR — FRONTEND \+ SUPABASE CONNECTION\s*'
+              r'PART 1\s*'
+              r'SUPABASE CLIENT INITIALIZATION\s*'
+              r'===================================================== -->.*?'
+              r'</script>\s*'
+          )
+          text, removed = re.subn(late_re, '', text, count=1, flags=re.S)
+
+          # Insert the bootstrap immediately before Part 2, after the original Part 1 foundation.
+          if part2_marker not in text:
+              raise SystemExit("Part 2 marker not found; aborting without changes.")
+
+          text = text.replace(part2_marker, bootstrap + "\n" + part2_marker, 1)
+
+          path.write_text(text, encoding="utf-8")
+          print(f"Late Part 1 block removed: {removed}")
+
+      - name: Commit fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No index.html change required."
+            exit 0
+          fi
+          git commit -m "Fix Supabase client initialization order"
+          git push
