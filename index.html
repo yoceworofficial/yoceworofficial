@@ -4038,7 +4038,7 @@
 
     if (
       !window.supabase ||
-      !supabaseClient
+      !window.supabaseClient
     ) {
 
       throw new Error(
@@ -4058,7 +4058,7 @@
     const {
       error
     } =
-      await supabaseClient
+      await window.supabaseClient
         .storage
         .from(MEDIA_BUCKET)
         .upload(
@@ -4080,7 +4080,7 @@
     const {
       data
     } =
-      supabaseClient
+       window.supabaseClient
         .storage
         .from(
           MEDIA_BUCKET
@@ -4468,7 +4468,7 @@
 
   "use strict";
 
-  const client = supabaseClient;
+  const client = window.supabaseClient;
 
   if (!client) {
     console.error("YOCEWOR: Supabase client missing.");
@@ -6018,8 +6018,7 @@
 
 
   const client =
-    supabaseClient;
-
+      window.supabaseClient;
 
   if (!client) {
 
@@ -7393,7 +7392,7 @@
 
 
   const client =
-    supabaseClient;
+     window.supabaseClient;
 
 
   if (!client) {
@@ -8659,7 +8658,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if (!client) {
@@ -10692,8 +10691,7 @@
 
 
   const client =
-    supabaseClient;
-
+    window.supabaseClient;
 
   if(!client){
 
@@ -12077,7 +12075,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -14016,7 +14014,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   /* =====================================================
@@ -15301,7 +15299,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -17483,7 +17481,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -18999,7 +18997,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -20261,7 +20259,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -21534,7 +21532,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -22909,7 +22907,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -24437,8 +24435,7 @@
 
 
   const client =
-    supabaseClient;
-
+    window.supabaseClient;
 
   if(!client){
 
@@ -26084,7 +26081,7 @@
 
 
   const client =
-    supabaseClient;
+   window.supabaseClient;
 
 
   if(!client){
@@ -27421,7 +27418,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -28933,7 +28930,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -30059,8 +30056,7 @@
 
 
   const client =
-    supabaseClient;
-
+    window.supabaseClient;
 
   if(!client){
 
@@ -30917,7 +30913,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -32496,8 +32492,7 @@
 
 
   const client =
-    supabaseClient;
-
+    window.supabaseClient;
 
   if(!client){
 
@@ -33907,7 +33902,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -34916,7 +34911,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -36202,7 +36197,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -38079,8 +38074,7 @@
 
 
   const client =
-    supabaseClient;
-
+    window.supabaseClient;
 
   if(!client){
 
@@ -40153,7 +40147,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -41760,7 +41754,7 @@
 
 
   const client =
-    supabaseClient;
+    window.supabaseClient;
 
 
   if(!client){
@@ -43153,8 +43147,7 @@
 
 
   const client =
-    supabaseClient;
-
+    window.supabaseClient;
 
   if(!client){
 
@@ -44289,8 +44282,7 @@
   function checkSupabase(){
 
     const client =
-      supabaseClient;
-
+      window.supabaseClient;
 
     if(!client){
 
@@ -44321,7 +44313,7 @@
   async function checkAuth(){
 
     const client =
-      supabaseClient;
+      window.supabaseClient;
 
 
     if(!client)
@@ -44376,7 +44368,7 @@
   function setupAuthListener(){
 
     const client =
-      supabaseClient;
+      window.supabaseClient;
 
 
     if(!client)
@@ -44666,12 +44658,12 @@
     const checks = {
 
       supabase:
-        !!supabaseClient,
+        !!window.supabaseClient,
 
       authSystem:
         !!(
-          supabaseClient &&
-          supabaseClient.auth
+           window.supabaseClient &&
+          window.supabaseClient.auth
         ),
 
       storageConfig:
