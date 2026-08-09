@@ -44858,77 +44858,7 @@
 <!-- =====================================================
      YOCEWOR — END OF ALL 32 CODING PARTS
      ===================================================== -->
-  <!-- =====================================================
-     YOCEWOR — FRONTEND + SUPABASE CONNECTION
-     PART 1
-     SUPABASE CLIENT INITIALIZATION
-     ===================================================== -->
 
-<script>
-
-  /*
-   * SUPABASE CONFIGURATION
-   *
-   * अभी इन दोनों values को मत बदलना।
-   * अगले step में सही values Supabase से copy करेंगे।
-   */
-
-  const SUPABASE_URL =
-    "YOUR_SUPABASE_URL";
-
-  const SUPABASE_ANON_KEY =
-    "YOUR_SUPABASE_ANON_KEY";
-
-
-  /*
-   * SUPABASE CLIENT
-   */
-
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
-
-
-  /*
-   * YOCEWOR GLOBAL STATE
-   */
-
-  const MEDIA_BUCKET =
-    "yocewor-media";
-
-  let currentUser = null;
-
-  let currentProfile = null;
-
-
-  /*
-   * CONNECTION INITIALIZATION
-   */
-
-  console.log(
-    "================================"
-  );
-
-  console.log(
-    "YOCEWOR SUPABASE PART 1"
-  );
-
-  console.log(
-    "Supabase client created"
-  );
-
-  console.log(
-    "Media bucket:",
-    MEDIA_BUCKET
-  );
-
-  console.log(
-    "================================"
-  );
-
-</script>
 <!-- =====================================================
      YOCEWOR — FRONTEND + SUPABASE CONNECTION
      PART 2
