@@ -9218,8 +9218,8 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
         .from("posts")
         .select("*")
         .eq(
-          "visibility",
-          "public"
+          "is_public",
+          true
         )
         .order(
           "created_at",
@@ -14208,8 +14208,8 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
           "id,media_url,media_type,created_at"
         )
         .eq(
-          "visibility",
-          "public"
+          "is_public",
+          true
         )
         .order(
           "created_at",
@@ -15783,8 +15783,8 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
         .from("posts")
         .select("*")
         .eq(
-          "visibility",
-          "public"
+          "is_public",
+          true
         )
         .order(
           "created_at",
@@ -35444,7 +35444,7 @@ if (!window.supabase || typeof window.supabase.createClient !== "function") {
             privacy,
             is_public,
             created_at,
-            profiles(
+            profiles:profiles!posts_user_id_fkey(
               id,
               username,
               display_name,
