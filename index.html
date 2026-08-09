@@ -44819,6 +44819,95 @@
 <!-- =====================================================
      YOCEWOR — END OF ALL 32 CODING PARTS
      ===================================================== -->
+  <!-- =====================================================
+     YOCEWOR — FRONTEND + SUPABASE CONNECTION
+     PART 1
+     SUPABASE CLIENT INITIALIZATION
+     ===================================================== -->
+
+<script>
+
+  // =====================================================
+  // SUPABASE CONFIGURATION
+  // =====================================================
+
+  const SUPABASE_URL =
+    "https://mzntgjyecymcpzciklfk.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
+
+
+  // =====================================================
+  // SUPABASE CLIENT
+  // =====================================================
+
+  const yoceworSupabase =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+
+  // =====================================================
+  // COMPATIBILITY CLIENT
+  // =====================================================
+
+  const supabaseClient =
+    yoceworSupabase;
+
+
+  // =====================================================
+  // GLOBAL USER STATE
+  // =====================================================
+
+  let currentUser = null;
+
+  let currentProfile = null;
+
+
+  // =====================================================
+  // SUPABASE STORAGE
+  // =====================================================
+
+  const MEDIA_BUCKET =
+    "yocewor-media";
+
+
+  // =====================================================
+  // GLOBAL COMPATIBILITY
+  // =====================================================
+
+  window.supabaseClient =
+    supabaseClient;
+
+
+  // =====================================================
+  // INITIALIZATION LOG
+  // =====================================================
+
+  console.log(
+    "================================"
+  );
+
+  console.log(
+    "YOCEWOR SUPABASE PART 1"
+  );
+
+  console.log(
+    "Supabase client created"
+  );
+
+  console.log(
+    "Media bucket:",
+    MEDIA_BUCKET
+  );
+
+  console.log(
+    "================================"
+  );
+
+</script>
 
 <!-- =====================================================
      YOCEWOR — FRONTEND + SUPABASE CONNECTION
