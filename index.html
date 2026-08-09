@@ -745,45 +745,7 @@
 
   </script>
 
-  <!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->
-<script>
-(function () {
-  "use strict";
-
-  if (!window.supabase || typeof window.supabase.createClient !== "function") {
-    console.error("YOCEWOR: Supabase CDN did not load before initialization.");
-    return;
-  }
-
-  window.SUPABASE_URL = "https://mzntgjyecymcpzciklfk.supabase.co";
-  window.SUPABASE_ANON_KEY = "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
-
-  window.yoceworSupabase = window.supabase.createClient(
-    window.SUPABASE_URL,
-    window.SUPABASE_ANON_KEY
-  );
-
-  window.supabaseClient = window.yoceworSupabase;
-  window.currentUser = null;
-  window.currentProfile = null;
-  window.MEDIA_BUCKET = "yocewor-media";
-
-  window.YOCEWOR = window.YOCEWOR || {};
-  window.YOCEWOR.supabaseConfig = {
-    urlConfigured: !!window.SUPABASE_URL,
-    keyConfigured: !!window.SUPABASE_ANON_KEY
-  };
-
-  window.YOCEWOR.isSupabaseConfigured = function () {
-    return !!window.SUPABASE_URL && !!window.SUPABASE_ANON_KEY;
-  };
-
-  console.log("YOCEWOR: Supabase bootstrap ready");
-})();
-</script>
-<!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->
-
-<!--
+  <!--
     =======================================================
     PART 2 WILL BE PASTED DIRECTLY BELOW THIS LINE.
     =======================================================
@@ -44857,7 +44819,52 @@
 <!-- =====================================================
      YOCEWOR — END OF ALL 32 CODING PARTS
      ===================================================== -->
-  <!-- =====================================================
+  <!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->
+<script>
+(function () {
+  "use strict";
+
+  if (!window.supabase || typeof window.supabase.createClient !== "function") {
+    console.error("YOCEWOR: Supabase CDN did not load before initialization.");
+    return;
+  }
+
+  const SUPABASE_URL = "https://mzntgjyecymcpzciklfk.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
+
+  const yoceworSupabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+  const supabaseClient = yoceworSupabase;
+
+  let currentUser = null;
+  let currentProfile = null;
+  const MEDIA_BUCKET = "yocewor-media";
+
+  window.SUPABASE_URL = SUPABASE_URL;
+  window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
+  window.yoceworSupabase = yoceworSupabase;
+  window.supabaseClient = supabaseClient;
+  window.currentUser = currentUser;
+  window.currentProfile = currentProfile;
+  window.MEDIA_BUCKET = MEDIA_BUCKET;
+
+  window.YOCEWOR = window.YOCEWOR || {};
+  window.YOCEWOR.supabaseConfig = {
+    urlConfigured: true,
+    keyConfigured: true
+  };
+  window.YOCEWOR.isSupabaseConfigured = function () {
+    return true;
+  };
+
+  console.log("YOCEWOR: Supabase bootstrap ready");
+})();
+</script>
+<!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->
+
+<!-- =====================================================
      YOCEWOR — FRONTEND + SUPABASE CONNECTION
      PART 2
      SUPABASE CONNECTION HELPERS
