@@ -1,1 +1,2572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#090914">
+<title>YOCEWOR — Your World. Your Voice.</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+  --bg:#080812;
+  --panel:#11111d;
+  --panel2:#171726;
+  --card:#12121f;
+  --text:#f7f7fb;
+  --muted:#9292a8;
+  --line:#29293b;
+  --primary:#7c5cff;
+  --primary2:#a855f7;
+  --pink:#ec4899;
+  --blue:#38bdf8;
+  --danger:#ef4444;
+  --success:#22c55e;
+  --shadow:0 12px 40px rgba(0,0,0,.35);
+  --radius:22px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 10% 0%,rgba(124,92,255,.13),transparent 30%),
+    radial-gradient(circle at 90% 10%,rgba(236,72,153,.10),transparent 25%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  min-height:100vh;
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+img,video{max-width:100%;display:block}
+
+.hidden{display:none!important}
+.app{min-height:100vh}
+
+.topbar{
+  height:68px;
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:100;
+  background:rgba(8,8,18,.84);
+  backdrop-filter:blur(22px);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.topbar-inner{
+  width:min(1200px,100%);
+  padding:0 18px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+.logo{
+  font-size:24px;
+  font-weight:900;
+  letter-spacing:-1px;
+  background:linear-gradient(90deg,#fff,var(--primary),var(--pink));
+  -webkit-background-clip:text;
+  color:transparent;
+  cursor:pointer;
+}
+.search{
+  flex:1;
+  max-width:460px;
+  position:relative;
+}
+.search input{
+  width:100%;
+  background:var(--panel2);
+  border:1px solid transparent;
+  color:var(--text);
+  border-radius:999px;
+  padding:12px 18px 12px 42px;
+  outline:none;
+}
+.search input:focus{border-color:var(--primary)}
+.search-icon{
+  position:absolute;
+  left:15px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--muted);
+}
+.top-actions{margin-left:auto;display:flex;gap:8px}
+.icon-btn{
+  width:42px;height:42px;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:var(--text);
+  display:grid;
+  place-items:center;
+}
+.icon-btn:hover{background:var(--panel2)}
+.icon-btn svg{width:22px;height:22px}
+.badge-wrap{position:relative}
+.badge{
+  position:absolute;
+  top:1px;right:1px;
+  min-width:17px;height:17px;
+  padding:0 4px;
+  border-radius:99px;
+  background:var(--pink);
+  color:#fff;
+  font-size:10px;
+  display:grid;
+  place-items:center;
+  font-weight:800;
+}
+
+.layout{
+  width:min(1200px,100%);
+  margin:auto;
+  padding:92px 18px 90px;
+  display:grid;
+  grid-template-columns:220px minmax(0,620px) 270px;
+  gap:24px;
+}
+
+.sidebar{
+  position:sticky;
+  top:88px;
+  height:max-content;
+}
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.nav button{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  padding:13px 14px;
+  border-radius:15px;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  font-weight:700;
+}
+.nav button:hover,.nav button.active{
+  color:#fff;
+  background:linear-gradient(90deg,rgba(124,92,255,.18),rgba(236,72,153,.08));
+}
+.nav svg{width:22px;height:22px}
+
+.main{min-width:0}
+.rightbar{position:sticky;top:88px;height:max-content}
+
+.card{
+  background:rgba(18,18,31,.84);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+.stories{
+  padding:15px;
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  margin-bottom:18px;
+}
+.stories::-webkit-scrollbar{display:none}
+.story{
+  min-width:72px;
+  text-align:center;
+  color:var(--muted);
+  font-size:11px;
+  cursor:pointer;
+}
+.story-avatar{
+  width:64px;height:64px;
+  margin:auto auto 7px;
+  border-radius:50%;
+  padding:2px;
+  background:linear-gradient(135deg,var(--primary),var(--pink),var(--blue));
+}
+.story-avatar-inner{
+  width:100%;height:100%;
+  border-radius:50%;
+  overflow:hidden;
+  background:var(--panel2);
+  border:2px solid var(--bg);
+}
+.story-avatar img{
+  width:100%;height:100%;
+  object-fit:cover;
+}
+.add-story .story-avatar-inner{
+  display:grid;
+  place-items:center;
+  font-size:27px;
+  color:#fff;
+}
+
+.create-box{
+  padding:15px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:18px;
+}
+.avatar{
+  width:44px;height:44px;
+  border-radius:50%;
+  overflow:hidden;
+  background:linear-gradient(135deg,var(--primary),var(--pink));
+  flex:none;
+}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.create-input{
+  flex:1;
+  border:1px solid var(--line);
+  background:var(--panel2);
+  color:var(--muted);
+  border-radius:999px;
+  padding:12px 17px;
+  cursor:pointer;
+}
+.create-input:hover{border-color:var(--primary)}
+
+.post{
+  margin-bottom:18px;
+  overflow:hidden;
+}
+.post-head{
+  padding:15px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+.post-user{flex:1}
+.post-user strong{display:block;font-size:14px}
+.post-user span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.more{margin-left:auto}
+.post-body{
+  padding:0 15px 15px;
+  white-space:pre-wrap;
+  word-break:break-word;
+  line-height:1.55;
+}
+.post-media{
+  width:100%;
+  max-height:700px;
+  object-fit:cover;
+  background:#05050a;
+}
+.post-actions{
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  border-top:1px solid rgba(255,255,255,.04);
+}
+.post-actions button{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  padding:8px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.post-actions button:hover{background:var(--panel2);color:#fff}
+.post-actions .liked{color:#ff4d79}
+.post-actions .saved{color:var(--blue)}
+.post-actions svg{width:22px;height:22px}
+.post-actions .save{margin-left:auto}
+.count-line{
+  padding:0 15px 12px;
+  color:var(--muted);
+  font-size:13px;
+}
+.comment-preview{
+  padding:0 15px 13px;
+  color:var(--muted);
+  font-size:13px;
+}
+.comment-preview strong{color:#fff;margin-right:5px}
+
+.right-card{
+  padding:17px;
+  margin-bottom:16px;
+}
+.right-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+.right-title strong{font-size:14px}
+.right-title button{
+  border:0;background:transparent;color:var(--primary);font-weight:800;
+}
+.person{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:13px;
+}
+.person-info{flex:1;min-width:0}
+.person-info strong{
+  font-size:13px;
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.person-info span{font-size:11px;color:var(--muted)}
+.follow-btn,.primary-btn{
+  border:0;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;
+  border-radius:10px;
+  padding:8px 12px;
+  font-weight:800;
+}
+.follow-btn.following{background:var(--panel2);border:1px solid var(--line)}
+
+.bottom-nav{
+  display:none;
+  position:fixed;
+  bottom:0;left:0;right:0;
+  z-index:100;
+  height:66px;
+  background:rgba(8,8,18,.94);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--line);
+  justify-content:space-around;
+}
+.bottom-nav button{
+  flex:1;border:0;background:transparent;color:var(--muted);
+  display:grid;place-items:center;
+}
+.bottom-nav button.active{color:#fff}
+.bottom-nav svg{width:23px;height:23px}
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(10px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+.modal.show{display:flex}
+.modal-box{
+  width:min(600px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:#11111d;
+  border:1px solid var(--line);
+  border-radius:25px;
+  box-shadow:0 25px 100px rgba(0,0,0,.6);
+}
+.modal-head{
+  padding:17px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+}
+.modal-head strong{font-size:17px}
+.modal-head button{margin-left:auto}
+.modal-content{padding:18px}
+
+.close{
+  border:0;background:var(--panel2);color:#fff;
+  width:36px;height:36px;border-radius:50%;
+  display:grid;place-items:center;
+}
+
+.form-group{margin-bottom:15px}
+.form-group label{
+  display:block;font-size:12px;color:var(--muted);
+  margin-bottom:7px;font-weight:700;
+}
+.form-control{
+  width:100%;
+  background:var(--panel2);
+  color:#fff;
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:12px 13px;
+  outline:none;
+}
+.form-control:focus{border-color:var(--primary)}
+textarea.form-control{min-height:120px;resize:vertical}
+
+.upload-area{
+  border:1px dashed #44445d;
+  border-radius:16px;
+  padding:22px;
+  text-align:center;
+  color:var(--muted);
+  cursor:pointer;
+}
+.upload-area:hover{border-color:var(--primary);color:#fff}
+.preview{
+  margin-top:12px;
+  border-radius:15px;
+  overflow:hidden;
+}
+.preview img,.preview video{width:100%;max-height:360px;object-fit:contain;background:#05050a}
+
+.auth{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(124,92,255,.25),transparent 35%),
+    radial-gradient(circle at 80% 70%,rgba(236,72,153,.18),transparent 35%),
+    var(--bg);
+}
+.auth-box{
+  width:min(430px,100%);
+  background:rgba(18,18,31,.92);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:30px;
+  box-shadow:var(--shadow);
+}
+.auth-logo{text-align:center;margin-bottom:10px}
+.auth-sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:25px}
+.auth-switch{text-align:center;color:var(--muted);font-size:13px;margin-top:18px}
+.auth-switch button{
+  border:0;background:transparent;color:var(--primary);font-weight:800;
+}
+
+.profile-cover{
+  height:210px;
+  background:
+    linear-gradient(135deg,rgba(124,92,255,.8),rgba(236,72,153,.6)),
+    #171726;
+  background-size:cover;
+  background-position:center;
+}
+.profile-info{padding:0 20px 20px}
+.profile-avatar{
+  width:104px;height:104px;
+  border-radius:50%;
+  border:5px solid var(--bg);
+  margin-top:-52px;
+  background:var(--panel2);
+  overflow:hidden;
+}
+.profile-avatar img{width:100%;height:100%;object-fit:cover}
+.profile-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:10px;
+}
+.profile-row h2{font-size:21px}
+.profile-actions{margin-left:auto;display:flex;gap:8px}
+.profile-bio{color:var(--muted);font-size:14px;margin-top:9px;line-height:1.5}
+.stats{
+  display:flex;
+  gap:25px;
+  margin-top:15px;
+}
+.stats div{text-align:center}
+.stats strong{display:block}
+.stats span{color:var(--muted);font-size:12px}
+
+.settings-item{
+  padding:16px 0;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.settings-item:last-child{border-bottom:0}
+.settings-item .info{flex:1}
+.settings-item strong{display:block;font-size:14px}
+.settings-item span{font-size:12px;color:var(--muted)}
+.switch{
+  width:48px;height:27px;border-radius:99px;
+  background:#343447;padding:3px;
+  transition:.2s;
+}
+.switch i{
+  display:block;width:21px;height:21px;
+  border-radius:50%;background:#fff;transition:.2s;
+}
+.switch.on{background:var(--primary)}
+.switch.on i{transform:translateX(21px)}
+
+.comments-list{
+  max-height:430px;
+  overflow:auto;
+}
+.comment{
+  display:flex;
+  gap:10px;
+  padding:10px 0;
+}
+.comment-content{flex:1}
+.comment-content strong{font-size:13px}
+.comment-content p{font-size:13px;color:#ddd;margin-top:3px;line-height:1.4}
+.comment-content small{font-size:10px;color:var(--muted)}
+.comment-input{
+  display:flex;
+  gap:8px;
+  margin-top:14px;
+}
+.comment-input input{
+  flex:1;
+  background:var(--panel2);
+  color:#fff;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:11px 15px;
+  outline:none;
+}
+
+.message-layout{
+  display:grid;
+  grid-template-columns:190px 1fr;
+  min-height:620px;
+}
+.conversation-list{border-right:1px solid var(--line);padding:10px}
+.conv{
+  padding:11px;
+  border-radius:13px;
+  cursor:pointer;
+  display:flex;
+  gap:9px;
+  align-items:center;
+}
+.conv:hover,.conv.active{background:var(--panel2)}
+.chat{display:flex;flex-direction:column;min-width:0}
+.chat-head{padding:13px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.chat-messages{flex:1;padding:15px;overflow:auto;min-height:400px}
+.bubble-row{display:flex;margin-bottom:9px}
+.bubble-row.me{justify-content:flex-end}
+.bubble{
+  max-width:72%;
+  padding:9px 12px;
+  border-radius:17px;
+  background:var(--panel2);
+  font-size:13px;
+  line-height:1.4;
+}
+.me .bubble{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+}
+.chat-input{
+  padding:12px;
+  border-top:1px solid var(--line);
+  display:flex;
+  gap:8px;
+}
+.chat-input input{
+  flex:1;background:var(--panel2);color:#fff;border:1px solid var(--line);
+  border-radius:999px;padding:11px 15px;outline:none;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:85px;
+  transform:translateX(-50%) translateY(20px);
+  background:#202033;
+  border:1px solid var(--line);
+  color:#fff;
+  padding:12px 17px;
+  border-radius:999px;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  z-index:1000;
+  box-shadow:var(--shadow);
+  font-size:13px;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.empty{
+  padding:50px 20px;
+  text-align:center;
+  color:var(--muted);
+}
+.empty strong{display:block;color:#fff;margin-bottom:5px}
+
+.loader{
+  width:30px;height:30px;border:3px solid #333344;
+  border-top-color:var(--primary);border-radius:50%;
+  animation:spin .7s linear infinite;margin:30px auto;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.page-title{
+  font-size:24px;
+  margin-bottom:18px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:4px;
+}
+.grid-item{
+  aspect-ratio:1;
+  overflow:hidden;
+  background:var(--panel2);
+  cursor:pointer;
+}
+.grid-item img,.grid-item video{
+  width:100%;height:100%;object-fit:cover;
+}
+
+@media(max-width:1050px){
+  .layout{grid-template-columns:70px minmax(0,620px);justify-content:center}
+  .sidebar{width:70px}
+  .nav button{justify-content:center;font-size:0}
+  .nav svg{width:24px;height:24px}
+  .rightbar{display:none}
+}
+@media(max-width:700px){
+  .topbar{height:60px}
+  .topbar-inner{padding:0 12px}
+  .logo{font-size:21px}
+  .search{display:none}
+  .layout{
+    display:block;
+    padding:75px 8px 78px;
+  }
+  .sidebar{display:none}
+  .bottom-nav{display:flex}
+  .card{border-radius:18px}
+  .stories{margin-left:-0px;margin-right:-0px}
+  .post-media{max-height:600px}
+  .message-layout{grid-template-columns:1fr}
+  .conversation-list{
+    border-right:0;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    overflow:auto;
+  }
+  .conv{min-width:130px}
+  .chat-messages{min-height:350px}
+}
+
+svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+
+<body>
+
+<div id="authScreen" class="auth">
+  <div class="auth-box">
+    <div class="auth-logo logo">YOCEWOR</div>
+    <div class="auth-sub">Your World. Your Voice.</div>
+
+    <form id="authForm">
+      <div class="form-group" id="usernameGroup">
+        <label>Username</label>
+        <input id="authUsername" class="form-control" placeholder="your_username">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input id="authEmail" class="form-control" type="email" required placeholder="you@example.com">
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input id="authPassword" class="form-control" type="password" required minlength="6" placeholder="••••••••">
+      </div>
+
+      <button id="authSubmit" class="primary-btn" style="width:100%;padding:13px">
+        Create account
+      </button>
+    </form>
+
+    <div class="auth-switch">
+      <span id="authSwitchText">Already have an account?</span>
+      <button id="authSwitch">Log in</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="logo" onclick="navigate('home')">YOCEWOR</div>
+
+    <div class="search">
+      <span class="search-icon">
+        <svg width="19" height="19"><use href="#i-search"/></svg>
+      </span>
+      <input id="searchInput" placeholder="Search people and posts...">
+    </div>
+
+    <div class="top-actions">
+      <button class="icon-btn" onclick="navigate('messages')" title="Messages">
+        <svg><use href="#i-message"/></svg>
+      </button>
+
+      <button class="icon-btn badge-wrap" onclick="navigate('notifications')" title="Notifications">
+        <svg><use href="#i-bell"/></svg>
+        <span id="notificationBadge" class="badge hidden">0</span>
+      </button>
+
+      <button class="icon-btn" onclick="navigate('profile')" title="Profile">
+        <svg><use href="#i-user"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <nav class="nav">
+    <button data-nav="home" onclick="navigate('home')">
+      <svg><use href="#i-home"/></svg><span>Home</span>
+    </button>
+    <button data-nav="explore" onclick="navigate('explore')">
+      <svg><use href="#i-compass"/></svg><span>Explore</span>
+    </button>
+    <button data-nav="create" onclick="openPostModal()">
+      <svg><use href="#i-plus"/></svg><span>Create</span>
+    </button>
+    <button data-nav="messages" onclick="navigate('messages')">
+      <svg><use href="#i-message"/></svg><span>Messages</span>
+    </button>
+    <button data-nav="notifications" onclick="navigate('notifications')">
+      <svg><use href="#i-bell"/></svg><span>Notifications</span>
+    </button>
+    <button data-nav="saved" onclick="navigate('saved')">
+      <svg><use href="#i-bookmark"/></svg><span>Saved</span>
+    </button>
+    <button data-nav="profile" onclick="navigate('profile')">
+      <svg><use href="#i-user"/></svg><span>Profile</span>
+    </button>
+    <button data-nav="settings" onclick="navigate('settings')">
+      <svg><use href="#i-settings"/></svg><span>Settings</span>
+    </button>
+  </nav>
+</aside>
+
+<main id="main" class="main"></main>
+
+<aside class="rightbar" id="rightbar"></aside>
+
+</div>
+
+<nav class="bottom-nav">
+  <button data-nav="home" onclick="navigate('home')"><svg><use href="#i-home"/></svg></button>
+  <button data-nav="explore" onclick="navigate('explore')"><svg><use href="#i-compass"/></svg></button>
+  <button data-nav="create" onclick="openPostModal()"><svg><use href="#i-plus"/></svg></button>
+  <button data-nav="messages" onclick="navigate('messages')"><svg><use href="#i-message"/></svg></button>
+  <button data-nav="profile" onclick="navigate('profile')"><svg><use href="#i-user"/></svg></button>
+</nav>
+
+</div>
+
+<!-- SVG ICONS -->
+<svg style="display:none">
+<symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+<symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-message" viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.7 8.7 0 0 1-3.5-.7L4 20l1.5-3.5A7.4 7.4 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5z"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/><path d="m19.4 15 .1.1a2 2 0 0 1-2.8 2.8l-.1-.1a2 2 0 0 0-3.4 1.4V19a2 2 0 0 1-4 0v-.2a2 2 0 0 0-3.4-1.4l-.1.1A2 2 0 0 1 3 14.7l.1-.1A2 2 0 0 0 1.7 11H1.5a2 2 0 0 1 0-4h.2a2 2 0 0 0 1.4-3.4L3 3.5A2 2 0 0 1 5.8.7l.1.1a2 2 0 0 0 3.4-1.4V-.8h4v.2a2 2 0 0 0 3.4 1.4l.1-.1A2 2 0 0 1 19.6 3l-.1.1A2 2 0 0 0 20.9 6h.2a2 2 0 0 1 0 4h-.2a2 2 0 0 0-1.5 3.4z" transform="scale(.85) translate(2 2)"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.7c0 5-8.8 10.3-8.8 10.3S3.2 13.7 3.2 8.7A4.7 4.7 0 0 1 12 6a4.7 4.7 0 0 1 8.8 2.7z"/></symbol>
+<symbol id="i-comment" viewBox="0 0 24 24"><path d="M20 11a7 7 0 0 1-7 7H8l-4 3 1-5a7 7 0 1 1 15-5z"/></symbol>
+<symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17l-6-4-6 4z"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><path d="m21 3-7 18-4-8-8-4zM21 3 10 13"/></symbol>
+<symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m3 17 5-5 4 4 3-3 6 6"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M21 19V5a2 2 0 0 0-2-2h-5"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/></symbol>
+</svg>
+
+<!-- POST MODAL -->
+<div id="postModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <strong>Create post</strong>
+      <button class="close" onclick="closeModal('postModal')">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="form-group">
+        <textarea id="postText" class="form-control" placeholder="Share something with your world..."></textarea>
+      </div>
+
+      <div class="upload-area" onclick="document.getElementById('postFile').click()">
+        <svg width="30" height="30"><use href="#i-image"/></svg>
+        <div style="margin-top:7px">Add photo or video</div>
+        <small>JPG, PNG, WEBP, MP4</small>
+      </div>
+
+      <input id="postFile" type="file" accept="image/*,video/*" hidden>
+
+      <div id="postPreview" class="preview hidden"></div>
+
+      <div style="display:flex;gap:8px;margin-top:15px">
+        <select id="postVisibility" class="form-control">
+          <option value="public">Public</option>
+          <option value="followers">Followers</option>
+          <option value="private">Only me</option>
+        </select>
+        <button id="publishBtn" class="primary-btn" style="flex:1" onclick="publishPost()">
+          Publish
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STORY MODAL -->
+<div id="storyModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <strong>Create story</strong>
+      <button class="close" onclick="closeModal('storyModal')">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="form-group">
+        <textarea id="storyCaption" class="form-control" placeholder="Add a caption..."></textarea>
+      </div>
+
+      <div class="upload-area" onclick="document.getElementById('storyFile').click()">
+        <svg width="30" height="30"><use href="#i-image"/></svg>
+        <div style="margin-top:7px">Choose story media</div>
+      </div>
+
+      <input id="storyFile" type="file" accept="image/*,video/*" hidden>
+      <div id="storyPreview" class="preview hidden"></div>
+
+      <button class="primary-btn" style="width:100%;margin-top:15px;padding:13px" onclick="publishStory()">
+        Add to story
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- COMMENTS MODAL -->
+<div id="commentsModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <strong>Comments</strong>
+      <button class="close" onclick="closeModal('commentsModal')">×</button>
+    </div>
+    <div class="modal-content">
+      <div id="commentsList" class="comments-list"></div>
+      <div class="comment-input">
+        <input id="commentInput" placeholder="Write a comment...">
+        <button class="primary-btn" onclick="submitComment()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STORY VIEWER -->
+<div id="storyViewer" class="modal">
+  <div class="modal-box" style="max-width:480px;background:#000">
+    <div class="modal-head" style="background:#000;border:0">
+      <strong id="storyViewerUser"></strong>
+      <button class="close" onclick="closeModal('storyViewer')">×</button>
+    </div>
+    <div id="storyViewerContent"></div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="profileEditModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <strong>Edit profile</strong>
+      <button class="close" onclick="closeModal('profileEditModal')">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="form-group">
+        <label>Display name</label>
+        <input id="editDisplayName" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Bio</label>
+        <textarea id="editBio" class="form-control"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Website</label>
+        <input id="editWebsite" class="form-control">
+      </div>
+      <button class="primary-btn" style="width:100%;padding:13px" onclick="saveProfile()">
+        Save profile
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div id="messageModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <strong>New message</strong>
+      <button class="close" onclick="closeModal('messageModal')">×</button>
+    </div>
+    <div class="modal-content">
+      <input id="messageUsername" class="form-control" placeholder="Enter username">
+      <button class="primary-btn" style="width:100%;margin-top:12px;padding:13px" onclick="startConversation()">
+        Start chat
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* =========================================================
+   YOCEWOR — COMPLETE APP
+   Your World. Your Voice.
+   ========================================================= */
+
+const SUPABASE_URL = "https://mzntgjyecymcpzciklfk.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const MEDIA_BUCKET = "yocewor-media";
+
+let currentUser = null;
+let currentProfile = null;
+let currentPage = "home";
+let currentCommentPost = null;
+let currentConversation = null;
+let allPosts = [];
+let allStories = [];
+let postFile = null;
+let storyFile = null;
+let authMode = "signup";
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function timeAgo(date){
+  const sec = Math.floor((Date.now()-new Date(date).getTime())/1000);
+  if(sec < 60) return "just now";
+  const min = Math.floor(sec/60);
+  if(min < 60) return min+"m";
+  const hr = Math.floor(min/60);
+  if(hr < 24) return hr+"h";
+  const day = Math.floor(hr/24);
+  if(day < 7) return day+"d";
+  return new Date(date).toLocaleDateString();
+}
+
+function toast(message){
+  const el=$("toast");
+  el.textContent=message;
+  el.classList.add("show");
+  clearTimeout(window.toastTimer);
+  window.toastTimer=setTimeout(()=>el.classList.remove("show"),2600);
+}
+
+function openModal(id){$(id).classList.add("show")}
+function closeModal(id){$(id).classList.remove("show")}
+
+function avatarHTML(profile,size=""){
+  const url=profile?.avatar_url;
+  return `<div class="avatar ${size}">
+    ${url ? `<img src="${escapeHTML(url)}" alt="">` : `<div style="height:100%;display:grid;place-items:center;font-weight:900">${escapeHTML((profile?.display_name||profile?.username||"U")[0].toUpperCase())}</div>`}
+  </div>`;
+}
+
+function safeUrl(url){
+  if(!url)return "";
+  try{
+    const u=new URL(url);
+    if(["http:","https:"].includes(u.protocol))return u.href;
+  }catch(e){}
+  return "";
+}
+
+function mediaHTML(post){
+  if(post.image_url){
+    return `<img class="post-media" src="${escapeHTML(safeUrl(post.image_url))}" alt="Post image" loading="lazy">`;
+  }
+  if(post.video_url){
+    return `<video class="post-media" src="${escapeHTML(safeUrl(post.video_url))}" controls playsinline></video>`;
+  }
+  return "";
+}
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+
+$("authSwitch").onclick=()=>{
+  authMode=authMode==="signup"?"login":"signup";
+  $("usernameGroup").classList.toggle("hidden",authMode==="login");
+  $("authSubmit").textContent=authMode==="signup"?"Create account":"Log in";
+  $("authSwitchText").textContent=authMode==="signup"?"Already have an account?":"Don't have an account?";
+  $("authSwitch").textContent=authMode==="signup"?"Log in":"Create account";
+};
+
+$("authForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+
+  const email=$("authEmail").value.trim();
+  const password=$("authPassword").value;
+  const username=$("authUsername").value.trim().toLowerCase();
+
+  $("authSubmit").disabled=true;
+  $("authSubmit").textContent="Please wait...";
+
+  try{
+    if(authMode==="signup"){
+      if(!/^[a-z0-9_]{3,30}$/.test(username)){
+        throw new Error("Username must be 3–30 characters using lowercase letters, numbers or _");
+      }
+
+      const {error}=await db.auth.signUp({
+        email,
+        password,
+        options:{
+          data:{
+            username,
+            display_name:username
+          }
+        }
+      });
+
+      if(error)throw error;
+
+      toast("Account created. Check your email if confirmation is enabled.");
+    }else{
+      const {error}=await db.auth.signInWithPassword({email,password});
+      if(error)throw error;
+    }
+  }catch(err){
+    toast(err.message||"Authentication failed");
+  }finally{
+    $("authSubmit").disabled=false;
+    $("authSubmit").textContent=authMode==="signup"?"Create account":"Log in";
+  }
+});
+
+async function logout(){
+  await db.auth.signOut();
+}
+
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
+
+async function init(){
+  const {data}=await db.auth.getSession();
+
+  if(data.session){
+    await startApp(data.session.user);
+  }else{
+    $("authScreen").classList.remove("hidden");
+  }
+
+  db.auth.onAuthStateChange(async(event,session)=>{
+    if(session){
+      setTimeout(()=>startApp(session.user),0);
+    }else{
+      currentUser=null;
+      currentProfile=null;
+      $("app").classList.add("hidden");
+      $("authScreen").classList.remove("hidden");
+    }
+  });
+}
+
+async function startApp(user){
+  currentUser=user;
+
+  const {data:profile,error}=await db
+    .from("profiles")
+    .select("*")
+    .eq("id",user.id)
+    .maybeSingle();
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  if(!profile){
+    await createFallbackProfile(user);
+  }else{
+    currentProfile=profile;
+  }
+
+  $("authScreen").classList.add("hidden");
+  $("app").classList.remove("hidden");
+
+  await loadNotificationsCount();
+  await navigate(currentPage);
+  subscribeRealtime();
+}
+
+async function createFallbackProfile(user){
+  let base=(user.user_metadata?.username||user.email?.split("@")[0]||"user")
+    .toLowerCase().replace(/[^a-z0-9_]/g,"").slice(0,24);
+
+  if(base.length<3)base="user_"+user.id.replaceAll("-","").slice(0,8);
+
+  let username=base;
+
+  const {data:existing}=await db
+    .from("profiles")
+    .select("username")
+    .eq("username",username)
+    .maybeSingle();
+
+  if(existing)username=base.slice(0,18)+"_"+user.id.replaceAll("-","").slice(0,6);
+
+  const {data,error}=await db.from("profiles").insert({
+    id:user.id,
+    username,
+    display_name:user.user_metadata?.display_name||username,
+    bio:"Your voice. Your ideas. Your world."
+  }).select().single();
+
+  if(!error)currentProfile=data;
+
+  await db.from("user_settings").upsert({user_id:user.id});
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+async function navigate(page){
+  currentPage=page;
+
+  document.querySelectorAll("[data-nav]").forEach(x=>{
+    x.classList.toggle("active",x.dataset.nav===page);
+  });
+
+  const main=$("main");
+  main.innerHTML=`<div class="loader"></div>`;
+
+  if(page==="home")await renderHome();
+  else if(page==="explore")await renderExplore();
+  else if(page==="profile")await renderProfile(currentUser.id);
+  else if(page==="saved")await renderSaved();
+  else if(page==="notifications")await renderNotifications();
+  else if(page==="messages")await renderMessages();
+  else if(page==="settings")await renderSettings();
+  else if(page.startsWith("user:"))await renderProfile(page.split(":")[1]);
+
+  await renderRightbar();
+}
+
+/* =========================================================
+   STORIES
+   ========================================================= */
+
+async function loadStories(){
+  const {data,error}=await db
+    .from("stories")
+    .select(`
+      *,
+      profiles:user_id(id,username,display_name,avatar_url)
+    `)
+    .gt("expires_at",new Date().toISOString())
+    .order("created_at",{ascending:false});
+
+  if(error)return [];
+  return data||[];
+}
+
+function renderStories(stories){
+  const unique=[];
+  const seen=new Set();
+
+  for(const s of stories){
+    if(!seen.has(s.user_id)){
+      seen.add(s.user_id);
+      unique.push(s);
+    }
+  }
+
+  return `
+  <div class="stories card">
+    <div class="story add-story" onclick="openStoryModal()">
+      <div class="story-avatar">
+        <div class="story-avatar-inner">
+          <span>+</span>
+        </div>
+      </div>
+      <span>Your story</span>
+    </div>
+
+    ${unique.map(s=>`
+      <div class="story" onclick="viewStory('${s.id}')">
+        <div class="story-avatar">
+          <div class="story-avatar-inner">
+            ${s.profiles?.avatar_url
+              ? `<img src="${escapeHTML(s.profiles.avatar_url)}">`
+              : `<div style="height:100%;display:grid;place-items:center;font-weight:800">${escapeHTML((s.profiles?.display_name||"U")[0])}</div>`}
+          </div>
+        </div>
+        <span>${escapeHTML((s.profiles?.username||"user").slice(0,10))}</span>
+      </div>
+    `).join("")}
+  </div>`;
+}
+
+function openStoryModal(){
+  $("storyText").value="";
+  openModal("storyModal");
+}
+
+/* =========================================================
+   POSTS
+   ========================================================= */
+
+async function fetchPosts(){
+  const {data,error}=await db
+    .from("posts")
+    .select(`
+      *,
+      profiles:user_id(id,username,display_name,avatar_url)
+    `)
+    .order("created_at",{ascending:false})
+    .limit(100);
+
+  if(error){
+    toast(error.message);
+    return [];
+  }
+
+  const postIds=(data||[]).map(x=>x.id);
+
+  let likes=[];
+  let comments=[];
+
+  if(postIds.length){
+    const l=await db.from("likes").select("post_id,user_id").in("post_id",postIds);
+    likes=l.data||[];
+
+    const c=await db
+      .from("comments")
+      .select("id,post_id,user_id,body,created_at,profiles:user_id(username,display_name,avatar_url)")
+      .in("post_id",postIds)
+      .order("created_at",{ascending:true});
+
+    comments=c.data||[];
+  }
+
+  return (data||[]).map(post=>{
+    const pl=likes.filter(x=>x.post_id===post.id);
+    const pc=comments.filter(x=>x.post_id===post.id);
+
+    return {
+      ...post,
+      likes:pl,
+      comments:pc,
+      liked:pl.some(x=>x.user_id===currentUser.id)
+    };
+  });
+}
+
+function postHTML(post){
+  const p=post.profiles||{};
+  const comment=post.comments?.[0];
+
+  return `
+  <article class="post card" id="post-${post.id}">
+    <div class="post-head">
+      ${avatarHTML(p)}
+      <div class="post-user" onclick="navigate('user:${p.id}')" style="cursor:pointer">
+        <strong>${escapeHTML(p.display_name||p.username||"User")}</strong>
+        <span>@${escapeHTML(p.username||"user")} · ${timeAgo(post.created_at)}</span>
+      </div>
+
+      <button class="icon-btn more" onclick="postMenu('${post.id}','${post.user_id}')">
+        <svg><use href="#i-more"/></svg>
+      </button>
+    </div>
+
+    ${post.body ? `<div class="post-body">${escapeHTML(post.body)}</div>` : ""}
+
+    ${mediaHTML(post)}
+
+    <div class="post-actions">
+      <button class="${post.liked?"liked":""}" onclick="toggleLike('${post.id}')">
+        <svg><use href="#i-heart"/></svg>
+        <span>${post.likes?.length||0}</span>
+      </button>
+
+      <button onclick="openComments('${post.id}')">
+        <svg><use href="#i-comment"/></svg>
+        <span>${post.comments?.length||0}</span>
+      </button>
+
+      <button onclick="sharePost('${post.id}')">
+        <svg><use href="#i-share"/></svg>
+      </button>
+
+      <button class="save" onclick="toggleSave('${post.id}')">
+        <svg><use href="#i-bookmark"/></svg>
+      </button>
+    </div>
+
+    ${post.likes?.length
+      ? `<div class="count-line">${post.likes.length} ${post.likes.length===1?"like":"likes"}</div>`
+      : ""}
+
+    ${comment
+      ? `<div class="comment-preview">
+          <strong>@${escapeHTML(comment.profiles?.username||"user")}</strong>
+          ${escapeHTML(comment.body)}
+        </div>`
+      : ""}
+  </article>`;
+}
+
+async function renderHome(){
+  allStories=await loadStories();
+  allPosts=await fetchPosts();
+
+  $("main").innerHTML=`
+    ${renderStories(allStories)}
+
+    <div class="create-box card">
+      ${avatarHTML(currentProfile)}
+      <div class="create-input" onclick="openPostModal()">
+        What's happening in your world?
+      </div>
+    </div>
+
+    <div id="feed">
+      ${allPosts.length
+        ? allPosts.map(postHTML).join("")
+        : `<div class="card empty"><strong>Your world starts here</strong><span>Create your first post.</span></div>`}
+    </div>
+  `;
+}
+
+async function publishPost(){
+  if(!currentUser)return;
+
+  const body=$("postText").value.trim();
+  const file=postFile;
+  const visibility=$("postVisibility").value;
+
+  if(!body&&!file){
+    toast("Write something or add media");
+    return;
+  }
+
+  $("publishBtn").disabled=true;
+  $("publishBtn").textContent="Publishing...";
+
+  try{
+    let image_url=null;
+    let video_url=null;
+
+    if(file){
+      const url=await uploadMedia(file,"posts");
+
+      if(file.type.startsWith("image/"))image_url=url;
+      else if(file.type.startsWith("video/"))video_url=url;
+    }
+
+    const post_type=image_url&&body?"mixed":
+      image_url?"image":
+      video_url?"video":"text";
+
+    const {error}=await db.from("posts").insert({
+      user_id:currentUser.id,
+      body,
+      image_url,
+      video_url,
+      post_type,
+      visibility
+    });
+
+    if(error)throw error;
+
+    $("postText").value="";
+    $("postFile").value="";
+    $("postPreview").innerHTML="";
+    $("postPreview").classList.add("hidden");
+    postFile=null;
+
+    closeModal("postModal");
+    toast("Post published");
+    await renderHome();
+  }catch(err){
+    toast(err.message||"Could not publish post");
+  }finally{
+    $("publishBtn").disabled=false;
+    $("publishBtn").textContent="Publish";
+  }
+}
+
+/* =========================================================
+   MEDIA UPLOAD
+   ========================================================= */
+
+async function uploadMedia(file,folder){
+  const ext=file.name.split(".").pop().toLowerCase();
+  const path=`${folder}/${currentUser.id}/${crypto.randomUUID()}.${ext}`;
+
+  const {error}=await db.storage
+    .from(MEDIA_BUCKET)
+    .upload(path,file,{
+      cacheControl:"3600",
+      upsert:false,
+      contentType:file.type
+    });
+
+  if(error)throw error;
+
+  const {data}=db.storage
+    .from(MEDIA_BUCKET)
+    .getPublicUrl(path);
+
+  if(!data?.publicUrl)throw new Error("Could not create media URL");
+
+  return data.publicUrl;
+}
+
+$("postFile").addEventListener("change",e=>{
+  postFile=e.target.files?.[0]||null;
+  if(!postFile)return;
+
+  const url=URL.createObjectURL(postFile);
+  const preview=$("postPreview");
+
+  preview.classList.remove("hidden");
+  preview.innerHTML=postFile.type.startsWith("video/")
+    ? `<video src="${url}" controls></video>`
+    : `<img src="${url}">`;
+});
+
+/* =========================================================
+   STORY UPLOAD
+   ========================================================= */
+
+$("storyFile").addEventListener("change",e=>{
+  storyFile=e.target.files?.[0]||null;
+  if(!storyFile)return;
+
+  const url=URL.createObjectURL(storyFile);
+  const preview=$("storyPreview");
+  preview.classList.remove("hidden");
+
+  preview.innerHTML=storyFile.type.startsWith("video/")
+    ? `<video src="${url}" controls></video>`
+    : `<img src="${url}">`;
+});
+
+async function publishStory(){
+  if(!storyFile){
+    toast("Choose an image or video");
+    return;
+  }
+
+  try{
+    const url=await uploadMedia(storyFile,"stories");
+
+    const {error}=await db.from("stories").insert({
+      user_id:currentUser.id,
+      media_url:url,
+      media_type:storyFile.type.startsWith("video/")?"video":"image",
+      caption:$("storyCaption").value.trim()
+    });
+
+    if(error)throw error;
+
+    storyFile=null;
+    $("storyFile").value="";
+    $("storyCaption").value="";
+    $("storyPreview").innerHTML="";
+    $("storyPreview").classList.add("hidden");
+
+    closeModal("storyModal");
+    toast("Story added");
+    await renderHome();
+  }catch(err){
+    toast(err.message||"Could not create story");
+  }
+}
+
+async function viewStory(id){
+  const {data,error}=await db
+    .from("stories")
+    .select(`
+      *,
+      profiles:user_id(display_name,username,avatar_url)
+    `)
+    .eq("id",id)
+    .single();
+
+  if(error||!data){
+    toast("Story unavailable");
+    return;
+  }
+
+  await db.from("story_views").upsert({
+    story_id:id,
+    viewer_id:currentUser.id
+  });
+
+  $("storyViewerUser").textContent="@"+(data.profiles?.username||"user");
+
+  $("storyViewerContent").innerHTML=`
+    ${data.media_type==="video"
+      ? `<video src="${escapeHTML(data.media_url)}" controls autoplay playsinline style="width:100%;max-height:70vh"></video>`
+      : `<img src="${escapeHTML(data.media_url)}" style="width:100%;max-height:70vh;object-fit:contain">`}
+    ${data.caption
+      ? `<div style="padding:15px;text-align:center">${escapeHTML(data.caption)}</div>`
+      : ""}
+  `;
+
+  openModal("storyViewer");
+}
+
+/* =========================================================
+   LIKE
+   ========================================================= */
+
+async function toggleLike(postId){
+  const {data:existing}=await db
+    .from("likes")
+    .select("post_id")
+    .eq("post_id",postId)
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
+
+  if(existing){
+    const {error}=await db
+      .from("likes")
+      .delete()
+      .eq("post_id",postId)
+      .eq("user_id",currentUser.id);
+
+    if(error)toast(error.message);
+  }else{
+    const {error}=await db.from("likes").insert({
+      post_id:postId,
+      user_id:currentUser.id
+    });
+
+    if(error)toast(error.message);
+  }
+
+  if(currentPage==="home")await renderHome();
+}
+
+/* =========================================================
+   COMMENTS
+   ========================================================= */
+
+async function openComments(postId){
+  currentCommentPost=postId;
+  openModal("commentsModal");
+  await loadComments(postId);
+}
+
+async function loadComments(postId){
+  $("commentsList").innerHTML=`<div class="loader"></div>`;
+
+  const {data,error}=await db
+    .from("comments")
+    .select(`
+      *,
+      profiles:user_id(username,display_name,avatar_url)
+    `)
+    .eq("post_id",postId)
+    .order("created_at",{ascending:true});
+
+  if(error){
+    $("commentsList").innerHTML=`<div class="empty">${escapeHTML(error.message)}</div>`;
+    return;
+  }
+
+  $("commentsList").innerHTML=data?.length
+    ? data.map(c=>`
+      <div class="comment">
+        ${avatarHTML(c.profiles)}
+        <div class="comment-content">
+          <strong>@${escapeHTML(c.profiles?.username||"user")}</strong>
+          <p>${escapeHTML(c.body)}</p>
+          <small>${timeAgo(c.created_at)}</small>
+        </div>
+      </div>
+    `).join("")
+    : `<div class="empty"><strong>No comments yet</strong><span>Start the conversation.</span></div>`;
+}
+
+async function submitComment(){
+  const input=$("commentInput");
+  const body=input.value.trim();
+
+  if(!body||!currentCommentPost)return;
+
+  const {error}=await db.from("comments").insert({
+    post_id:currentCommentPost,
+    user_id:currentUser.id,
+    body
+  });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  input.value="";
+  await loadComments(currentCommentPost);
+}
+
+/* =========================================================
+   SAVE
+   ========================================================= */
+
+async function toggleSave(postId){
+  const {data:existing}=await db
+    .from("saved_posts")
+    .select("post_id")
+    .eq("user_id",currentUser.id)
+    .eq("post_id",postId)
+    .maybeSingle();
+
+  if(existing){
+    await db.from("saved_posts")
+      .delete()
+      .eq("user_id",currentUser.id)
+      .eq("post_id",postId);
+
+    toast("Removed from saved");
+  }else{
+    const {error}=await db.from("saved_posts").insert({
+      user_id:currentUser.id,
+      post_id:postId
+    });
+
+    if(error){
+      toast(error.message);
+      return;
+    }
+
+    toast("Saved");
+  }
+}
+
+/* =========================================================
+   SHARE
+   ========================================================= */
+
+async function sharePost(postId){
+  const url=location.origin+location.pathname+"#post-"+postId;
+
+  try{
+    if(navigator.share){
+      await navigator.share({
+        title:"YOCEWOR",
+        text:"Check out this post on YOCEWOR",
+        url
+      });
+    }else{
+      await navigator.clipboard.writeText(url);
+      toast("Post link copied");
+    }
+  }catch(e){}
+}
+
+/* =========================================================
+   POST MENU
+   ========================================================= */
+
+async function postMenu(postId,userId){
+  if(userId===currentUser.id){
+    if(confirm("Delete this post?")){
+      const {error}=await db.from("posts")
+        .delete()
+        .eq("id",postId)
+        .eq("user_id",currentUser.id);
+
+      if(error)toast(error.message);
+      else{
+        toast("Post deleted");
+        await navigate(currentPage);
+      }
+    }
+    return;
+  }
+
+  const action=prompt("Type: report or block");
+
+  if(action==="report"){
+    const reason=prompt("Reason for report?")||"Other";
+
+    await db.from("reports").insert({
+      reporter_id:currentUser.id,
+      reported_user_id:userId,
+      post_id:postId,
+      reason
+    });
+
+    toast("Report submitted");
+  }
+
+  if(action==="block"){
+    const {error}=await db.from("blocks").insert({
+      blocker_id:currentUser.id,
+      blocked_id:userId
+    });
+
+    toast(error?"Could not block user":"User blocked");
+    await navigate("home");
+  }
+}
+
+/* =========================================================
+   EXPLORE
+   ========================================================= */
+
+async function renderExplore(){
+  const posts=await fetchPosts();
+
+  const media=posts.filter(p=>p.image_url||p.video_url);
+
+  $("main").innerHTML=`
+    <h1 class="page-title">Explore</h1>
+
+    <div class="grid">
+      ${media.length
+        ? media.map(p=>`
+          <div class="grid-item" onclick="openComments('${p.id}')">
+            ${p.image_url
+              ? `<img src="${escapeHTML(p.image_url)}" loading="lazy">`
+              : `<video src="${escapeHTML(p.video_url)}"></video>`}
+          </div>
+        `).join("")
+        : `<div class="empty" style="grid-column:1/-1"><strong>No posts yet</strong></div>`}
+    </div>
+  `;
+}
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+$("searchInput").addEventListener("input",async e=>{
+  const q=e.target.value.trim().toLowerCase();
+
+  if(!q){
+    if(currentPage==="home")await renderHome();
+    return;
+  }
+
+  const {data,error}=await db
+    .from("profiles")
+    .select("*")
+    .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+    .limit(20);
+
+  if(error)return;
+
+  $("main").innerHTML=`
+    <h1 class="page-title">Search</h1>
+    <div class="card" style="padding:15px">
+      ${data?.length
+        ? data.map(p=>`
+          <div class="person" style="padding:8px 0;cursor:pointer" onclick="navigate('user:${p.id}')">
+            ${avatarHTML(p)}
+            <div class="person-info">
+              <strong>${escapeHTML(p.display_name)}</strong>
+              <span>@${escapeHTML(p.username)}</span>
+            </div>
+          </div>
+        `).join("")
+        : `<div class="empty"><strong>No users found</strong></div>`}
+    </div>
+  `;
+});
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+async function renderProfile(userId){
+  const {data:profile,error}=await db
+    .from("profiles")
+    .select("*")
+    .eq("id",userId)
+    .single();
+
+  if(error||!profile){
+    $("main").innerHTML=`<div class="card empty"><strong>User not found</strong></div>`;
+    return;
+  }
+
+  const {data:posts}=await db
+    .from("posts")
+    .select("*")
+    .eq("user_id",userId)
+    .order("created_at",{ascending:false});
+
+  const {count:followers}=await db
+    .from("follows")
+    .select("*",{count:"exact",head:true})
+    .eq("following_id",userId);
+
+  const {count:following}=await db
+    .from("follows")
+    .select("*",{count:"exact",head:true})
+    .eq("follower_id",userId);
+
+  const {data:isFollowing}=await db
+    .from("follows")
+    .select("follower_id")
+    .eq("follower_id",currentUser.id)
+    .eq("following_id",userId)
+    .maybeSingle();
+
+  const mine=userId===currentUser.id;
+
+  $("main").innerHTML=`
+    <div class="card" style="overflow:hidden">
+      <div class="profile-cover"
+        ${profile.cover_url
+          ? `style="background-image:url('${escapeHTML(profile.cover_url)}')"`
+          : ""}></div>
+
+      <div class="profile-info">
+        <div class="profile-avatar">
+          ${profile.avatar_url
+            ? `<img src="${escapeHTML(profile.avatar_url)}">`
+            : `<div style="height:100%;display:grid;place-items:center;font-size:36px;font-weight:900">${escapeHTML((profile.display_name||"U")[0])}</div>`}
+        </div>
+
+        <div class="profile-row">
+          <div>
+            <h2>${escapeHTML(profile.display_name)}</h2>
+            <div style="color:var(--muted);font-size:13px">@${escapeHTML(profile.username)}</div>
+          </div>
+
+          <div class="profile-actions">
+            ${mine
+              ? `<button class="follow-btn" onclick="openEditProfile()">Edit profile</button>`
+              : `<button class="follow-btn ${isFollowing?"following":""}" onclick="toggleFollow('${userId}')">
+                  ${isFollowing?"Following":"Follow"}
+                </button>
+                <button class="icon-btn" onclick="openMessageFor('${profile.username}')">
+                  <svg><use href="#i-message"/></svg>
+                </button>`}
+          </div>
+        </div>
+
+        ${profile.bio
+          ? `<div class="profile-bio">${escapeHTML(profile.bio)}</div>`
+          : ""}
+
+        ${profile.website
+          ? `<div style="margin-top:8px;font-size:13px;color:var(--blue)">${escapeHTML(profile.website)}</div>`
+          : ""}
+
+        <div class="stats">
+          <div><strong>${posts?.length||0}</strong><span>Posts</span></div>
+          <div><strong>${followers||0}</strong><span>Followers</span></div>
+          <div><strong>${following||0}</strong><span>Following</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:18px"></div>
+
+    <div class="grid">
+      ${(posts||[]).filter(p=>p.image_url||p.video_url).map(p=>`
+        <div class="grid-item">
+          ${p.image_url
+            ? `<img src="${escapeHTML(p.image_url)}">`
+            : `<video src="${escapeHTML(p.video_url)}"></video>`}
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  if(mine){
+    $("editDisplayName").value=profile.display_name||"";
+    $("editBio").value=profile.bio||"";
+    $("editWebsite").value=profile.website||"";
+  }
+}
+
+/* =========================================================
+   FOLLOW
+   ========================================================= */
+
+async function toggleFollow(userId){
+  const {data:existing}=await db
+    .from("follows")
+    .select("*")
+    .eq("follower_id",currentUser.id)
+    .eq("following_id",userId)
+    .maybeSingle();
+
+  if(existing){
+    await db.from("follows").delete()
+      .eq("follower_id",currentUser.id)
+      .eq("following_id",userId);
+    toast("Unfollowed");
+  }else{
+    const {error}=await db.from("follows").insert({
+      follower_id:currentUser.id,
+      following_id:userId
+    });
+    if(error){
+      toast(error.message);
+      return;
+    }
+    toast("Following");
+  }
+
+  await renderProfile(userId);
+}
+
+/* =========================================================
+   EDIT PROFILE
+   ========================================================= */
+
+function openEditProfile(){
+  $("editDisplayName").value=currentProfile.display_name||"";
+  $("editBio").value=currentProfile.bio||"";
+  $("editWebsite").value=currentProfile.website||"";
+  openModal("profileEditModal");
+}
+
+async function saveProfile(){
+  const updates={
+    display_name:$("editDisplayName").value.trim()||"New User",
+    bio:$("editBio").value.trim(),
+    website:$("editWebsite").value.trim()
+  };
+
+  const {data,error}=await db.from("profiles")
+    .update(updates)
+    .eq("id",currentUser.id)
+    .select()
+    .single();
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  currentProfile=data;
+  closeModal("profileEditModal");
+  toast("Profile updated");
+  await renderProfile(currentUser.id);
+}
+
+/* =========================================================
+   SAVED
+   ========================================================= */
+
+async function renderSaved(){
+  const {data,error}=await db
+    .from("saved_posts")
+    .select(`
+      created_at,
+      posts(
+        *,
+        profiles:user_id(id,username,display_name,avatar_url)
+      )
+    `)
+    .eq("user_id",currentUser.id)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    $("main").innerHTML=`<div class="card empty">${escapeHTML(error.message)}</div>`;
+    return;
+  }
+
+  const posts=(data||[]).map(x=>x.posts).filter(Boolean);
+
+  $("main").innerHTML=`
+    <h1 class="page-title">Saved</h1>
+    ${posts.length
+      ? posts.map(p=>postHTML({...p,likes:[],comments:[],liked:false})).join("")
+      : `<div class="card empty"><strong>No saved posts</strong><span>Save posts to see them here.</span></div>`}
+  `;
+}
+
+/* =========================================================
+   NOTIFICATIONS
+   ========================================================= */
+
+async function loadNotificationsCount(){
+  const {count}=await db
+    .from("notifications")
+    .select("*",{count:"exact",head:true})
+    .eq("user_id",currentUser.id)
+    .eq("is_read",false);
+
+  if(count>0){
+    $("notificationBadge").textContent=count>99?"99+":count;
+    $("notificationBadge").classList.remove("hidden");
+  }else{
+    $("notificationBadge").classList.add("hidden");
+  }
+}
+
+async function renderNotifications(){
+  const {data,error}=await db
+    .from("notifications")
+    .select(`
+      *,
+      profiles:actor_id(username,display_name,avatar_url)
+    `)
+    .eq("user_id",currentUser.id)
+    .order("created_at",{ascending:false})
+    .limit(100);
+
+  if(error){
+    $("main").innerHTML=`<div class="card empty">${escapeHTML(error.message)}</div>`;
+    return;
+  }
+
+  $("main").innerHTML=`
+    <h1 class="page-title">Notifications</h1>
+    <div class="card" style="padding:10px">
+      ${data?.length
+        ? data.map(n=>`
+          <div class="person" style="padding:9px;border-bottom:1px solid var(--line);background:${n.is_read?"transparent":"rgba(124,92,255,.08)"}">
+            ${avatarHTML(n.profiles)}
+            <div class="person-info">
+              <strong>${escapeHTML(n.profiles?.display_name||"YOCEWOR")}</strong>
+              <span>${escapeHTML(n.message||n.type)} · ${timeAgo(n.created_at)}</span>
+            </div>
+          </div>
+        `).join("")
+        : `<div class="empty"><strong>No notifications</strong></div>`}
+    </div>
+  `;
+
+  await db.from("notifications")
+    .update({is_read:true})
+    .eq("user_id",currentUser.id);
+
+  await loadNotificationsCount();
+}
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
+async function getConversations(){
+  const {data,error}=await db
+    .from("conversation_members")
+    .select(`
+      conversation_id,
+      conversations(
+        id,
+        updated_at,
+        conversation_members(
+          user_id,
+          profiles:user_id(id,username,display_name,avatar_url)
+        )
+      )
+    `)
+    .eq("user_id",currentUser.id);
+
+  if(error)return [];
+
+  return data||[];
+}
+
+async function renderMessages(){
+  const convs=await getConversations();
+
+  $("main").innerHTML=`
+    <div class="card message-layout">
+      <div class="conversation-list">
+        <button class="primary-btn" style="margin:5px;width:calc(100% - 10px)" onclick="openModal('messageModal')">
+          + New
+        </button>
+
+        ${convs.map(c=>{
+          const members=c.conversations?.conversation_members||[];
+          const other=members.find(m=>m.user_id!==currentUser.id)?.profiles;
+
+          return `
+            <div class="conv" onclick="openConversation('${c.conversation_id}')">
+              ${avatarHTML(other)}
+              <div class="person-info">
+                <strong>${escapeHTML(other?.display_name||"Chat")}</strong>
+                <span>@${escapeHTML(other?.username||"user")}</span>
+              </div>
+            </div>`;
+        }).join("")}
+      </div>
+
+      <div id="chat" class="chat">
+        <div class="empty" style="margin:auto">
+          <strong>Your messages</strong>
+          <span>Select a conversation or start a new one.</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function openConversation(conversationId){
+  currentConversation=conversationId;
+
+  const {data:members}=await db
+    .from("conversation_members")
+    .select(`
+      user_id,
+      profiles:user_id(id,username,display_name,avatar_url)
+    `)
+    .eq("conversation_id",conversationId);
+
+  const other=members?.find(x=>x.user_id!==currentUser.id)?.profiles;
+
+  $("chat").innerHTML=`
+    <div class="chat-head">
+      ${avatarHTML(other)}
+      <div class="person-info">
+        <strong>${escapeHTML(other?.display_name||"Chat")}</strong>
+        <span>@${escapeHTML(other?.username||"user")}</span>
+      </div>
+    </div>
+
+    <div id="chatMessages" class="chat-messages"></div>
+
+    <div class="chat-input">
+      <input id="messageInput" placeholder="Write a message..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button class="primary-btn" onclick="sendMessage()">
+        <svg width="20" height="20"><use href="#i-send"/></svg>
+      </button>
+    </div>
+  `;
+
+  await loadMessages(conversationId);
+}
+
+async function loadMessages(conversationId){
+  const {data,error}=await db
+    .from("messages")
+    .select("*")
+    .eq("conversation_id",conversationId)
+    .order("created_at",{ascending:true});
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  const el=$("chatMessages");
+  if(!el)return;
+
+  el.innerHTML=(data||[]).map(m=>`
+    <div class="bubble-row ${m.sender_id===currentUser.id?"me":""}">
+      <div class="bubble">${escapeHTML(m.body)}</div>
+    </div>
+  `).join("");
+
+  el.scrollTop=el.scrollHeight;
+}
+
+async function sendMessage(){
+  const input=$("messageInput");
+  const body=input?.value.trim();
+
+  if(!body||!currentConversation)return;
+
+  const {error}=await db.from("messages").insert({
+    conversation_id:currentConversation,
+    sender_id:currentUser.id,
+    body,
+    message_type:"text"
+  });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  input.value="";
+  await loadMessages(currentConversation);
+}
+
+async function startConversation(){
+  const username=$("messageUsername").value.trim().toLowerCase();
+
+  if(!username)return;
+
+  const {data:user,error}=await db
+    .from("profiles")
+    .select("*")
+    .eq("username",username)
+    .maybeSingle();
+
+  if(error||!user){
+    toast("User not found");
+    return;
+  }
+
+  if(user.id===currentUser.id){
+    toast("You cannot message yourself");
+    return;
+  }
+
+  const {data:existing}=await db
+    .from("conversation_members")
+    .select(`
+      conversation_id,
+      conversations(
+        conversation_members(user_id)
+      )
+    `)
+    .eq("user_id",currentUser.id);
+
+  let conversationId=null;
+
+  for(const c of existing||[]){
+    const ids=(c.conversations?.conversation_members||[]).map(x=>x.user_id);
+    if(ids.includes(user.id)&&ids.length===2){
+      conversationId=c.conversation_id;
+      break;
+    }
+  }
+
+  if(!conversationId){
+    const {data:conv,error:convError}=await db
+      .from("conversations")
+      .insert({})
+      .select()
+      .single();
+
+    if(convError){
+      toast(convError.message);
+      return;
+    }
+
+    conversationId=conv.id;
+
+    const {error:memberError}=await db
+      .from("conversation_members")
+      .insert([
+        {conversation_id:conversationId,user_id:currentUser.id},
+        {conversation_id:conversationId,user_id:user.id}
+      ]);
+
+    if(memberError){
+      toast(memberError.message);
+      return;
+    }
+  }
+
+  $("messageUsername").value="";
+  closeModal("messageModal");
+  await navigate("messages");
+  await openConversation(conversationId);
+}
+
+/* =========================================================
+   OPEN MESSAGE FROM PROFILE
+   ========================================================= */
+
+async function openMessageFor(username){
+  $("messageUsername").value=username;
+  openModal("messageModal");
+}
+
+/* =========================================================
+   SETTINGS / PRIVACY
+   ========================================================= */
+
+async function renderSettings(){
+  const {data}=await db
+    .from("user_settings")
+    .select("*")
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
+
+  const settings=data||{
+    is_private:false,
+    notifications_enabled:true,
+    message_requests:true,
+    show_activity_status:true
+  };
+
+  $("main").innerHTML=`
+    <h1 class="page-title">Settings & Privacy</h1>
+
+    <div class="card" style="padding:18px">
+
+      <div class="settings-item">
+        <div class="info">
+          <strong>Private account</strong>
+          <span>Only approved followers should see your private content.</span>
+        </div>
+        <button class="switch ${settings.is_private?"on":""}" onclick="toggleSetting('is_private',this)">
+          <i></i>
+        </button>
+      </div>
+
+      <div class="settings-item">
+        <div class="info">
+          <strong>Notifications</strong>
+          <span>Receive activity notifications.</span>
+        </div>
+        <button class="switch ${settings.notifications_enabled?"on":""}" onclick="toggleSetting('notifications_enabled',this)">
+          <i></i>
+        </button>
+      </div>
+
+      <div class="settings-item">
+        <div class="info">
+          <strong>Message requests</strong>
+          <span>Allow people to start conversations.</span>
+        </div>
+        <button class="switch ${settings.message_requests?"on":""}" onclick="toggleSetting('message_requests',this)">
+          <i></i>
+        </button>
+      </div>
+
+      <div class="settings-item">
+        <div class="info">
+          <strong>Activity status</strong>
+          <span>Show when you are active.</span>
+        </div>
+        <button class="switch ${settings.show_activity_status?"on":""}" onclick="toggleSetting('show_activity_status',this)">
+          <i></i>
+        </button>
+      </div>
+
+      <div style="margin-top:20px">
+        <button class="follow-btn" onclick="openEditProfile()" style="width:100%">
+          Edit profile
+        </button>
+
+        <button class="follow-btn" onclick="logout()" style="width:100%;margin-top:8px;color:#ff758f">
+          Log out
+        </button>
+      </div>
+
+    </div>
+  `;
+}
+
+async function toggleSetting(field,button){
+  const isOn=button.classList.contains("on");
+  const value=!isOn;
+
+  const {error}=await db.from("user_settings")
+    .upsert({
+      user_id:currentUser.id,
+      [field]:value,
+      updated_at:new Date().toISOString()
+    });
+
+  if(error){
+    toast(error.message);
+    return;
+  }
+
+  button.classList.toggle("on",value);
+  toast("Setting updated");
+}
+
+/* =========================================================
+   RIGHT SIDEBAR
+   ========================================================= */
+
+async function renderRightbar(){
+  const {data}=await db
+    .from("profiles")
+    .select("*")
+    .neq("id",currentUser.id)
+    .limit(8);
+
+  $("rightbar").innerHTML=`
+    <div class="right-card card">
+      <div class="right-title">
+        <strong>People to follow</strong>
+        <button onclick="navigate('explore')">See all</button>
+      </div>
+
+      ${(data||[]).map(p=>`
+        <div class="person">
+          ${avatarHTML(p)}
+          <div class="person-info">
+            <strong>${escapeHTML(p.display_name)}</strong>
+            <span>@${escapeHTML(p.username)}</span>
+          </div>
+          <button class="follow-btn" onclick="toggleFollow('${p.id}')">Follow</button>
+        </div>
+      `).join("")}
+    </div>
+
+    <div style="color:#66667c;font-size:11px;line-height:1.6;padding:10px">
+      © ${new Date().getFullYear()} YOCEWOR<br>
+      Your World. Your Voice.
+    </div>
+  `;
+}
+
+/* =========================================================
+   REALTIME
+   ========================================================= */
+
+let realtimeStarted=false;
+
+function subscribeRealtime(){
+  if(realtimeStarted)return;
+  realtimeStarted=true;
+
+  db.channel("yocewor-live")
+    .on("postgres_changes",{event:"*",schema:"public",table:"likes"},()=>{
+      if(currentPage==="home")renderHome();
+    })
+    .on("postgres_changes",{event:"*",schema:"public",table:"comments"},()=>{
+      if(currentPage==="home")renderHome();
+      if(currentCommentPost)loadComments(currentCommentPost);
+    })
+    .on("postgres_changes",{event:"*",schema:"public",table:"posts"},()=>{
+      if(currentPage==="home")renderHome();
+    })
+    .on("postgres_changes",{event:"*",schema:"public",table:"stories"},()=>{
+      if(currentPage==="home")renderHome();
+    })
+    .on("postgres_changes",{event:"*",schema:"public",table:"notifications"},()=>{
+      loadNotificationsCount();
+    })
+    .on("postgres_changes",{event:"*",schema:"public",table:"messages"},payload=>{
+      if(currentConversation&&payload.new?.conversation_id===currentConversation){
+        loadMessages(currentConversation);
+      }
+    })
+    .subscribe();
+}
+
+/* =========================================================
+   PROFILE / STORY BUTTONS
+   ========================================================= */
+
+window.openStoryModal=openStoryModal;
+
+/* =========================================================
+   KEYBOARD / MODAL CLOSE
+   ========================================================= */
+
+document.querySelectorAll(".modal").forEach(m=>{
+  m.addEventListener("click",e=>{
+    if(e.target===m)m.classList.remove("show");
+  });
+});
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    document.querySelectorAll(".modal.show")
+      .forEach(x=>x.classList.remove("show"));
+  }
+});
+
+/* =========================================================
+   START
+   ========================================================= */
+
+init();
+
+/* =========================================================
+   YOCEWOR — LAST UPDATE
+   =========================================================
+   DATABASE:
+   Profiles
+   Settings
+   Posts
+   Likes
+   Comments
+   Follows
+   Stories
+   Story Views
+   Saved Posts
+   Notifications
+   Conversations
+   Messages
+   Blocks
+   Reports
+   RLS
+   Realtime
+   Storage foundation
+
+   FRONTEND:
+   Authentication
+   Feed
+   Stories
+   Story Viewer
+   Create Post
+   Image Upload
+   Video Upload
+   Likes
+   Comments
+   Save
+   Share
+   Follow / Unfollow
+   Search
+   Explore
+   Profile
+   Edit Profile
+   Notifications
+   Messaging
+   Privacy Settings
+   Block
+   Report
+   Delete Own Posts
+   Responsive Mobile UI
+   Desktop UI
+   Real SVG Icons
+   Realtime Supabase Updates
+   URL-text problem avoided in post rendering
+
+   CURRENT FILE:
+   index.html
+
+   CURRENT STEP:
+   Complete integrated frontend connected to Supabase.
+
+   NEXT STEP:
+   Run/test the complete app and fix any Supabase
+   permission/storage errors that appear during actual testing.
+   ========================================================= */
+</script>
+
+</body>
+</html>
