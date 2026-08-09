@@ -1,0 +1,44 @@
+name: Repair YOCEWOR feed
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.event.head_commit.message != 'Apply YOCEWOR feed repair'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch feed query
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old = '''            profiles(\n              id,\n              username,\n              display_name,\n              avatar_url,\n              is_verified\n            )'''
+          new = '''            profiles:profiles!posts_user_id_fkey(\n              id,\n              username,\n              display_name,\n              avatar_url,\n              is_verified\n            )'''
+
+          if old in s:
+              s = s.replace(old, new, 1)
+
+          s = s.replace('.eq(\n          "visibility",\n          "public"\n        )', '.eq(\n          "is_public",\n          true\n        )')
+          s = s.replace('.eq("visibility", "public")', '.eq("is_public", true)')
+          s = s.replace('.eq(\'visibility\', \'public\')', '.eq(\'is_public\', true)')
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Apply YOCEWOR feed repair'
+          git push
+          rm -f .github/workflows/repair-feed.yml
+          git add -u .github/workflows/repair-feed.yml
+          git commit -m 'Remove temporary feed repair workflow'
+          git push
