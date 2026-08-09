@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   fix-supabase-order:
+    if: ${{ !contains(github.event.head_commit.message, 'Fix Supabase client initialization order') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,13 +34,8 @@ jobs:
           } else {
             var SUPABASE_URL = "https://mzntgjyecymcpzciklfk.supabase.co";
             var SUPABASE_ANON_KEY = "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
-
-            var yoceworSupabase = window.supabase.createClient(
-              SUPABASE_URL,
-              SUPABASE_ANON_KEY
-            );
+            var yoceworSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             var supabaseClient = yoceworSupabase;
-
             var currentUser = null;
             var currentProfile = null;
             var MEDIA_BUCKET = "yocewor-media";
@@ -53,24 +49,15 @@ jobs:
             window.MEDIA_BUCKET = MEDIA_BUCKET;
 
             window.YOCEWOR = window.YOCEWOR || {};
-            window.YOCEWOR.supabaseConfig = {
-              urlConfigured: true,
-              keyConfigured: true
-            };
-            window.YOCEWOR.isSupabaseConfigured = function () {
-              return true;
-            };
-
+            window.YOCEWOR.supabaseConfig = { urlConfigured: true, keyConfigured: true };
+            window.YOCEWOR.isSupabaseConfigured = function () { return true; };
             console.log("YOCEWOR: Supabase bootstrap ready");
           }
           </script>
           <!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->
           '''
 
-          text = re.sub(
-              r'<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->.*?<!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->\s*',
-              '', text, flags=re.S
-          )
+          text = re.sub(r'<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->.*?<!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->\s*', '', text, flags=re.S)
 
           late_re = (
               r'<!-- =====================================================\s*'
@@ -82,36 +69,36 @@ jobs:
           )
           text, removed = re.subn(late_re, '', text, count=1, flags=re.S)
 
-          part2_marker = "<!-- =====================================================\n     YOCEWOR — FRONTEND + SUPABASE CONNECTION\n     PART 2"
+          part2_marker = "<!-- =====================================================\n     YOCEWOR — PART 2"
           pos = text.find(part2_marker)
           if pos < 0:
-              raise SystemExit("First Part 2 marker not found; aborting without changes.")
+              raise SystemExit("First Part 2 marker not found; no changes made.")
 
           text = text[:pos] + bootstrap + "\n" + text[pos:]
           path.write_text(text, encoding="utf-8")
           print(f"Late Part 1 blocks removed: {removed}")
 
-      - name: Validate initialization order and scope
+      - name: Validate
         shell: python
         run: |
           from pathlib import Path
           text = Path("index.html").read_text(encoding="utf-8")
           bootstrap = text.index("<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->")
-          part2 = text.index("<!-- =====================================================\n     YOCEWOR — FRONTEND + SUPABASE CONNECTION\n     PART 2")
-          assert bootstrap < part2, "Bootstrap must execute before Part 2"
+          part2 = text.index("<!-- =====================================================\n     YOCEWOR — PART 2")
+          assert bootstrap < part2
           assert text.count("<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->") == 1
           assert text.count("var yoceworSupabase") == 1
           assert text.count("var supabaseClient") == 1
-          print("Supabase bootstrap order and global scope validated.")
+          print("YOCEWOR Supabase order/scope fix validated.")
 
-      - name: Commit fix
+      - name: Commit repair
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if git diff --cached --quiet; then
-            echo "No index.html change required."
+            echo "No change needed."
             exit 0
           fi
           git commit -m "Fix Supabase client initialization order"
