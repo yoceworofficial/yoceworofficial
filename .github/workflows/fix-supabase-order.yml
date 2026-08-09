@@ -26,26 +26,23 @@ jobs:
 
           bootstrap = '''<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->
           <script>
-          (function () {
-            "use strict";
+          "use strict";
 
-            if (!window.supabase || typeof window.supabase.createClient !== "function") {
-              console.error("YOCEWOR: Supabase CDN did not load before initialization.");
-              return;
-            }
+          if (!window.supabase || typeof window.supabase.createClient !== "function") {
+            console.error("YOCEWOR: Supabase CDN did not load before initialization.");
+          } else {
+            var SUPABASE_URL = "https://mzntgjyecymcpzciklfk.supabase.co";
+            var SUPABASE_ANON_KEY = "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
 
-            const SUPABASE_URL = "https://mzntgjyecymcpzciklfk.supabase.co";
-            const SUPABASE_ANON_KEY = "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn";
-
-            const yoceworSupabase = window.supabase.createClient(
+            var yoceworSupabase = window.supabase.createClient(
               SUPABASE_URL,
               SUPABASE_ANON_KEY
             );
-            const supabaseClient = yoceworSupabase;
+            var supabaseClient = yoceworSupabase;
 
-            let currentUser = null;
-            let currentProfile = null;
-            const MEDIA_BUCKET = "yocewor-media";
+            var currentUser = null;
+            var currentProfile = null;
+            var MEDIA_BUCKET = "yocewor-media";
 
             window.SUPABASE_URL = SUPABASE_URL;
             window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
@@ -65,7 +62,7 @@ jobs:
             };
 
             console.log("YOCEWOR: Supabase bootstrap ready");
-          })();
+          }
           </script>
           <!-- END YOCEWOR SAFE SUPABASE BOOTSTRAP -->
           '''
@@ -94,7 +91,7 @@ jobs:
           path.write_text(text, encoding="utf-8")
           print(f"Late Part 1 blocks removed: {removed}")
 
-      - name: Validate initialization order
+      - name: Validate initialization order and scope
         shell: python
         run: |
           from pathlib import Path
@@ -103,8 +100,9 @@ jobs:
           part2 = text.index("<!-- =====================================================\n     YOCEWOR — FRONTEND + SUPABASE CONNECTION\n     PART 2")
           assert bootstrap < part2, "Bootstrap must execute before Part 2"
           assert text.count("<!-- YOCEWOR SAFE SUPABASE BOOTSTRAP -->") == 1
-          assert text.count("const yoceworSupabase") == 1
-          print("Supabase bootstrap order validated.")
+          assert text.count("var yoceworSupabase") == 1
+          assert text.count("var supabaseClient") == 1
+          print("Supabase bootstrap order and global scope validated.")
 
       - name: Commit fix
         shell: bash
