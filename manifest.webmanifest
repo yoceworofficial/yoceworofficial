@@ -1,14 +1,14 @@
 {
-  "name": "YOCEWOR — Your Voice. Your World.",
-  "short_name": "YOCEWOR",
-  "description": "YOCEWOR — Your Voice. Your World.",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#090b14",
-  "theme_color": "#090b14",
-  "orientation": "portrait-primary",
-  "icons": [
+  "name":"YOCEWOR — Your Voice. Your World.",
+  "short_name":"YOCEWOR",
+  "description":"YOCEWOR — Your Voice. Your World.",
+  "start_url":"./yocewor-v2.html",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#080b14",
+  "theme_color":"#080b14",
+  "orientation":"portrait-primary",
+  "icons":[
     {"src":"icon-192.svg","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"},
     {"src":"icon-512.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}
   ]
