@@ -2,7 +2,7 @@
   "name":"YOCEWOR — Your Voice. Your World.",
   "short_name":"YOCEWOR",
   "description":"YOCEWOR — Your Voice. Your World.",
-  "start_url":"./yocewor-v2.html",
+  "start_url":"./yocewor-v3.html",
   "scope":"./",
   "display":"standalone",
   "background_color":"#080b14",
