@@ -1,0 +1,42 @@
+name: Fix YOCEWOR username input
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  normalize-username-input:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch username input behavior
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = 'function normUser(v){return v.trim().replace(/\\s+/g,"_").toLowerCase()}'
+          new = '''function normUser(v){return v.replace(/\\s+/g,"_").replace(/[^A-Za-z0-9_.]/g,"").toLowerCase()}function bindUsernameInput(){var el=document.getElementById("user");if(!el)return;el.addEventListener("input",function(){var pos=el.selectionStart||0,before=el.value;var v=before.replace(/\\s+/g,"_").replace(/[^A-Za-z0-9_.]/g,"").toLowerCase().slice(0,30);el.value=v;try{el.setSelectionRange(Math.min(pos,v.length),Math.min(pos,v.length))}catch(e){}});el.addEventListener("paste",function(e){e.preventDefault();var t=(e.clipboardData.getData("text")||"").replace(/\\s+/g,"_").replace(/[^A-Za-z0-9_.]/g,"").toLowerCase();var start=el.selectionStart||0,end=el.selectionEnd||0;el.value=(el.value.slice(0,start)+t+el.value.slice(end)).slice(0,30);try{el.setSelectionRange(Math.min(start+t.length,el.value.length),Math.min(start+t.length,el.value.length))}catch(e){}})}'''
+          if old not in s:
+              raise SystemExit('Expected username function not found; no change made.')
+          s = s.replace(old, new, 1)
+          old2 = 'bind()}function bind(){'
+          new2 = 'bind();if(mode==="signup")bindUsernameInput()}function bind(){'
+          if old2 not in s:
+              raise SystemExit('Expected bind call not found; no change made.')
+          s = s.replace(old2, new2, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit patched index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Fix username input normalization"
+          git push
