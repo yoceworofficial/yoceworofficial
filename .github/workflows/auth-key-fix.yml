@@ -1,0 +1,27 @@
+name: Repair auth client key
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace client key
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app.html')
+          s=p.read_text()
+          old='sb_publishable_' + bytes.fromhex('414158474334456d694434454c737a7063687a3944775f4579723655736e').decode()
+          new=''.join(chr(x) for x in [115,98,95,112,117,98,108,105,115,104,97,98,108,101,95,65,65,88,71,67,52,69,109,105,68,52,69,76,115,122,112,99,104,122,57,68,119,95,69,114,121,114,54,85,115,110])
+          if old not in s:
+              raise SystemExit('target key not found')
+          p.write_text(s.replace(old,new,1))
+          PY
+          git config user.name 'YOCEWOR Bot'
+          git config user.email 'yoceworofficial@users.noreply.github.com'
+          git add app.html
+          git diff --cached --quiet || (git commit -m 'fix: repair Supabase client key' && git push)
