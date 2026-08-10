@@ -1,4 +1,4 @@
-const CACHE='yocewor-v4-privacy';
+const CACHE='yocewor-v5-social-privacy';
 self.addEventListener('install',()=>self.skipWaiting());
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',e=>{
@@ -9,7 +9,7 @@ self.addEventListener('fetch',e=>{
    const ct=r.headers.get('content-type')||'';
    if(!ct.includes('text/html'))return r;
    const text=await r.text();
-   const injected=text.replace('</body>','<script src="privacy-controls.js?v=4" defer></script></body>');
+   const injected=text.replace('</body>','<script src="privacy-controls.js?v=5" defer></script><script src="story-insights.js?v=5" defer></script></body>');
    return new Response(injected,{status:r.status,statusText:r.statusText,headers:{'Content-Type':'text/html; charset=UTF-8','Cache-Control':'no-store'}});
   }).catch(()=>caches.match(e.request)));
  }else e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));
