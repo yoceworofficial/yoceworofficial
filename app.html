@@ -19,7 +19,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 'use strict';
-const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co',SUPABASE_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eyr6Usn';
+const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co',SUPABASE_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
 const themes={sunset:['#ff6a00','#ff2f7e','#7c4dff'],ocean:['#00c6ff','#247bff','#6c4dff'],forest:['#18c37e','#08a6a6','#6acb4b'],royal:['#7c4dff','#b33cff','#ff3d81'],rose:['#ff4d8d','#ff7a59','#ffd166']};
