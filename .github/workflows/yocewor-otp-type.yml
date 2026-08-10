@@ -1,0 +1,29 @@
+name: YOCEWOR OTP compatibility
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use email OTP verification type
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('type:"signup"});if(v.error)', 'type:"email"});if(v.error)')
+          s=s.replace('type:mode==="signupOtp"?"signup":"recovery"', 'type:mode==="signupOtp"?"signup":"recovery"')
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit if changed
+        run: |
+          git config user.name 'YOCEWOR Bot'
+          git config user.email 'yoceworofficial@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'fix: verify signup email OTP with email token type'
+          git push
