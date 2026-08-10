@@ -14,6 +14,35 @@ function interceptReelShare(e){const b=e.target.closest('[data-share-reel]');if(
 function interceptPostShare(e){const b=e.target.closest('[data-share]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();const id=b.dataset.share,m=document.getElementById('modal');m.innerHTML='<div class="modal"><div class="card modalbox"><div class="row"><h2 class="grow">Share</h2><button class="icon" id="sx">×</button></div><button class="btn primary" id="addstory" style="width:100%">Add post to your story</button><button class="btn" id="copyshare" style="width:100%;margin-top:8px">Copy post link</button></div></div>';$('#sx').onclick=()=>m.innerHTML='';$('#addstory').onclick=()=>reshareToStory('post',id);$('#copyshare').onclick=()=>{const u=location.href.split('#')[0]+'#post-'+id;navigator.clipboard?.writeText(u).then(()=>toast('Link copied'))}}
 function interceptStoryFile(e){const input=e.target.closest('#sf');if(!input)return;e.preventDefault();e.stopImmediatePropagation();const f=input.files?.[0];if(f)storyEditor(f,null)}
 function enhanceSettings(){const page=document.getElementById('page');if(!page||page.querySelector('#yprivacy'))return;const heading=page.querySelector('h2');if(!heading||!/(settings|सेटिंग)/i.test(heading.textContent||''))return;const box=page.querySelector('.sidecard');if(!box)return;const el=document.createElement('div');el.id='yprivacy';el.className='latest';el.innerHTML='<b>Mention & Story Privacy</b><div class="tiny muted" style="margin:6px 0 12px">Control who can mention you and who can add your posts/reels to their stories.</div><div class="setting"><div><b>Who can mention me?</b></div><select id="ymprivacy" class="select" style="width:auto"><option value="everyone">Everyone</option><option value="followers">People I follow</option><option value="nobody">Nobody</option></select></div><div class="setting"><div><b>Who can add my posts/reels to stories?</b></div><select id="yrprivacy" class="select" style="width:auto"><option value="everyone">Everyone</option><option value="followers">People I follow</option><option value="nobody">Nobody</option></select></div><div class="tiny muted" id="ypsave" style="margin-top:10px">Saving automatically.</div>';box.insertBefore(el,box.querySelector('.latest')||box.firstChild);db.from('user_settings').select('mention_privacy,reshare_privacy').eq('user_id',me.id).maybeSingle().then(({data})=>{if(data){$('#ymprivacy').value=data.mention_privacy||'everyone';$('#yrprivacy').value=data.reshare_privacy||'everyone'}});const save=async()=>{const r=await db.from('user_settings').upsert({user_id:me.id,mention_privacy:$('#ymprivacy').value,reshare_privacy:$('#yrprivacy').value},{onConflict:'user_id'});$('#ypsave').textContent=r.error?'Could not save: '+r.error.message:'Saved'};$('#ymprivacy').onchange=save;$('#yrprivacy').onchange=save}
-new MutationObserver(enhanceSettings).observe(document.body,{childList:true,subtree:true});
-document.addEventListener('click',interceptPost,true);document.addEventListener('click',interceptPostShare,true);document.addEventListener('click',interceptReelShare,true);document.addEventListener('change',interceptReelUpload,true);document.addEventListener('change',interceptStoryFile,true);setTimeout(enhanceSettings,700);E.ready=true;
+
+/* Auth enhancement: email OTP + phone OTP + Google/Facebook entry points.  OAuth buttons are only usable after their provider credentials are enabled in Supabase. */
+function authOverlay(){
+  if(!window.db||!window.me)return;
+  const root=document.body;
+  const email=root.querySelector('input[type="email"]');
+  if(!email||root.querySelector('#yauthMethods'))return;
+  const password=root.querySelector('input[type="password"]');
+  const host=password?.parentElement||email.parentElement;
+  if(!host)return;
+  const box=document.createElement('div');box.id='yauthMethods';box.style.cssText='margin-top:14px;padding-top:14px;border-top:1px solid var(--line,#2b3047)';
+  box.innerHTML='<div style="font-size:12px;color:#a7acc1;margin-bottom:9px">More secure sign-in options</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button type="button" class="btn" id="yEmailOtp">Email OTP</button><button type="button" class="btn" id="yPhoneOtp">Phone OTP</button><button type="button" class="btn" id="yGoogle">Continue with Google</button><button type="button" class="btn" id="yFacebook">Continue with Facebook</button></div><div id="yAuthStatus" class="tiny muted" style="margin-top:9px"></div>';
+  host.appendChild(box);
+  const status=x=>{const n=document.getElementById('yAuthStatus');if(n)n.textContent=x};
+  async function otpPrompt(kind){
+    const value=kind==='phone'?prompt('Enter your mobile number with country code, e.g. +919876543210'):email.value.trim();
+    if(!value)return;
+    status('Sending OTP…');
+    const r=kind==='phone'?await db.auth.signInWithOtp({phone:value,options:{shouldCreateUser:true}}):await db.auth.signInWithOtp({email:value,options:{shouldCreateUser:true,emailRedirectTo:location.origin}});
+    if(r.error){status(r.error.message);return toast(r.error.message)}
+    const code=prompt('OTP sent. Enter the code:');if(!code)return;
+    const v=kind==='phone'?await db.auth.verifyOtp({phone:value,token:code,type:'sms'}):await db.auth.verifyOtp({email:value,token:code,type:'email'});
+    if(v.error){status(v.error.message);return toast(v.error.message)}
+    status('Verified. Loading YOCEWOR…');if(typeof boot==='function')boot();
+  }
+  $('#yEmailOtp').onclick=()=>otpPrompt('email');$('#yPhoneOtp').onclick=()=>otpPrompt('phone');
+  $('#yGoogle').onclick=async()=>{const r=await db.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.href}});if(r.error)toast(r.error.message)};
+  $('#yFacebook').onclick=async()=>{const r=await db.auth.signInWithOAuth({provider:'facebook',options:{redirectTo:location.href}});if(r.error)toast(r.error.message)};
+}
+new MutationObserver(()=>{try{enhanceSettings();authOverlay()}catch(e){}}).observe(document.body,{childList:true,subtree:true});
+document.addEventListener('click',interceptPost,true);document.addEventListener('click',interceptPostShare,true);document.addEventListener('click',interceptReelShare,true);document.addEventListener('change',interceptReelUpload,true);document.addEventListener('change',interceptStoryFile,true);setTimeout(enhanceSettings,700);setTimeout(authOverlay,900);E.ready=true;
 })();
