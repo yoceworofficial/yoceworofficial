@@ -1,10 +1,10 @@
 (function(){'use strict';
   const SUPA_URL='https://mzntgjyecymcpzciklfk.supabase.co',SUPA_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
   let client=null;try{if(window.supabase?.createClient)client=window.supabase.createClient(SUPA_URL,SUPA_KEY)}catch(e){console.error(e)}
-  function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function esc(x){return String(x??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]))}
   function hideSplash(){const s=document.getElementById('splash');if(s){s.classList.add('hide');setTimeout(()=>s.remove(),500)}}
   function showAuth(){
-    const root=document.getElementById('root');if(!root||root.children.length)return;
+    const root=document.getElementById('root');if(!root)return;
     root.innerHTML='<section style="min-height:calc(100vh - 70px);display:grid;place-items:center;padding:18px;background:radial-gradient(circle at 20% 0,#291046,transparent 35%),#07040f;color:#fff;font-family:system-ui,sans-serif"><div style="width:min(520px,100%);background:#111526;border:1px solid #2b3047;border-radius:22px;padding:22px;box-shadow:0 18px 55px #0007"><h1 style="margin:0 0 6px">Welcome to <span style="background:linear-gradient(90deg,#ff6a00,#ff2f7e,#7c4dff);-webkit-background-clip:text;color:transparent">YOCEWOR</span></h1><p style="color:#a7acc1">Your Voice. Your World.</p><div style="display:flex;gap:8px;margin:18px 0"><button id="fsLoginTab" style="flex:1;padding:11px;border:0;border-radius:12px;background:linear-gradient(100deg,#ff6a00,#ff2f7e);color:#fff;font-weight:800">Login</button><button id="fsSignupTab" style="flex:1;padding:11px;border:1px solid #2b3047;border-radius:12px;background:#151a2b;color:#fff;font-weight:800">Create account</button></div><div id="fsForm"></div></div></section>';
     const form=document.getElementById('fsForm');
     function render(mode){form.innerHTML=mode==='login'?'<input id="fsEmail" type="email" placeholder="Email" style="width:100%;padding:12px;box-sizing:border-box;margin:5px 0;border:1px solid #2b3047;border-radius:12px;background:#151a2b;color:#fff"><input id="fsPass" type="password" placeholder="Password" style="width:100%;padding:12px;box-sizing:border-box;margin:5px 0;border:1px solid #2b3047;border-radius:12px;background:#151a2b;color:#fff"><button id="fsGo" style="width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;background:linear-gradient(100deg,#ff6a00,#ff2f7e);color:#fff;font-weight:800">Login</button><button id="fsOtp" style="width:100%;margin-top:8px;padding:12px;border:1px solid #2b3047;border-radius:12px;background:#151a2b;color:#fff;font-weight:800">Login with Email OTP</button><div id="fsMsg" style="color:#a7acc1;font-size:13px;margin-top:10px"></div>':'<input id="fsName" placeholder="Full name" style="width:100%;padding:12px;box-sizing:border-box;margin:5px 0;border:1px solid #2b3047;border-radius:12px;background:#151a2b;color:#fff"><input id="fsUser" placeholder="Username" style="width:100%;padding:12px;box-sizing:border-box;margin:5px 0;border:1px solid #2b3047;border-radius:12px;background:#151a2b;color:#fff"><input id="fsEmail" type="email" placeholder="Email" style="width:100%;padding:12px;box-sizing:border-box;margin:5px 0;border:1px solid #2b3047;border-radius:12px;background:#151a2b;color:#fff"><input id="fsPass" type="password" placeholder="Password" style="width:100%;padding:12px;box-sizing:border-box;margin:5px 0;border:1px solid #2b3047;border-radius:12px;background:#151a2b;color:#fff"><button id="fsGo" style="width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;background:linear-gradient(100deg,#ff6a00,#ff2f7e);color:#fff;font-weight:800">Create account</button><div id="fsMsg" style="color:#a7acc1;font-size:13px;margin-top:10px"></div>';
@@ -14,5 +14,14 @@
     function msg(x){const n=document.getElementById('fsMsg');if(n)n.textContent=x}
     document.getElementById('fsLoginTab').onclick=()=>render('login');document.getElementById('fsSignupTab').onclick=()=>render('signup');render('login');
   }
-  setTimeout(function(){hideSplash();const root=document.getElementById('root');if(root&&root.children.length===0)showAuth();else if(typeof window.boot==='function'){try{window.boot()}catch(e){console.error(e)} }},3200);
+  setTimeout(async function(){
+    hideSplash();
+    try{
+      if(client){
+        const s=await client.auth.getSession();
+        if(!s.data?.session){showAuth();return}
+      }else{showAuth();return}
+      if(typeof window.boot==='function'){try{window.boot()}catch(e){console.error(e)}}
+    }catch(e){console.error('YOCEWOR failsafe',e);showAuth()}
+  },5000);
 })();
