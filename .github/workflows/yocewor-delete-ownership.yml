@@ -1,0 +1,42 @@
+name: YOCEWOR ownership delete patch
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, 'YOCEWOR: apply ownership delete layer') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add ownership delete layer
+        run: |
+          cat > yocewor-delete-ownership.js <<'EOF'
+          (() => {
+            'use strict';
+            const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+            const toast=msg=>{const t=document.getElementById('toast');if(t){t.textContent=msg;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2200)}};
+            const confirmDelete=async label=>window.confirm(`Delete this ${label}? This cannot be undone.`);
+            const currentUser=async()=>{try{const {data:{user}}=await db.auth.getUser();return user||null}catch(e){return null}};
+            const del=async(table,id,userId,owner='user_id')=>{if(!id||!userId)throw new Error('Missing ownership information');const {error}=await db.from(table).delete().eq('id',id).eq(owner,userId);if(error)throw error};
+            async function postId(card,userId){const direct=card.dataset.id||card.dataset.postId||card.getAttribute('data-id')||card.getAttribute('data-post-id');if(direct)return direct;const el=card.querySelector('.posttext');const text=el?.textContent.trim();if(!text)return null;const {data,error}=await db.from('posts').select('id,body,created_at').eq('user_id',userId).eq('body',text).order('created_at',{ascending:false}).limit(2);return error||!data||data.length!==1?null:data[0].id}
+            function posts(){document.querySelectorAll('.post').forEach(async card=>{if(card.querySelector('[data-yo-delete="post"]'))return;const u=await currentUser();if(!u)return;const id=await postId(card,u.id);if(!id)return;const b=document.createElement('button');b.className='action';b.type='button';b.dataset.yoDelete='post';b.title='Delete your post';b.textContent='🗑️ Delete';b.onclick=async e=>{e.stopPropagation();if(!await confirmDelete('post'))return;try{await del('posts',id,u.id);card.remove();toast('Post deleted')}catch(err){console.error(err);toast('Could not delete post')}};card.querySelector('.postactions')?.appendChild(b)})}
+            async function commentId(row,userId){const direct=row.dataset.id||row.dataset.commentId||row.getAttribute('data-id')||row.getAttribute('data-comment-id');if(direct)return direct;const body=row.querySelector('.bubble')?.textContent.trim();if(!body)return null;const {data,error}=await db.from('comments').select('id,body,created_at').eq('user_id',userId).eq('body',body).order('created_at',{ascending:false}).limit(2);return error||!data||data.length!==1?null:data[0].id}
+            function comments(){document.querySelectorAll('.comment').forEach(async row=>{if(row.querySelector('[data-yo-delete="comment"]'))return;const u=await currentUser();if(!u)return;const id=await commentId(row,u.id);if(!id)return;const b=document.createElement('button');b.type='button';b.dataset.yoDelete='comment';b.title='Delete your comment';b.textContent='🗑️';b.className='icon';b.style.cssText='width:34px;height:34px;padding:0;flex:none';b.onclick=async e=>{e.stopPropagation();if(!await confirmDelete('comment'))return;try{await del('comments',id,u.id);row.remove();toast('Comment deleted')}catch(err){console.error(err);toast('Could not delete comment')}};row.appendChild(b)})}
+            async function storyId(card,userId){const direct=card.dataset.id||card.dataset.storyId||card.getAttribute('data-id')||card.getAttribute('data-story-id');if(direct)return direct;const src=card.querySelector('img')?.src||'';const label=(card.textContent||'').trim();const {data,error}=await db.from('stories').select('id,created_at,image_url,body').eq('user_id',userId).order('created_at',{ascending:false}).limit(5);if(error||!data?.length)return null;const hit=data.filter(s=>(src&&s.image_url&&src.includes(s.image_url))||(label&&s.body&&label.includes(s.body)));return hit.length===1?hit[0].id:null}
+            function stories(){document.querySelectorAll('.story').forEach(async card=>{if(card.querySelector('[data-yo-delete="story"]'))return;const u=await currentUser();if(!u)return;const id=await storyId(card,u.id);if(!id)return;const b=document.createElement('button');b.type='button';b.dataset.yoDelete='story';b.title='Delete your story';b.textContent='🗑️';b.className='icon';b.style.cssText='width:30px;height:30px;padding:0;margin:4px auto;display:block';b.onclick=async e=>{e.stopPropagation();if(!await confirmDelete('story'))return;try{await del('stories',id,u.id);card.remove();toast('Story deleted')}catch(err){console.error(err);toast('Could not delete story')}};card.appendChild(b)})}
+            async function refresh(){await sleep(500);posts();comments();stories()};const mo=new MutationObserver(()=>{clearTimeout(window.__yoDeleteTimer);window.__yoDeleteTimer=setTimeout(refresh,250)});mo.observe(document.body,{childList:true,subtree:true});window.YOCEWOR_DELETE_LAYER={version:'1.0',scope:'owner-only',refresh};refresh();
+          })();
+          EOF
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('yocewor-v3.html'); s=p.read_text(encoding='utf-8'); tag='<script src="yocewor-delete-ownership.js"></script>'
+          if tag not in s: p.write_text(s.replace('</body>',tag+'</body>'),encoding='utf-8')
+          PY
+          git config user.name "YOCEWOR Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add yocewor-v3.html yocewor-delete-ownership.js
+          git commit -m "YOCEWOR: apply ownership delete layer" || exit 0
+          git push
