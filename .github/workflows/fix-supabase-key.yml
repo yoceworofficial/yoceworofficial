@@ -1,0 +1,27 @@
+name: Fix Supabase client key
+on:
+  push:
+    paths:
+      - index.html
+      - .github/workflows/fix-supabase-key.yml
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace invalid Supabase publishable key
+        run: |
+          old='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eyr1yRsK'
+          new='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn'
+          if grep -Fq "$old" index.html; then
+            sed -i "s/$old/$new/g" index.html
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add index.html
+            git commit -m 'Fix Supabase publishable API key'
+            git push
+          else
+            echo 'Supabase key is already correct.'
+          fi
