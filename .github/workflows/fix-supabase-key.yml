@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Replace invalid Supabase publishable key
         run: |
-          old='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eyr1yRsK'
+          old='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6UsnK'
           new='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn'
           if grep -Fq "$old" index.html; then
             sed -i "s/$old/$new/g" index.html
