@@ -1,0 +1,44 @@
+(function(){
+'use strict';
+const KEY='yocewor.accounts.v1',MAX=8;
+const escA=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+function get(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
+function put(a){localStorage.setItem(KEY,JSON.stringify(a.slice(0,MAX)))}
+function remember(){try{if(!window.me||!window.meP)return;let a=get().filter(x=>x.id!==window.me.id);a.unshift({id:window.me.id,email:window.me.email||'',username:window.meP.username||'',display_name:window.meP.display_name||window.meP.username||'YOCEWOR User',avatar_url:window.meP.avatar_url||''});put(a)}catch(e){}}
+function accountButton(){
+ const p=window.meP||{}, name=p.username||p.display_name||'Account';
+ return '<button id="ywAccountBtn" class="btn" style="display:flex;align-items:center;gap:7px;max-width:210px;padding:8px 10px;background:#111625;border-color:#30364f" aria-label="Switch account"><span style="max-width:125px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">@'+escA(name)+'</span><span style="font-size:13px">⌄</span><span style="font-size:15px">◉</span></button>';
+}
+function renderMenu(){
+ const a=get(),cur=window.me?.id;
+ const rows=a.map(x=>'<button data-yw-switch="'+escA(x.id)+'" style="width:100%;display:flex;align-items:center;gap:11px;border:0;background:transparent;color:#fff;padding:12px 8px;text-align:left;border-radius:13px">'+(x.avatar_url?'<img src="'+escA(x.avatar_url)+'" style="width:42px;height:42px;border-radius:50%;object-fit:cover">':'<span style="width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#20263a">'+escA((x.username||'Y').slice(0,1).toUpperCase())+'</span>')+'<span style="flex:1;min-width:0"><b style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">@'+escA(x.username||x.email||'account')+'</b><small style="color:#a7acc1">'+escA(x.display_name||'YOCEWOR')+(x.id===cur?' · Current':'')+'</small></span>'+(x.id===cur?'<span style="color:#1688ff;font-size:20px">✓</span>':'')+'</button>').join('');
+ document.getElementById('modal').innerHTML='<div class="modal" id="ywAccountModal"><div class="card modalbox" style="max-width:430px"><div class="row"><div class="grow"><h2 style="margin:0">YOCEWOR accounts</h2><div class="tiny muted">Up to '+MAX+' accounts can be kept on this phone.</div></div><button class="icon" id="ywClose">×</button></div><div style="margin-top:12px">'+(rows||'<div class="empty">No saved accounts yet.</div>')+'</div><div style="border-top:1px solid var(--line);margin-top:8px;padding-top:12px;display:grid;gap:8px"><button class="btn primary" id="ywAdd">＋ Add account</button><button class="btn" id="ywManage">Manage saved accounts</button></div></div></div>';
+ document.getElementById('ywClose').onclick=()=>document.getElementById('modal').innerHTML='';
+ document.querySelectorAll('[data-yw-switch]').forEach(b=>b.onclick=()=>switchTo(b.dataset.ywSwitch));
+ document.getElementById('ywAdd').onclick=addAccount;
+ document.getElementById('ywManage').onclick=()=>toast('This phone can keep up to '+MAX+' YOCEWOR accounts. Accounts can also be used on other phones.');
+}
+async function switchTo(id){
+ const x=get().find(v=>v.id===id);if(!x||id===window.me?.id)return;
+ const pass=prompt('Password for @'+(x.username||x.email)+'');if(pass===null)return;if(!pass){toast('Password required');return}
+ try{const r=await window.db.auth.signOut();if(r.error)throw r.error;const q=await window.db.auth.signInWithPassword({email:x.email,password:pass});if(q.error)throw q.error;document.getElementById('modal').innerHTML='';await window.boot();toast('Switched to @'+(x.username||x.email));}catch(e){toast(e.message||'Could not switch account')}
+}
+async function addAccount(){
+ if(get().length>=MAX){toast('Maximum '+MAX+' accounts are already saved on this phone.');return}
+ document.getElementById('modal').innerHTML='';
+ try{await window.db.auth.signOut();await window.boot();setTimeout(()=>{if(window.root&&window.auth&&window.bindAuth){window.root.innerHTML=window.auth('login');window.bindAuth('login');toast('Login to add another YOCEWOR account')}},250)}catch(e){toast(e.message||'Could not add account')}
+}
+function mount(){
+ remember();
+ const top=document.getElementById('topActions');if(!top||!window.me)return;
+ top.innerHTML=accountButton()+'<button class="icon" id="ywLogout" aria-label="Logout">↪</button>';
+ document.getElementById('ywAccountBtn').onclick=renderMenu;
+ document.getElementById('ywLogout').onclick=window.logout;
+}
+function start(){
+ let n=0;const t=setInterval(()=>{n++;if(window.me&&window.meP&&document.getElementById('topActions')){mount();clearInterval(t)}if(n>40)clearInterval(t)},250);
+ const oldBoot=window.boot;if(typeof oldBoot==='function'&&!oldBoot.__ywWrapped){const b=oldBoot;window.boot=async function(){const r=await b.apply(this,arguments);setTimeout(mount,120);return r};window.boot.__ywWrapped=true}
+}
+start();
+window.YOCEWOR_ACCOUNTS={get,remember,mount,MAX};
+})();
