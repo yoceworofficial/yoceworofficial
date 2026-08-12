@@ -25,11 +25,14 @@ dependencies {
 }
 
 configurations.configureEach {
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk7")
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
     resolutionStrategy.eachDependency {
         if (requested.group == "org.jetbrains.kotlin") {
             useVersion("1.8.22")
         }
     }
+    resolutionStrategy.force(
+        "org.jetbrains.kotlin:kotlin-stdlib:1.8.22",
+        "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22",
+        "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22"
+    )
 }
