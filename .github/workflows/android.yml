@@ -23,7 +23,8 @@ jobs:
       - name: Build release APK
         working-directory: android
         run: gradle assembleRelease --no-daemon
-      - uses: actions/upload-artifact@v4
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
         with:
           name: yocewor-android-builds
           path: |
