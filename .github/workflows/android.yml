@@ -1,5 +1,6 @@
 name: YOCEWOR Android Build
 
+# Trigger a fresh build from the current android-app head.
 on:
   push:
     branches: [ android-app ]
