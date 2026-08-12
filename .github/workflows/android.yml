@@ -2,7 +2,7 @@ name: YOCEWOR Android Build
 
 on:
   push:
-    branches: [ android-app ]
+    branches: [ main, android-app ]
   workflow_dispatch:
 
 jobs:
