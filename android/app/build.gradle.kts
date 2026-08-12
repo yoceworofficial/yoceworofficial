@@ -23,3 +23,13 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
 }
+
+configurations.configureEach {
+    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk7")
+    exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion("1.8.22")
+        }
+    }
+}
