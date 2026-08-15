@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>YOCEWOR Creator Engine</title>
+<style>
+:root{--bg:#07040f;--panel:#111526;--line:#2b3047;--muted:#a7acc1;--a:#ff6a00;--b:#ff2f7e;--c:#7c4dff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0,#291046,transparent 35%),var(--bg);color:#fff;font-family:Inter,system-ui,sans-serif}.wrap{width:min(1180px,calc(100% - 24px));margin:auto}.top{height:68px;border-bottom:1px solid var(--line);display:flex;align-items:center}.brand{font-weight:950;font-size:21px}.brand span{background:linear-gradient(90deg,var(--a),var(--b),var(--c));-webkit-background-clip:text;color:transparent}.grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px;padding:20px 0 50px}.card{background:#111526ee;border:1px solid var(--line);border-radius:20px;padding:18px}.field,textarea,button{font:inherit}.field,textarea{width:100%;background:#090d19;color:#fff;border:1px solid var(--line);border-radius:12px;padding:11px;margin:5px 0 12px;outline:0}textarea{min-height:100px;resize:vertical}button{border:0;border-radius:12px;padding:11px 14px;font-weight:850;cursor:pointer}.primary{color:#fff;background:linear-gradient(100deg,var(--a),var(--b))}.ghost{background:#171c2d;color:#fff;border:1px solid var(--line)}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}.scenes{display:grid;gap:8px;margin-top:10px}.scene{display:grid;grid-template-columns:34px 1fr 34px;gap:7px;align-items:center;padding:8px;background:#0b0f1c;border:1px solid var(--line);border-radius:12px}.scene b{font-size:12px;color:var(--muted)}.scene input{width:100%;background:transparent;border:0;color:#fff;outline:0}.preview{display:grid;place-items:center;min-height:650px}.phone{width:min(390px,90vw);aspect-ratio:9/16;background:#000;border-radius:30px;overflow:hidden;border:1px solid #3a4058;box-shadow:0 25px 80px #0009;position:relative}.phone canvas{width:100%;height:100%;display:block}.status{font-size:12px;color:var(--muted);margin-top:10px;min-height:18px}.hint{font-size:12px;color:var(--muted);line-height:1.5}.timeline{display:flex;gap:5px;margin-top:14px}.seg{height:5px;background:#252b40;border-radius:9px;flex:1}.seg.on{background:linear-gradient(90deg,var(--a),var(--b))}@media(max-width:820px){.grid{grid-template-columns:1fr}.preview{min-height:auto;padding-top:10px}.phone{width:min(330px,80vw)}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="brand"><span>YOCEWOR</span> Creator Engine</div></div></header>
+<main class="wrap grid">
+<section class="card">
+<h2 style="margin-top:0">Create a short drama</h2>
+<label>Story title</label><input id="title" class="field" value="एक आखिरी मौका">
+<label>Hook</label><textarea id="hook">उसने दरवाज़ा खोला… और सामने वही इंसान था जिसे वह 10 साल से मरा हुआ समझती थी।</textarea>
+<label>Episode length</label><div class="row"><button id="minus" class="ghost">−</button><input id="duration" class="field" type="number" min="10" max="90" value="30"><button id="plus" class="ghost">+</button></div>
+<label>Scenes</label><div id="scenes" class="scenes"></div>
+<div class="row"><button id="add" class="ghost">+ Scene</button><button id="demo" class="primary">Generate Preview</button></div>
+<div class="row" style="margin-top:8px"><button id="record" class="primary">Generate Video</button><button id="stop" class="ghost" disabled>Stop</button></div>
+<input id="image" class="field" type="file" accept="image/*" multiple>
+<div id="status" class="status"></div>
+<p class="hint">यह पहला ₹0 engine है: browser Canvas से vertical drama frames render होते हैं और WebM video बनाया जा सकता है। बाद में इसी pipeline में original AI assets जोड़े जा सकते हैं।</p>
+</section>
+<section class="card preview">
+<div class="phone"><canvas id="canvas" width="540" height="960"></canvas></div>
+<div class="timeline" id="timeline"></div>
+</section>
+</main>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), canvas=$('#canvas'),ctx=canvas.getContext('2d');
+let scenes=[
+'रात के 2 बजे फोन बजा…',
+'उसने स्क्रीन देखी और उसका चेहरा सफेद पड़ गया।',
+'आवाज़ आई: "दरवाज़ा खोलो। मैं वापस आ गया हूँ।"',
+'उसने धीरे से दरवाज़ा खोला…',
+'सामने वही चेहरा था जिसे वह 10 साल से मरा हुआ समझती थी।',
+'लेकिन उसके हाथ में एक ऐसा राज़ था जो सब बदलने वाला था।'
+];
+let images=[],raf=0,recording=false,recorder=null,chunks=[];
+function drawBackground(){const g=ctx.createLinearGradient(0,0,540,960);g.addColorStop(0,'#101326');g.addColorStop(.55,'#160b1d');g.addColorStop(1,'#05060b');ctx.fillStyle=g;ctx.fillRect(0,0,540,960);for(let i=0;i<8;i++){ctx.fillStyle='rgba(255,47,126,.05)';ctx.beginPath();ctx.arc((i*97)%540,150+i*90,100+i*10,0,Math.PI*2);ctx.fill()}}
+function wrap(text,max){const words=text.split(/\s+/),lines=[];let line='';for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>max&&line){lines.push(line);line=w}else line=t}if(line)lines.push(line);return lines}
+function draw(time=0,index=0){drawBackground();const title=$('#title').value.trim()||'YOCEWOR Drama';const hook=$('#hook').value.trim();ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='800 27px system-ui';ctx.fillText(title,270,70);ctx.font='700 18px system-ui';ctx.fillStyle='#ff7b00';ctx.fillText('EPISODE 1',270,105);if(images[index%Math.max(1,images.length)]){const im=images[index%images.length];const scale=Math.max(360/im.width,320/im.height);const w=im.width*scale,h=im.height*scale;ctx.save();ctx.globalAlpha=.42;ctx.drawImage(im,(540-w)/2,180+(320-h)/2,w,h);ctx.restore();}ctx.fillStyle='rgba(0,0,0,.52)';ctx.fillRect(28,190,484,600);ctx.fillStyle='#fff';ctx.font='850 31px system-ui';const lines=wrap(scenes[index%scenes.length],440);const y=460-(lines.length-1)*20;lines.forEach((l,i)=>ctx.fillText(l,270,y+i*42));ctx.font='600 16px system-ui';ctx.fillStyle='#c7cbdb';const hl=wrap(hook,430);hl.slice(0,3).forEach((l,i)=>ctx.fillText(l,270,835+i*25));ctx.fillStyle='#8f96ae';ctx.font='600 13px system-ui';ctx.fillText('YOCEWOR • Your Voice. Your World.',270,925);ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(40,145,460,4);ctx.fillStyle='#ff2f7e';ctx.fillRect(40,145,460*((index+1)/scenes.length),4)}
+function renderScenes(){const box=$('#scenes');box.innerHTML=scenes.map((s,i)=>'<div class="scene"><b>'+String(i+1).padStart(2,'0')+'</b><input data-scene="'+i+'" value="'+esc(s)+'"><button class="ghost" data-del="'+i+'">×</button></div>').join('');box.querySelectorAll('[data-scene]').forEach(x=>x.oninput=()=>scenes[+x.dataset.scene]=x.value);box.querySelectorAll('[data-del]').forEach(x=>x.onclick=()=>{if(scenes.length<=1)return;scenes.splice(+x.dataset.del,1);renderScenes();draw(0,0);updateTimeline()})}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function updateTimeline(){const t=$('#timeline');t.innerHTML=scenes.map((_,i)=>'<span class="seg '+(i===0?'on':'')+'"></span>').join('')}
+function preview(){cancelAnimationFrame(raf);let start=performance.now();const dur=Math.max(10,+$('#duration').value||30)*1000;function loop(now){const elapsed=(now-start)%dur;const idx=Math.min(scenes.length-1,Math.floor(elapsed/dur*scenes.length));draw(elapsed,idx);tweenTimeline(idx);raf=requestAnimationFrame(loop)}loop(start);$('#status').textContent='Preview running…'}
+function tweenTimeline(idx){document.querySelectorAll('.seg').forEach((s,i)=>s.classList.toggle('on',i===idx))}
+async function loadImages(files){images=[];for(const file of files){const u=URL.createObjectURL(file);const im=new Image();im.src=u;await im.decode();images.push(im)}draw(0,0)}
+function makeVideo(){if(!canvas.captureStream||!window.MediaRecorder){$('#status').textContent='इस browser में video recording support नहीं है। Chrome/Edge में खोलें।';return}cancelAnimationFrame(raf);chunks=[];const fps=30,stream=canvas.captureStream(fps);let mime='video/webm;codecs=vp9';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';recorder=new MediaRecorder(stream,{mimeType:mime});recorder.ondataavailable=e=>e.data.size&&chunks.push(e.data);recorder.onstop=()=>{const blob=new Blob(chunks,{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='yocewor-episode-1.webm';a.click();$('#status').textContent='Video ready: yocewor-episode-1.webm';$('#record').disabled=false;$('#stop').disabled=true;recording=false};recorder.start();recording=true;$('#record').disabled=true;$('#stop').disabled=false;const total=Math.max(10,+$('#duration').value||30)*1000,start=performance.now();function loop(now){if(!recording)return;const elapsed=now-start;const idx=Math.min(scenes.length-1,Math.floor((elapsed/total)*scenes.length));draw(elapsed,idx);tweenTimeline(idx);$('#status').textContent='Generating '+Math.min(100,Math.floor(elapsed/total*100))+'%';if(elapsed>=total){recorder.stop();return}raf=requestAnimationFrame(loop)}loop(start)}
+$('#add').onclick=()=>{scenes.push('नई scene — यहाँ कहानी आगे बढ़ती है।');renderScenes();updateTimeline()};$('#demo').onclick=preview;$('#record').onclick=makeVideo;$('#stop').onclick=()=>{recording=false;cancelAnimationFrame(raf);recorder?.stop()};$('#minus').onclick=()=>$('#duration').value=Math.max(10,(+$('#duration').value||30)-5);$('#plus').onclick=()=>$('#duration').value=Math.min(90,(+$('#duration').value||30)+5);$('#image').onchange=e=>loadImages([...e.target.files]);renderScenes();updateTimeline();draw();
+</script>
+</body>
+</html>
