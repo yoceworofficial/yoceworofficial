@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -25,7 +25,22 @@
 <section class="section" id="help"><h3>⚠️ महत्वपूर्ण सूचना</h3><div class="sectionbody disclaimer">YOCEWOR सरकारी वेबसाइट नहीं है। आवेदन, शुल्क, परीक्षा तिथि, परिणाम या किसी अन्य महत्वपूर्ण जानकारी के लिए संबंधित विभाग की official website/notification को अंतिम और प्रामाणिक स्रोत मानें।</div></section>
 </main>
 <footer class="footer"><div class="container"><b>YOCEWOR</b><p>Your Voice. Your World.</p><div class="line">स्वतंत्र सूचना पोर्टल • © 2026 YOCEWOR</div></div></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+let hindi=false;
+function toggleLang(){
+  hindi=!hindi;
+  document.documentElement.lang=hindi?'hi':'en';
+  const btn=document.getElementById('langBtn'); if(btn) btn.textContent=hindi?'English':'हिंदी';
+  const map={
+    'मुख्य पृष्ठ':'Home','नवीनतम भर्ती':'Latest Jobs','लेटेस्ट अपडेट':'Latest Updates','एडमिट कार्ड':'Admit Card','रिजल्ट':'Results','भर्ती खोजें':'Search Jobs','महत्वपूर्ण सूचना':'Important Notice',
+    'नवीनतम भर्ती':'Latest Jobs','ताज़ा अपडेट':'Latest Updates','नवीनतम सरकारी भर्तियाँ':'Latest Government Jobs','प्रवेश पत्र और परीक्षा सूचना':'Admit Card and Exam Information','परीक्षा परिणाम और मेरिट':'Results and Merit','नवीनतम सरकारी अपडेट':'Latest Updates'
+  };
+  document.querySelectorAll('.nav a').forEach(a=>{if(!a.dataset.en){a.dataset.hi=a.textContent.trim();a.dataset.en=map[a.dataset.hi]||a.dataset.hi;}a.textContent=hindi?a.dataset.hi:a.dataset.en;});
+  const title=document.querySelector('.hero h2'); if(title){title.dataset.hi=title.dataset.hi||title.textContent; title.dataset.en='Government Jobs & Important Information'; title.textContent=hindi?title.dataset.hi:title.dataset.en;}
+  const text=document.querySelector('.hero p'); if(text){text.dataset.hi=text.dataset.hi||text.textContent; text.dataset.en='Find the latest government jobs, examinations, admit cards and results — clear, organized and in one place.'; text.textContent=hindi?text.dataset.hi:text.dataset.en;}
+  const search=document.querySelector('.search input'); if(search) search.placeholder=hindi?'भर्ती, परीक्षा या विभाग खोजें...':'Search jobs, exams or departments...';
+}
+</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const db=supabase.createClient('https://mzntgjyecymcpzciklfk.supabase.co','sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr4Usn');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
