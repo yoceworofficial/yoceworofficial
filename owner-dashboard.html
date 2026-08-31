@@ -12,34 +12,21 @@
 <section id="guard" class="card">Owner access verify हो रहा है…</section>
 <section id="app" class="hide">
 <div class="card"><span class="status">● OWNER ACTIVE</span><h2 id="welcome">Welcome, Owner</h2><div class="muted" id="email"></div></div>
-<div class="grid">
-<div class="card stat"><b>👥 Active Team</b><strong id="teamCount">—</strong></div>
-<div class="card stat"><b>🏢 Departments</b><strong id="deptCount">—</strong></div>
-<div class="card stat"><b>📢 Active Notices</b><strong id="noticeCount">—</strong></div>
-<div class="card stat"><b>🔴 Live Notices</b><strong id="liveCount">—</strong></div>
-</div>
+<div class="grid"><div class="card stat"><b>👥 Active Team</b><strong id="teamCount">—</strong></div><div class="card stat"><b>🏢 Departments</b><strong id="deptCount">—</strong></div><div class="card stat"><b>📢 Active Notices</b><strong id="noticeCount">—</strong></div><div class="card stat"><b>🔴 Live Notices</b><strong id="liveCount">—</strong></div></div>
 <div class="card"><h2>📤 Publishing Status</h2><div id="publishStatus" class="alert">Checking latest publishing activity…</div><p><a class="btn" href="/" target="_blank" rel="noopener">👁️ View Public Site</a></p></div>
 <div class="card"><h2>📋 Recent Activity</h2><div id="activity">Loading…</div></div>
 <div class="card"><h2>📩 Pending Requests</h2><div id="requests">Checking…</div></div>
 <div class="card"><h2>⚠️ Important Alerts</h2><div id="alerts">Checking system…</div></div>
-<div class="card"><h2>⚡ Quick Access</h2><div class="actions">
-<a href="/owner-dashboard.html">🏠 Home</a>
-<a href="/owner-dashboard.html#dashboard">📊 Dashboard</a>
-<a href="/team-requests.html">👥 Team</a>
-<a href="/departments.html">🏢 Departments</a>
-<a href="/content.html">📝 Content</a>
-<a href="/notices.html">📢 Important Notice</a>
-<a href="/live-notice.html">🔴 Live Notice</a>
-<a href="/settings.html">⚙️ Settings</a>
-<a href="/audit.html">🧾 Activity / Audit</a>
-<a href="/login.html" id="logout">🚪 Logout</a>
-</div></div>
+<div class="card"><h2>⚡ Quick Access</h2><div class="actions"><a href="/owner-dashboard.html">🏠 Home</a><a href="/owner-dashboard.html#dashboard">📊 Dashboard</a><a href="/team-requests.html">👥 Team</a><a href="/departments.html">🏢 Departments</a><a href="/content.html">📝 Content</a><a href="/notices.html">📢 Important Notice</a><a href="/live-notice.html">🔴 Live Notice</a><a href="/settings.html">⚙️ Settings</a><a href="/audit.html">🧾 Activity / Audit</a><a href="/login.html" id="logout">🚪 Logout</a></div></div>
 </section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const db=supabase.createClient('https://mzntgjyecymcpzciklfk.supabase.co','sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr4Usn',{auth:{persistSession:true,autoRefreshToken:true}});
+const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
+const SUPABASE_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr4Usn';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'sb-mzntgjyecymcpzciklfk-auth-token'}});
 const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
-async function api(action,body={}){const r=await db.functions.invoke('team-management',{body:{action,...body}});if(r.error)throw r.error;if(r.data?.error)throw Error(r.data.error);return r.data}
+async function accessToken(){const s=await db.auth.getSession();if(s.data?.session?.access_token)return s.data.session.access_token;try{const raw=localStorage.getItem('sb-mzntgjyecymcpzciklfk-auth-token');const x=raw?JSON.parse(raw):null;return x?.access_token||x?.currentSession?.access_token||null}catch{return null}}
+async function api(action,body={}){const token=await accessToken();if(!token)throw new Error('Login session missing. Please login again.');const r=await db.functions.invoke('team-management',{body:{action,...body},headers:{Authorization:'Bearer '+token,apikey:SUPABASE_KEY}});if(r.error)throw r.error;if(r.data?.error)throw Error(r.data.error);return r.data}
 async function load(){
  try{const me=await Promise.race([api('me'),new Promise((_,rej)=>setTimeout(()=>rej(Error('Owner verification timeout. Refresh करें.')),10000))]);if(String(me.role||'').toLowerCase()!=='owner')throw Error('Owner access required');$('guard').classList.add('hide');$('app').classList.remove('hide');$('welcome').textContent='Welcome, '+(me.display_name||me.full_name||'Owner');$('email').textContent=me.email||me.official_email||'';}catch(e){$('guard').innerHTML='<span class="error">'+esc(e.message)+'</span><br><br><button class="btn" onclick="location.reload()">Retry</button>';return}
  try{const t=await api('list_team');const rows=t.data||[];$('teamCount').textContent=rows.filter(x=>x.is_active!==false).length;$('activity').innerHTML=rows.slice(0,5).map(x=>'<div class="activity">👤 <b>'+esc(x.display_name||x.username)+'</b> — '+esc(String(x.role||'').toUpperCase())+' <span class="muted">'+(x.is_active===false?'BLOCKED':'ACTIVE')+'</span></div>').join('')||'<span class="muted">No team activity yet.</span>';}catch(e){$('teamCount').textContent='—';$('activity').innerHTML='<span class="error">Team data unavailable</span>'}
