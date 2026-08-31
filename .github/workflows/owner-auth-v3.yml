@@ -1,0 +1,30 @@
+name: Owner auth v3
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Switch Owner auth reference
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for p in [Path('team-management-live.html'), Path('departments.html')]:
+              if p.exists():
+                  s=p.read_text(encoding='utf-8')
+                  s=s.replace('/owner-auth.js','/owner-auth-v3.js')
+                  p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name 'YOCEWOR Bot'
+          git config user.email 'yoceworofficial@users.noreply.github.com'
+          git add team-management-live.html departments.html
+          git diff --cached --quiet || git commit -m 'fix: use refreshed Owner auth on Team and Departments'
+          git push
