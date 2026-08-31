@@ -7,8 +7,7 @@
     for(const key of keys){
       try{
         const raw=localStorage.getItem(key); if(!raw) continue;
-        const x=JSON.parse(raw);
-        const s=x?.currentSession||x?.session||x;
+        const x=JSON.parse(raw); const s=x?.currentSession||x?.session||x;
         if(s?.access_token) return s;
       }catch(e){}
     }
@@ -17,36 +16,30 @@
   async function request(action,extra={},timeout=10000){
     const session=readStoredSession();
     if(!session?.access_token) throw new Error('Login session missing. Please login again.');
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),timeout);
+    const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),timeout);
     try{
-      const r=await fetch(FUNCTION_URL,{method:'POST',headers:{'Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({action,...extra}),signal:controller.signal});
-      const text=await r.text();
-      let data={}; try{data=JSON.parse(text||'{}')}catch(e){throw new Error('Invalid authentication service response.');}
+      const r=await fetch(FUNCTION_URL,{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({action,...extra}),signal:controller.signal});
+      const text=await r.text(); let data={}; try{data=JSON.parse(text||'{}')}catch(e){throw new Error('Invalid authentication service response.')}
       if(!r.ok||data.error) throw new Error(data.error||('Access verification failed (HTTP '+r.status+').'));
       return data;
-    }catch(e){
-      if(e.name==='AbortError') throw new Error('Access verification timed out.');
-      throw e;
-    }finally{clearTimeout(timer);}
+    }catch(e){if(e.name==='AbortError') throw new Error('Access verification timed out.'); throw e}
+    finally{clearTimeout(timer)}
   }
   async function requireRole(roles){
     const allowed=(Array.isArray(roles)?roles:[roles]).map(x=>String(x).toLowerCase());
-    const me=await request('me');
-    const role=String(me?.role||'').toLowerCase();
-    if(!allowed.includes(role)) throw new Error('You do not have permission to access this page.');
-    return me;
+    const me=await request('me'); const role=String(me?.role||'').toLowerCase();
+    if(!allowed.includes(role)) throw new Error('You do not have permission to access this page.'); return me;
   }
   function ensureOwnerNav(){
+    const html='<a href="/owner-dashboard.html">🏠 Home</a><a href="/dashboard.html">📊 Dashboard</a><a href="/team-management-live.html">👥 Team</a><a href="/content.html">📝 Content</a><a href="/departments.html">🏢 Departments</a><a href="/important-notice.html">📢 Important Notice</a><a href="/live-notice.html">🔴 Live Notice</a><a href="/settings.html">⚙️ Settings</a><a href="/activity-audit.html">🧾 Activity / Audit</a><a href="/" id="yocewor-nav-logout">🚪 Logout</a>';
     document.querySelectorAll('.nav').forEach(nav=>{
-      if(!nav.querySelector('a[href="/content.html"]')){
-        const a=document.createElement('a');
-        a.href='/content.html';
-        a.textContent='📝 Content';
-        nav.appendChild(a);
-      }
+      nav.innerHTML=html;
+      const current=location.pathname.replace(/\\/$/,'')||'/owner-dashboard.html';
+      nav.querySelectorAll('a').forEach(a=>{if(a.getAttribute('href')===current)a.classList.add('active')});
+      const lo=nav.querySelector('#yocewor-nav-logout'); if(lo) lo.onclick=async e=>{e.preventDefault();try{await window.YOCEWOR_AUTH?.signOut?.()}catch(_){};location.href='/'};
     });
   }
+  async function signOut(){try{const session=readStoredSession();if(session?.access_token) await fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY}})}catch(e){} localStorage.removeItem('sb-mzntgjyecymcpzciklfk-auth-token');localStorage.removeItem('yocewor_team_session');}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ensureOwnerNav); else ensureOwnerNav();
-  window.YOCEWOR_AUTH={request,requireRole,readStoredSession,SUPABASE_URL,SUPABASE_KEY};
+  window.YOCEWOR_AUTH={request,requireRole,readStoredSession,SUPABASE_URL,SUPABASE_KEY,signOut};
 })();
