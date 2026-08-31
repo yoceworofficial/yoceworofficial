@@ -23,34 +23,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Configure Pages
         uses: actions/configure-pages@v5
-
-      - name: Bust Owner auth cache
+      - name: Normalize Owner auth references
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          version='owner-auth-v2'
+          version='owner-auth-20260831-6'
           files=[
             'owner-dashboard.html','dashboard.html','team-management-live.html','content.html',
             'departments.html','important-notice.html','live-notice.html','settings.html','activity-audit.html'
           ]
           for name in files:
             p=Path(name)
-            if not p.exists():
-              continue
+            if not p.exists(): continue
             s=p.read_text(encoding='utf-8')
+            s=s.replace('/owner-auth-v3.js','/owner-auth.js')
             s=s.replace('/owner-auth.js?owner-auth-v2','/owner-auth.js?'+version)
+            s=s.replace('/owner-auth.js?20260831-owner','/owner-auth.js?'+version)
             s=s.replace('/owner-auth.js','/owner-auth.js?'+version)
             p.write_text(s,encoding='utf-8')
           PY
-
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
-
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
