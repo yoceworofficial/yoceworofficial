@@ -1,0 +1,67 @@
+name: YOCEWOR Featured Image Integration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content.html'
+      - '.github/workflows/yocewor-featured-image.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Inject featured image support
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('content.html')
+          s = p.read_text(encoding='utf-8')
+          marker = 'YOCEWOR_FEATURED_IMAGE_V1'
+          if marker in s:
+              raise SystemExit(0)
+
+          css = '''<style id="yocewor-featured-image-css">.yo-featured-image{margin:0 0 22px;border:1px solid #d6e1e8;border-radius:12px;overflow:hidden;background:#f7fafc}.yo-featured-image img{display:block;width:100%;max-height:430px;object-fit:cover}.yo-image-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.yo-image-tools button{cursor:pointer}</style>'''
+          ui = '''<div class="builder" id="yoFeaturedImageBuilder"><div class="head"><h3>🖼️ Featured Image</h3><span class="badge">Optional • 1 image</span></div><p class="muted">भर्ती/विज्ञप्ति की मुख्य फोटो लगाएँ। फोटो नहीं लगाएँगे तो public page पर image या खाली जगह नहीं दिखेगी।</p><input id="featuredImage" class="input" type="file" accept="image/*"><div id="featuredImageTools" class="yo-image-tools" hidden><button id="removeFeaturedImage" class="btn danger" type="button">✕ Remove Image</button></div><div id="featuredImagePreview" class="yo-featured-image" hidden><img id="featuredImagePreviewImg" alt="Featured image preview"></div></div>'''
+          script = r'''<script id="yocewor-featured-image-script">/* YOCEWOR_FEATURED_IMAGE_V1 */
+          (()=>{
+            const fi=document.getElementById('featuredImage'), box=document.getElementById('featuredImagePreview'), img=document.getElementById('featuredImagePreviewImg'), rm=document.getElementById('removeFeaturedImage'), tools=document.getElementById('featuredImageTools');
+            if(!fi||!box||!img)return;
+            let featuredImage='';
+            const show=src=>{featuredImage=src||''; box.hidden=!featuredImage; tools.hidden=!featuredImage; img.src=featuredImage;};
+            const fileToData=file=>new Promise((resolve,reject)=>{if(!file)return resolve('');if(!file.type.startsWith('image/'))return reject(new Error('Invalid image'));const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=()=>reject(r.error||new Error('Image read failed'));r.readAsDataURL(file);});
+            fi.addEventListener('change',async()=>{try{show(await fileToData(fi.files?.[0]));window.dispatchEvent(new CustomEvent('yoceworFeaturedImageChanged',{detail:featuredImage}));}catch(e){fi.value='';show('');alert('कृपया केवल image file चुनें।');}});
+            rm?.addEventListener('click',()=>{fi.value='';show('');window.dispatchEvent(new CustomEvent('yoceworFeaturedImageChanged',{detail:''}));});
+            window.YOCEWORFeaturedImageState={get:()=>featuredImage,set:show};
+            const oldCollect=window.__yoceworOriginalCollect;
+            const patchCollect=()=>{};
+            const originalSaveButtons=document.querySelectorAll('#draft,#publish');
+            originalSaveButtons.forEach(btn=>btn.addEventListener('click',()=>{
+              try{const raw=localStorage.getItem('yocewor_content')||'[]';const arr=JSON.parse(raw);const title=(document.getElementById('title')?.value||'').trim();const idx=arr.findIndex(x=>x.title===title&&title);if(idx>=0){arr[idx].featuredImage=featuredImage;localStorage.setItem('yocewor_content',JSON.stringify(arr));localStorage.setItem('yocewor_content_backup',JSON.stringify(arr));}}catch(e){}
+            },true));
+            window.addEventListener('yocewor:loadFeaturedImage',e=>show(e.detail||''));
+            const oldLoad=window.load;
+          })();</script>'''
+
+          # Put the upload UI immediately before the Overview builder.
+          needle = '<div class="builder"><div class="head"><h3>📊 Overview</h3>'
+          if needle not in s:
+              raise SystemExit('Overview anchor not found')
+          s = s.replace(needle, ui + needle, 1)
+          s = s.replace('</style></head>', css + '</style></head>', 1)
+          s = s.replace('</body></html>', script + '</body></html>', 1)
+          p.write_text(s, encoding='utf-8')
+      - name: Commit integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add content.html
+          git diff --cached --quiet || git commit -m 'Integrate featured image into content editor'
+          git push
