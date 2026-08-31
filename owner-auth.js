@@ -37,5 +37,16 @@
     if(!allowed.includes(role)) throw new Error('You do not have permission to access this page.');
     return me;
   }
+  function ensureOwnerNav(){
+    document.querySelectorAll('.nav').forEach(nav=>{
+      if(!nav.querySelector('a[href="/content.html"]')){
+        const a=document.createElement('a');
+        a.href='/content.html';
+        a.textContent='📝 Content';
+        nav.appendChild(a);
+      }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ensureOwnerNav); else ensureOwnerNav();
   window.YOCEWOR_AUTH={request,requireRole,readStoredSession,SUPABASE_URL,SUPABASE_KEY};
 })();
