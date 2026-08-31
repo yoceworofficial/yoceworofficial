@@ -2,44 +2,11 @@
   const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
   const SUPABASE_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
   const FUNCTION_URL=SUPABASE_URL+'/functions/v1/team-management';
-  function readStoredSession(){
-    const keys=['sb-mzntgjyecymcpzciklfk-auth-token','yocewor_team_session'];
-    for(const key of keys){
-      try{
-        const raw=localStorage.getItem(key); if(!raw) continue;
-        const x=JSON.parse(raw); const s=x?.currentSession||x?.session||x;
-        if(s?.access_token) return s;
-      }catch(e){}
-    }
-    return null;
-  }
-  async function request(action,extra={},timeout=10000){
-    const session=readStoredSession();
-    if(!session?.access_token) throw new Error('Login session missing. Please login again.');
-    const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),timeout);
-    try{
-      const r=await fetch(FUNCTION_URL,{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({action,...extra}),signal:controller.signal});
-      const text=await r.text(); let data={}; try{data=JSON.parse(text||'{}')}catch(e){throw new Error('Invalid authentication service response.')}
-      if(!r.ok||data.error) throw new Error(data.error||('Access verification failed (HTTP '+r.status+').'));
-      return data;
-    }catch(e){if(e.name==='AbortError') throw new Error('Access verification timed out.'); throw e}
-    finally{clearTimeout(timer)}
-  }
-  async function requireRole(roles){
-    const allowed=(Array.isArray(roles)?roles:[roles]).map(x=>String(x).toLowerCase());
-    const me=await request('me'); const role=String(me?.role||'').toLowerCase();
-    if(!allowed.includes(role)) throw new Error('You do not have permission to access this page.'); return me;
-  }
-  function ensureOwnerNav(){
-    const html='<a href="/owner-dashboard.html">🏠 Home</a><a href="/dashboard.html">📊 Dashboard</a><a href="/team-management-live.html">👥 Team</a><a href="/content.html">📝 Content</a><a href="/departments.html">🏢 Departments</a><a href="/important-notice.html">📢 Important Notice</a><a href="/live-notice.html">🔴 Live Notice</a><a href="/settings.html">⚙️ Settings</a><a href="/activity-audit.html">🧾 Activity / Audit</a><a href="/" id="yocewor-nav-logout">🚪 Logout</a>';
-    document.querySelectorAll('.nav').forEach(nav=>{
-      nav.innerHTML=html;
-      const current=location.pathname.replace(/\\/$/,'')||'/owner-dashboard.html';
-      nav.querySelectorAll('a').forEach(a=>{if(a.getAttribute('href')===current)a.classList.add('active')});
-      const lo=nav.querySelector('#yocewor-nav-logout'); if(lo) lo.onclick=async e=>{e.preventDefault();try{await window.YOCEWOR_AUTH?.signOut?.()}catch(_){};location.href='/'};
-    });
-  }
-  async function signOut(){try{const session=readStoredSession();if(session?.access_token) await fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY}})}catch(e){} localStorage.removeItem('sb-mzntgjyecymcpzciklfk-auth-token');localStorage.removeItem('yocewor_team_session');}
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ensureOwnerNav); else ensureOwnerNav();
+  function readStoredSession(){const keys=['sb-mzntgjyecymcpzciklfk-auth-token','yocewor_team_session'];for(const key of keys){try{const raw=localStorage.getItem(key);if(!raw)continue;const x=JSON.parse(raw);const s=x?.currentSession||x?.session||x;if(s?.access_token)return s}catch(e){}}return null}
+  async function request(action,extra={},timeout=10000){const session=readStoredSession();if(!session?.access_token)throw new Error('Login session missing. Please login again.');const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);try{const r=await fetch(FUNCTION_URL,{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({action,...extra}),signal:controller.signal});const text=await r.text();let data={};try{data=JSON.parse(text||'{}')}catch(e){throw new Error('Invalid authentication service response.')}if(!r.ok||data.error)throw new Error(data.error||('Access verification failed (HTTP '+r.status+').'));return data}catch(e){if(e.name==='AbortError')throw new Error('Access verification timed out.');throw e}finally{clearTimeout(timer)}}
+  async function requireRole(roles){const allowed=(Array.isArray(roles)?roles:[roles]).map(x=>String(x).toLowerCase());const me=await request('me');const role=String(me?.role||'').toLowerCase();if(!allowed.includes(role))throw new Error('You do not have permission to access this page.');return me}
+  async function signOut(){try{const session=readStoredSession();if(session?.access_token)await fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY}})}catch(e){}localStorage.removeItem('sb-mzntgjyecymcpzciklfk-auth-token');localStorage.removeItem('yocewor_team_session')}
   window.YOCEWOR_AUTH={request,requireRole,readStoredSession,SUPABASE_URL,SUPABASE_KEY,signOut};
+  function ensureOwnerNav(){const html='<a href="/owner-dashboard.html">🏠 Home</a><a href="/dashboard.html">📊 Dashboard</a><a href="/team-management-live.html">👥 Team</a><a href="/content.html">📝 Content</a><a href="/departments.html">🏢 Departments</a><a href="/important-notice.html">📢 Important Notice</a><a href="/live-notice.html">🔴 Live Notice</a><a href="/settings.html">⚙️ Settings</a><a href="/activity-audit.html">🧾 Activity / Audit</a><a href="/" id="yocewor-nav-logout">🚪 Logout</a>';document.querySelectorAll('.nav').forEach(nav=>{nav.innerHTML=html;const current=location.pathname.replace(/\/$/,'')||'/owner-dashboard.html';nav.querySelectorAll('a').forEach(a=>{if(a.getAttribute('href')===current)a.classList.add('active')});const lo=nav.querySelector('#yocewor-nav-logout');if(lo)lo.onclick=async e=>{e.preventDefault();await signOut();location.href='/'}})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureOwnerNav);else ensureOwnerNav();
 })();
