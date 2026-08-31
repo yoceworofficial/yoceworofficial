@@ -3,6 +3,11 @@ on:
   push:
     paths:
       - index.html
+      - content.html
+      - content-live.html
+      - updates.html
+      - job.html
+      - job-details.html
       - .github/workflows/fix-supabase-key.yml
 permissions:
   contents: write
@@ -11,17 +16,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Replace invalid Supabase publishable key
+      - name: Replace stale Supabase publishable key everywhere
         run: |
-          old='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6UsnK'
+          python - <<'PY'
+          from pathlib import Path
+          old='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr4Usn'
           new='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn'
-          if grep -Fq "$old" index.html; then
-            sed -i "s/$old/$new/g" index.html
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add index.html
-            git commit -m 'Fix Supabase publishable API key'
-            git push
-          else
-            echo 'Supabase key is already correct.'
-          fi
+          changed=[]
+          for p in Path('.').rglob('*'):
+              if not p.is_file() or '.git' in p.parts:
+                  continue
+              if p.suffix.lower() not in {'.html','.js','.css','.json','.txt'}:
+                  continue
+              try: s=p.read_text()
+              except Exception: continue
+              if old in s:
+                  p.write_text(s.replace(old,new))
+                  changed.append(str(p))
+          print('fixed:', changed)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet || (git commit -m 'Fix stale Supabase publishable key' && git push)
