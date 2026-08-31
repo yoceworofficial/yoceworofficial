@@ -1,0 +1,81 @@
+name: YOCEWOR Featured Image Complete Fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content.html'
+      - 'job.html'
+      - '.github/workflows/yocewor-featured-image-complete.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Patch editor and public page
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          # Current content.html already contains the upload UI. This patch only
+          # wires its state into the existing collect/load/preview flow.
+          p = Path('content.html')
+          s = p.read_text(encoding='utf-8')
+          marker = 'YOCEWOR_FEATURED_IMAGE_COMPLETE_V1'
+          if marker not in s:
+              # collect(): persist the selected image with the same content record.
+              old = "['title','short','department','categoryInput','main','eligibility','fee','selection','how','docs','publishDate','lastDate','slug'].forEach(k=>o[k]=val(k));"
+              new = old + "o.featuredImage=window.YOCEWORFeaturedImageState?.get?.()||'';"
+              if old in s and 'o.featuredImage=' not in s:
+                  s = s.replace(old, new, 1)
+
+              # load(): restore the image when editing a saved draft/published item.
+              load_old = "['title','short','department','categoryInput','main','eligibility','fee','selection','how','docs','publishDate','lastDate','slug'].forEach(k=>$(k).value=o[k]||'');"
+              load_new = load_old + "window.YOCEWORFeaturedImageState?.set?.(o.featuredImage||'');"
+              if load_old in s and 'YOCEWORFeaturedImageState?.set' not in s:
+                  s = s.replace(load_old, load_new, 1)
+
+              # Preview: put the optional image at the top of the article body.
+              preview_old = "const o=collect();let h='<span class=\"tag\">'+esc(o.type)+'</span><h1>'+esc(o.title||'Untitled publication')+'</h1>';"
+              preview_new = "const o=collect();let h=(o.featuredImage?'<div class=\"yo-featured-image\"><img src=\"'+esc(o.featuredImage)+'\" alt=\"Featured image\" loading=\"lazy\"></div>':'')+'<span class=\"tag\">'+esc(o.type)+'</span><h1>'+esc(o.title||'Untitled publication')+'</h1>';"
+              if preview_old in s and 'o.featuredImage?\'<div class=\"yo-featured-image\"' not in s:
+                  s = s.replace(preview_old, preview_new, 1)
+
+              # Public-safe CSS and a marker so the patch is idempotent.
+              css = '<style id="yocewor-featured-image-complete-css">.yo-featured-image{margin:0 0 22px;border:1px solid #d6e1e8;border-radius:12px;overflow:hidden;background:#f7fafc}.yo-featured-image img{display:block;width:100%;max-height:430px;object-fit:cover}@media(max-width:700px){.yo-featured-image{margin-bottom:16px;border-radius:10px}.yo-featured-image img{max-height:260px;object-fit:cover}}</style>'
+              if 'yocewor-featured-image-complete-css' not in s:
+                  s = s.replace('</head>', css + '</head>', 1)
+              s = s.replace('</body>', '<!-- '+marker+' -->\n</body>', 1)
+              p.write_text(s, encoding='utf-8')
+
+          # job.html is the public job-detail renderer. If a published job record
+          # contains featuredImage, render it; otherwise render nothing at all.
+          p = Path('job.html')
+          s = p.read_text(encoding='utf-8')
+          marker = 'YOCEWOR_PUBLIC_FEATURED_IMAGE_V1'
+          if marker not in s:
+              css = '<style id="yocewor-public-featured-image-css">.yo-public-featured-image{margin:14px 0 18px;border:1px solid #d7dee6;border-radius:12px;overflow:hidden;background:#f7f9fb}.yo-public-featured-image img{display:block;width:100%;max-height:480px;object-fit:cover}@media(max-width:700px){.yo-public-featured-image{margin:10px 0 14px;border-radius:9px}.yo-public-featured-image img{max-height:280px}}</style>'
+              if 'yocewor-public-featured-image-css' not in s:
+                  s = s.replace('</style></head>', '</style>'+css+'</head>', 1)
+              needle = "<section class=\"title\"><span class=\"tag\">'+esc((x.type||'JOB').toUpperCase())+'</span><h1>'+esc(x.title)+'</h1><p class=\"muted\">'+esc(x.department||'')+'</p></section>"
+              replacement = "<section class=\"title\"><span class=\"tag\">'+esc((x.type||'JOB').toUpperCase())+'</span><h1>'+esc(x.title)+'</h1><p class=\"muted\">'+esc(x.department||'')+'</p>'+((x.featuredImage)?'<div class=\"yo-public-featured-image\"><img src=\"'+esc(x.featuredImage)+'\" alt=\"'+esc(x.title)+'\" loading=\"lazy\"></div>':'')+'</section>"
+              if needle in s:
+                  s = s.replace(needle, replacement, 1)
+                  s = s.replace('</script></body></html>', '<!-- '+marker+' -->\n</script></body></html>', 1)
+                  p.write_text(s, encoding='utf-8')
+
+      - name: Commit fixes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add content.html job.html
+          git diff --cached --quiet || git commit -m 'Fix featured image persistence and public rendering'
+          git push
