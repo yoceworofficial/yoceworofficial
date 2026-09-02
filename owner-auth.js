@@ -2,7 +2,7 @@
   const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
   const SUPABASE_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
   const FUNCTION_URL=SUPABASE_URL+'/functions/v1/team-management';
-  const STORAGE_KEYS=['sb-mzntgjyecymcpiklfk-auth-token','yocewor_team_session'];
+  const STORAGE_KEYS=['sb-mzntgjyecymcpzciklfk-auth-token','yocewor_team_session'];
   let refreshInFlight=null;
   function parseStored(){for(const key of STORAGE_KEYS){try{const raw=localStorage.getItem(key);if(!raw)continue;const x=JSON.parse(raw);const s=x?.currentSession||x?.session||x;if(s?.access_token)return {key,wrapper:x,session:s}}catch(e){}}return null}
   function readStoredSession(){return parseStored()?.session||null}
