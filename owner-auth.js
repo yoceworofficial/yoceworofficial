@@ -13,8 +13,10 @@
   window.YOCEWOR_AUTH={request,requireRole,readStoredSession,SUPABASE_URL,SUPABASE_KEY,signOut};
   function ensureOwnerNav(){
     if(location.pathname==='/gm-manage-users.html'){
-      const removeLogout=()=>document.querySelectorAll('#logout').forEach(el=>el.remove());
-      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',removeLogout);else removeLogout();
+      const hideLogout=()=>{document.querySelectorAll('#logout').forEach(el=>{el.remove();});document.querySelectorAll('.nav button').forEach(el=>{if(/logout/i.test(el.textContent||''))el.remove()})};
+      const style=document.createElement('style');style.id='yocewor-gm-manage-no-logout';style.textContent='#logout,.nav button{display:none!important}';(document.head||document.documentElement).appendChild(style);
+      hideLogout();
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',hideLogout);else setTimeout(hideLogout,0);
       return;
     }
     if(location.pathname.includes('gm-')) return;
