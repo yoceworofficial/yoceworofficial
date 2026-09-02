@@ -1,6 +1,6 @@
 (function(){
   const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
-  const SUPABASE_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
+  const SUPABASE_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr4Usn';
   const FUNCTION_URL=SUPABASE_URL+'/functions/v1/team-management';
   const STORAGE_KEYS=['sb-mzntgjyecymcpzciklfk-auth-token','yocewor_team_session'];
   function parseStored(){for(const key of STORAGE_KEYS){try{const raw=localStorage.getItem(key);if(!raw)continue;const x=JSON.parse(raw);const s=x?.currentSession||x?.session||x;if(s?.access_token)return {key,wrapper:x,session:s}}catch(e){}}return null}
@@ -12,7 +12,7 @@
   async function signOut(){try{const session=readStoredSession();if(session?.access_token)await fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY}})}catch(e){}for(const k of STORAGE_KEYS)localStorage.removeItem(k)}
   window.YOCEWOR_AUTH={request,requireRole,readStoredSession,SUPABASE_URL,SUPABASE_KEY,signOut};
   function ensureOwnerNav(){
-    if(location.pathname.endsWith('/gm-dashboard.html')) return;
+    if(location.pathname.includes('gm-')) return;
     const html='<a href="/owner-dashboard.html">🏠 Home</a><a href="/dashboard.html">📊 Dashboard</a><a href="/team-management-live.html">👥 Team</a><a href="/content.html">📝 Content</a><a href="/departments.html">🏢 Departments</a><a href="/important-notice.html">📢 Important Notice</a><a href="/live-notice.html">🔴 Live Notice</a><a href="/settings.html">⚙️ Settings</a><a href="/activity-audit.html">🧾 Activity / Audit</a><a href="/" id="yocewor-nav-logout">🚪 Logout</a>';
     document.querySelectorAll('.nav').forEach(nav=>{nav.innerHTML=html;const current=location.pathname.replace(/\/$/,'')||'/owner-dashboard.html';nav.querySelectorAll('a').forEach(a=>{if(a.getAttribute('href')===current)a.classList.add('active')});const lo=nav.querySelector('#yocewor-nav-logout');if(lo)lo.onclick=async e=>{e.preventDefault();await signOut();location.href='/'}})
   }
