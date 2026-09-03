@@ -44,6 +44,21 @@ jobs:
             s=s.replace('/owner-auth.js','/owner-auth.js?'+version)
             p.write_text(s,encoding='utf-8')
           PY
+      - name: Refine job details side layout
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('job-details.html')
+          if p.exists():
+            s=p.read_text(encoding='utf-8')
+            css='''<style id="yocewor-side-layout">\nhtml,body{width:100%;max-width:100%;overflow-x:hidden!important}\n.wrap{width:100%;max-width:1080px;margin-left:auto;margin-right:auto;padding-left:20px;padding-right:20px}\n.hero,.content-card{width:100%;max-width:100%;margin-left:0;margin-right:0}\n.content-card{border-radius:10px}\n.content-card>.intro,.content-card>.grid,.content-card>.fee-grid,.content-card>.exam-grid,.content-card>.links,.content-card>.notice,.content-card>.steps,.content-card>.empty,.content-card>.section,.content-card>.faq{max-width:calc(100% - 32px);margin-left:16px;margin-right:16px}\n.link-row,.info,.section,.step,.highlight,.notice{min-width:0;max-width:100%}\n.link-info{min-width:0;max-width:100%}\n.link-action{flex:0 1 116px;min-width:96px;max-width:38%;white-space:normal;overflow-wrap:anywhere}\n@media(max-width:600px){.wrap{padding-left:14px;padding-right:14px}.hero{padding-left:13px;padding-right:13px}.content-card>.intro,.content-card>.grid,.content-card>.fee-grid,.content-card>.exam-grid,.content-card>.links,.content-card>.notice,.content-card>.steps,.content-card>.empty,.content-card>.section,.content-card>.faq{max-width:calc(100% - 26px);margin-left:13px;margin-right:13px}.link-row{gap:8px}.link-action{min-width:88px;max-width:36%;padding-left:7px;padding-right:7px}.content-card h2{padding-left:13px;padding-right:13px}}\n</style>'''
+            if 'id="yocewor-side-layout"' in s:
+              import re
+              s=re.sub(r'<style id="yocewor-side-layout">.*?</style>',css,s,flags=re.S)
+            else:
+              s=s.replace('</head>',css+'</head>',1)
+            p.write_text(s,encoding='utf-8')
+          PY
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
