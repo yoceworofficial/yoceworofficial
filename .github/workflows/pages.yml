@@ -16,24 +16,25 @@ concurrency:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout production branch
         uses: actions/checkout@v4
         with:
           ref: main-live
+          fetch-depth: 1
 
-      - name: Configure Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload site
+      - name: Upload production site
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
 
-      - name: Deploy
+      - name: Deploy production site
         id: deployment
         uses: actions/deploy-pages@v4
