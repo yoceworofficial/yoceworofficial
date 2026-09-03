@@ -1,0 +1,61 @@
+name: YOCEWOR Featured Image Fix
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: yocewor-pages-featured-image
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Patch actual Content editor and Job Details image
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          # The real editor is loaded inside content.html as content-live-fixed.html.
+          p=Path('content-live-fixed.html')
+          if p.exists():
+            s=p.read_text(encoding='utf-8')
+            tag='<script src="/edit-image-upload-v2.js?image-upload-v2"></script>'
+            if tag not in s:
+              s=s.replace('</body>',tag+'</body>',1)
+              p.write_text(s,encoding='utf-8')
+
+          # Never show a hard-coded cover. Render the image saved in the job record.
+          p=Path('job-details.html')
+          if p.exists():
+            s=p.read_text(encoding='utf-8')
+            old='<img class="yocewor-job-cover" src="assets/yocewor-job-cover.svg" alt="YOCEWOR Job & Recruitment">'
+            s=s.replace(old,'')
+            needle="document.getElementById('app').innerHTML=`<article class=\"hero\">"
+            repl="document.getElementById('app').innerHTML=`${j.featured_image?'<img class=\"yocewor-job-cover\" src=\"'+esc(j.featured_image)+'\" alt=\"'+esc(j.title||'YOCEWOR Recruitment')+'\">':''}<article class=\"hero\">"
+            if needle in s:
+              s=s.replace(needle,repl,1)
+            p.write_text(s,encoding='utf-8')
+          PY
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
