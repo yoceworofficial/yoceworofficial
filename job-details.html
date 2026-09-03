@@ -11,7 +11,7 @@
 </head>
 <body><header class="top"><div class="wrap brand"><strong>YOCEWOR</strong><span>Government Recruitment & Information Portal</span></div></header><main class="wrap" id="app"><div class="content-card">Loading job details…</div></main><footer>© YOCEWOR — Recruitment & Information Portal</footer>
 <script>
-const db=supabase.createClient('https://mzntgjyecymcpzciklfk.supabase.co','sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr4Usn');
+const db=supabase.createClient('https://mzntgjyecymcpzciklfk.supabase.co','sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn');
 const params=new URLSearchParams(location.search);const id=params.get('id');const slug=params.get('slug')||location.pathname.split('/').filter(Boolean).pop();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=s=>String(s??'').replace(/undefinedn/g,'\n').replace(/\\n/g,'\n').replace(/\r/g,'').trim();
