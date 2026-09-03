@@ -2,7 +2,7 @@ name: Deploy YOCEWOR to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main-live]
   workflow_dispatch:
 
 permissions:
