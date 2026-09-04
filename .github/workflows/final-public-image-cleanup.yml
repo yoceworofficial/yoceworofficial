@@ -1,0 +1,36 @@
+name: Final Public Image Cleanup
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Remove legacy hardcoded cover and preserve database image
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('job-details.html')
+          s = p.read_text(encoding='utf-8')
+          marker = 'YOCEWOR_FINAL_LEGACY_COVER_BLOCK_V2'
+          if marker not in s:
+              patch = r'''\n<script id="yocewor-final-legacy-cover-cleanup">\n(function(){\n  function cleanLegacyCover(){\n    document.querySelectorAll('img.yocewor-job-cover').forEach(function(el){ el.remove(); });\n  }\n  cleanLegacyCover();\n  new MutationObserver(cleanLegacyCover).observe(document.documentElement,{childList:true,subtree:true});\n})();\n</script>\n<!-- YOCEWOR_FINAL_LEGACY_COVER_BLOCK_V2 -->\n'''
+              s=s.replace('</body>',patch+'</body>',1)
+              p.write_text(s,encoding='utf-8')
+      - name: Commit cleanup
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add job-details.html
+          git diff --cached --quiet || git commit -m 'Remove legacy hardcoded job cover'
+          git push
