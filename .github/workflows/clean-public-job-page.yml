@@ -1,0 +1,100 @@
+name: Clean Public Job Page
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Apply clean public layout
+        shell: python
+        run: |
+          from pathlib import Path
+          p=Path('job-details.html')
+          s=p.read_text(encoding='utf-8')
+          marker='YOCEWOR_CLEAN_PUBLIC_LAYOUT_V1'
+          if marker not in s:
+              css=r'''<style id="yocewor-clean-public-layout">
+:root{--yo-bg:#f5f7fa;--yo-card:#fff;--yo-navy:#123f6b;--yo-blue:#1769aa;--yo-text:#1f2937;--yo-muted:#66758a;--yo-line:#e2e8f0;--yo-soft:#eef5fb}
+html,body{background:var(--yo-bg)}
+body{font-size:15px;line-height:1.65}
+.top{box-shadow:0 2px 10px rgba(18,63,107,.12)}
+.wrap{max-width:1040px}
+main.wrap{padding-top:18px}
+.hero,.content-card{background:var(--yo-card);border:1px solid var(--yo-line);border-radius:12px;box-shadow:0 2px 10px rgba(15,23,42,.04)}
+.hero{margin:0 0 18px;padding:0;overflow:hidden;border-bottom:1px solid var(--yo-line)}
+.hero .badge,.hero h1,.hero>p,.hero>.grid,.hero>.sharebar{margin-left:20px;margin-right:20px}
+.hero .badge{margin-top:18px}
+.hero h1{font-size:clamp(24px,3.5vw,34px);margin-top:10px;margin-bottom:8px}
+.hero>p{font-size:15px;color:#526173;margin-bottom:18px}
+.yo-featured-image{margin:0!important;border:0!important;border-radius:0!important;background:#fff!important;max-height:none!important}
+.yo-featured-image img{display:block;width:100%;height:auto;max-height:560px;object-fit:contain;margin:0 auto}
+.grid{border-top:1px solid var(--yo-line);border-left:0}
+.info{padding:12px 14px;background:#fff;border-bottom:1px solid var(--yo-line);border-right:1px solid var(--yo-line);min-height:68px}
+.info b{font-size:9px;color:#718096;letter-spacing:.6px}
+.info span{font-size:14px;line-height:1.45}
+.sharebar{padding-bottom:20px;margin-top:16px}
+button,.btn{border-radius:8px;box-shadow:none}
+.content-card{margin:0 0 16px;padding:18px 20px;overflow:visible}
+.content-card h2{margin:0 0 14px;padding:0 0 10px;border-bottom:2px solid var(--yo-navy);font-size:20px}
+.intro{font-size:15px;color:#344054}
+.intro p{margin:0}
+.section{padding:10px 0;margin:0;border-bottom:1px solid var(--yo-line)}
+.section:last-child{border-bottom:0}
+.section h3{font-size:16px;margin:0 0 6px;color:var(--yo-navy)}
+.steps{gap:0}
+.step{padding:10px 10px 10px 40px;border-bottom:1px solid var(--yo-line);background:#fff}
+.step:last-child{border-bottom:0}
+.step:before{top:9px;width:26px;height:26px;line-height:26px;background:var(--yo-blue)}
+.fee-grid,.exam-grid{gap:12px}
+.highlight{border:1px solid var(--yo-line);border-left:4px solid #e67e22;border-radius:8px;padding:12px 14px;background:#fafcff}
+.notice{border-radius:8px;padding:12px 14px}
+.links{gap:0;border-top:1px solid var(--yo-line)}
+.link-row{padding:13px 0;border-bottom:1px solid var(--yo-line);background:#fff}
+.link-title{font-size:14px;color:#173e62}
+.link-sub{font-size:11px;color:#8190a3}
+.link-action{min-width:112px;border-radius:7px}
+.faq{border-bottom:1px solid var(--yo-line)}
+.faq summary{padding:13px 0;font-size:14px;list-style-position:inside}
+.faq .answer{padding:0 0 13px;font-size:14px;color:#475467}
+.empty{padding:4px 0;color:var(--yo-muted)}
+footer{padding:24px 12px 42px}
+@media(max-width:600px){
+  main.wrap{padding-top:10px}
+  .wrap{padding-left:10px;padding-right:10px}
+  .hero,.content-card{border-radius:9px}
+  .hero .badge,.hero h1,.hero>p,.hero>.grid,.hero>.sharebar{margin-left:14px;margin-right:14px}
+  .hero h1{font-size:23px}
+  .hero>p{font-size:14px}
+  .yo-featured-image img{max-height:none;width:100%;object-fit:contain}
+  .content-card{padding:15px 14px;margin-bottom:12px}
+  .content-card h2{font-size:18px;margin-bottom:12px}
+  .grid{grid-template-columns:1fr 1fr}
+  .info{padding:10px 9px;min-height:62px}
+  .info span{font-size:13px}
+  .sharebar>*{flex:1 1 calc(50% - 8px)}
+  .fee-grid,.exam-grid{grid-template-columns:1fr}
+  .link-row{gap:8px;padding:11px 0}
+  .link-title{font-size:13px}
+  .link-action{min-width:94px;max-width:35%;font-size:11px;padding:8px 6px}
+}
+</style>'''
+              s=s.replace('</head>',css+'\n<!-- '+marker+' -->\n</head>',1)
+              p.write_text(s,encoding='utf-8')
+      - name: Commit layout
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add job-details.html
+          git diff --cached --quiet || git commit -m 'Clean and organize public job details layout'
+          git push
