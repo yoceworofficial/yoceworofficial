@@ -1,6 +1,6 @@
 (function(){
   const DB_URL='https://mzntgjyecymcpzciklfk.supabase.co';
-  const DB_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr4Usn';
+  const DB_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
   function start(){
     const url=document.getElementById('imageUrl');
     if(!url || document.getElementById('imageUploadBoxV2')) return;
