@@ -74,6 +74,30 @@ jobs:
               s=s.replace('</body>',tag+'</body>',1)
             p.write_text(s,encoding='utf-8')
           PY
+      - name: Add AdSense verification and ads.txt
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          adsense = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2660794738235284" crossorigin="anonymous"></script>'
+
+          for p in Path('.').rglob('*.html'):
+            if any(part in {'.git', 'node_modules', '_site'} for part in p.parts):
+              continue
+            s = p.read_text(encoding='utf-8')
+            if 'client=ca-pub-2660794738235284' not in s:
+              if re.search(r'</head>', s, flags=re.I):
+                s = re.sub(r'</head>', adsense + '\n</head>', s, count=1, flags=re.I)
+                p.write_text(s, encoding='utf-8')
+
+          Path('ads.txt').write_text('google.com, pub-2660794738235284, DIRECT, f08c47fec0942fa0\n', encoding='utf-8')
+          PY
+      - name: Verify AdSense files before publish
+        run: |
+          test -s ads.txt
+          grep -F 'google.com, pub-2660794738235284, DIRECT, f08c47fec0942fa0' ads.txt
+          grep -R -l -F 'client=ca-pub-2660794738235284' --include='*.html' . | head -1
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
