@@ -57,5 +57,5 @@ section('📌 भर्ती का संक्षिप्त परिचय
 function copyLink(){navigator.clipboard?.writeText(location.href);alert('लिंक कॉपी हो गया।');}
 run().catch(e=>document.getElementById('app').innerHTML=section('YOCEWOR', '<div class="empty">'+esc(e.message||e)+'</div>'));
 </script>
-</body>
+\n<script id="yocewor-final-legacy-cover-cleanup">\n(function(){\n  function cleanLegacyCover(){\n    document.querySelectorAll('img.yocewor-job-cover').forEach(function(el){ el.remove(); });\n  }\n  cleanLegacyCover();\n  new MutationObserver(cleanLegacyCover).observe(document.documentElement,{childList:true,subtree:true});\n})();\n</script>\n<!-- YOCEWOR_FINAL_LEGACY_COVER_BLOCK_V2 -->\n</body>
 </html>
