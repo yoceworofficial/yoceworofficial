@@ -81,15 +81,21 @@ jobs:
           import re
 
           adsense = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2660794738235284" crossorigin="anonymous"></script>'
+          meta = '<meta name="google-adsense-account" content="ca-pub-2660794738235284">'
 
           for p in Path('.').rglob('*.html'):
             if any(part in {'.git', 'node_modules', '_site'} for part in p.parts):
               continue
             s = p.read_text(encoding='utf-8')
-            if 'client=ca-pub-2660794738235284' not in s:
-              if re.search(r'</head>', s, flags=re.I):
-                s = re.sub(r'</head>', adsense + '\n</head>', s, count=1, flags=re.I)
-                p.write_text(s, encoding='utf-8')
+            changed = False
+            if 'client=ca-pub-2660794738235284' not in s and re.search(r'</head>', s, flags=re.I):
+              s = re.sub(r'</head>', adsense + '\n</head>', s, count=1, flags=re.I)
+              changed = True
+            if 'name="google-adsense-account"' not in s and re.search(r'</head>', s, flags=re.I):
+              s = re.sub(r'</head>', meta + '\n</head>', s, count=1, flags=re.I)
+              changed = True
+            if changed:
+              p.write_text(s, encoding='utf-8')
 
           Path('ads.txt').write_text('google.com, pub-2660794738235284, DIRECT, f08c47fec0942fa0\n', encoding='utf-8')
           PY
@@ -98,6 +104,7 @@ jobs:
           test -s ads.txt
           grep -F 'google.com, pub-2660794738235284, DIRECT, f08c47fec0942fa0' ads.txt
           grep -R -l -F 'client=ca-pub-2660794738235284' --include='*.html' . | head -1
+          grep -R -l -F 'google-adsense-account' --include='*.html' . | head -1
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
