@@ -35,6 +35,23 @@
 <script>
 const db=supabase.createClient('https://mzntgjyecymcpzciklfk.supabase.co','sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn');
 const params=new URLSearchParams(location.search),id=params.get('id'),slug=params.get('slug')||location.pathname.split('/').filter(Boolean).pop();
+const YOCEWOR_ANSWER_KEY_ROUTER_V1=true;
+document.documentElement.style.visibility='hidden';
+(async()=>{
+  try{
+    const key=String(id||'').trim(), cleanSlug=String(slug||'').trim();
+    let q=db.from('jobs').select('id,type').eq('published',true);
+    q=key?q.eq('id',key):q.eq('slug',cleanSlug);
+    const r=await q.maybeSingle();
+    const t=String(r.data?.type||'').toLowerCase().replace(/[-\s]+/g,'_');
+    if(t==='answer_key'){
+      const target='/answer-key-detail.html?'+(r.data?.id?'id='+encodeURIComponent(r.data.id):'slug='+encodeURIComponent(cleanSlug));
+      location.replace(target);
+      return;
+    }
+  }catch(e){}
+  document.documentElement.style.visibility='visible';
+})();
 const SOCIAL={instagram:'https://www.instagram.com/yocewor?igsi=cTE0NmozbWE1d3E5',channel:'https://whatsapp.com/channel/0029VaNA3EBJf05WBdLb1y2n',group:'https://chat.whatsapp.com/D6eEuFsxR0PHslMu8XWZfr?s=sw&p=a&ilr=0',telegram:'https://t.me/YOCEWOR'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=s=>String(s??'').replace(/undefinedn/g,'\n').replace(/\\n/g,'\n').replace(/\r/g,'').trim();
