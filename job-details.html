@@ -68,5 +68,5 @@ run().catch(e=>document.getElementById('app').innerHTML=section('YOCEWOR', '<div
   new MutationObserver(cleanLegacyCover).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
-</body>
+\n<script id="yocewor-final-legacy-cover-cleanup">\n(function(){\n  function cleanLegacyCover(){\n    document.querySelectorAll('img.yocewor-job-cover').forEach(function(el){ el.remove(); });\n  }\n  cleanLegacyCover();\n  new MutationObserver(cleanLegacyCover).observe(document.documentElement,{childList:true,subtree:true});\n})();\n</script>\n<!-- YOCEWOR_FINAL_LEGACY_COVER_BLOCK_V2 -->\n</body>
 </html>
