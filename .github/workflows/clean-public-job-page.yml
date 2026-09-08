@@ -2,15 +2,12 @@ name: Clean Public Job Page
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
   clean:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,56 +23,30 @@ jobs:
           if marker not in s:
               css=r'''<style id="yocewor-premium-public-layout">
 /* YOCEWOR_PREMIUM_PUBLIC_LAYOUT_V2 */
-:root{--yo-deep:#082f55;--yo-blue:#0b5b96;--yo-accent:#f59e0b;--yo-bg:#f5f8fc;--yo-line:#e2eaf2;--yo-text:#203246;--yo-muted:#6b7b8c}
-html,body{background:linear-gradient(180deg,#f8fbff 0,#eef4fa 100%)}body{color:var(--yo-text)}
-.top{background:linear-gradient(135deg,#072d50,#0b5b96);border-bottom:3px solid var(--yo-accent);box-shadow:0 6px 24px #082f5522}
-.hero,.section,.content-card{border:1px solid var(--yo-line);border-radius:17px;box-shadow:0 7px 25px #173b5d12;background:#fff}
-.hero{margin-bottom:21px}.hero h1{color:var(--yo-deep);font-weight:900}.badge{border-radius:999px;background:#edf7ff;color:var(--yo-blue);border-color:#cfe5f7}
-.facts,.grid{gap:10px;padding:12px;background:#f7fbff;border-radius:14px;border-top:0}.fact,.info{border:1px solid var(--yo-line)!important;border-radius:12px;background:#fff;box-shadow:0 3px 12px #173b5d0b;padding:13px}.fact-value,.info span{color:var(--yo-deep);font-weight:800}
-.section{margin-bottom:19px;overflow:hidden}.section-head{padding:15px 18px;background:linear-gradient(90deg,#f7fbff,#fff);border-bottom:1px solid var(--yo-line)}.section-head .bar{width:5px;height:30px;border-radius:99px;background:linear-gradient(#f59e0b,#f97316)}.section-head h2{color:var(--yo-deep);font-weight:900}
-.section-body{padding:19px}.summary-grid{gap:11px}.summary-item{border:1px solid var(--yo-line);border-radius:13px;background:linear-gradient(145deg,#fff,#f8fbff);box-shadow:0 4px 14px #173b5d0b;padding:14px}.summary-item strong{color:var(--yo-deep)}
-.dates{border:1px solid var(--yo-line);border-radius:13px;overflow:hidden}.dates th{background:linear-gradient(90deg,var(--yo-deep),var(--yo-blue));padding:13px}.dates td{padding:13px;border-color:var(--yo-line)}
-.detail-block{border:1px solid var(--yo-line);border-radius:13px;background:#fbfdff;padding:15px;margin-bottom:10px}.detail-block h3{color:var(--yo-blue);font-weight:900}
-.step{border:1px solid var(--yo-line);border-radius:13px;background:#fff;box-shadow:0 4px 13px #173b5d08;padding:13px 14px 13px 52px}.step:before{background:linear-gradient(135deg,var(--yo-blue),#1677b8);width:29px;height:29px;line-height:29px;top:12px}
-.notice{border:1px solid #f1d38a;border-left:5px solid var(--yo-accent);border-radius:13px;background:#fff9e9;padding:15px}
-.link-row,.link{border:1px solid var(--yo-line);border-radius:12px;background:#fff;padding:13px;box-shadow:0 3px 12px #173b5d08}
-/* Plain text sections are converted into premium cards by the script below. */
-.yo-premium-content{display:grid;gap:13px}.yo-card{border:1px solid var(--yo-line);border-radius:16px;background:linear-gradient(145deg,#fff,#f8fbff);padding:18px;box-shadow:0 5px 18px #173b5d0b}.yo-card-title{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:var(--yo-deep);font-size:19px;font-weight:900}.yo-card-title:before{content:'';width:5px;height:27px;border-radius:99px;background:linear-gradient(#f59e0b,#f97316);flex:0 0 auto}.yo-card p{margin:0 0 9px;color:#3d5062;font-size:15px}.yo-card p:last-child{margin-bottom:0}.yo-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.yo-stat{border:1px solid var(--yo-line);border-radius:13px;padding:13px;background:#fff}.yo-stat b{display:block;color:var(--yo-muted);font-size:11px;margin-bottom:3px}.yo-stat strong{display:block;color:var(--yo-deep);font-size:15px}.yo-highlight{background:linear-gradient(135deg,#eef7ff,#fff);border-color:#cfe2f5}
-@media(max-width:700px){.yo-stat-grid{grid-template-columns:1fr}.yo-card{padding:15px}.section-body{padding:15px}}
+.yo-premium-content{display:grid;gap:13px}.yo-card{border:1px solid #dfe8f1;border-radius:16px;background:linear-gradient(145deg,#fff,#f8fbff);padding:18px;box-shadow:0 5px 18px #173b5d0b}.yo-card-title{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#082f55;font-size:19px;font-weight:900}.yo-card-title:before{content:'';width:5px;height:27px;border-radius:99px;background:linear-gradient(#f59e0b,#f97316)}.yo-card p{margin:0 0 9px;color:#3d5062;font-size:15px}.yo-card p:last-child{margin-bottom:0}.yo-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.yo-stat{border:1px solid #dfe8f1;border-radius:13px;padding:13px;background:#fff}.yo-stat b{display:block;color:#6b7b8c;font-size:11px;margin-bottom:3px}.yo-stat strong{display:block;color:#082f55;font-size:15px}.yo-highlight{background:linear-gradient(135deg,#eef7ff,#fff);border-color:#cfe2f5}.section{border-radius:16px;box-shadow:0 7px 25px #173b5d12}.section-head{padding:15px 18px}.section-head h2{font-weight:900}@media(max-width:700px){.yo-stat-grid{grid-template-columns:1fr}.yo-card{padding:15px}.section-body{padding:15px}}
 </style>'''
               s=s.replace('</head>',css+'\n<!-- '+marker+' -->\n</head>',1)
-
-              js=r'''<script id="yocewor-premium-content-v2">
+              js=r'''<script id="yocewor-premium-content-v3">
 (function(){
   const sep=/^[━─—\-_=]{5,}$/;
   const heading=/^(📌|📅|🎓|🎂|💳|🎯|💰|📄|📝|⚠️|🏆|📍)/;
-  function esc(x){return String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-  function makeCard(title,lines){
-    lines=lines.filter(Boolean);
-    if(!lines.length)return '';
-    const important=/महत्वपूर्ण सूचना/.test(title);
-    let h='<article class="yo-card'+(important?' yo-highlight':'')+'"><h3 class="yo-card-title">'+esc(title)+'</h3>';
-    const stats=[];
-    lines.forEach(x=>{const m=x.match(/^([^:]{2,40}):\s*(.+)$/);if(m)stats.push([m[1],m[2]]);});
-    if(stats.length>=2){h+='<div class="yo-stat-grid">'+stats.map(a=>'<div class="yo-stat"><b>'+esc(a[0])+'</b><strong>'+esc(a[1])+'</strong></div>').join('')+'</div>';}
+  const esc=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function card(title,lines){
+    const stats=[]; lines.forEach(x=>{const m=x.match(/^([^:]{2,40}):\s*(.+)$/);if(m)stats.push([m[1],m[2]]);});
+    let h='<article class="yo-card'+(/महत्वपूर्ण सूचना/.test(title)?' yo-highlight':'')+'"><h3 class="yo-card-title">'+esc(title)+'</h3>';
+    if(stats.length>=2) h+='<div class="yo-stat-grid">'+stats.map(a=>'<div class="yo-stat"><b>'+esc(a[0])+'</b><strong>'+esc(a[1])+'</strong></div>').join('')+'</div>';
     else lines.forEach(x=>h+='<p>'+esc(x)+'</p>');
     return h+'</article>';
   }
-  function convert(){
-    document.querySelectorAll('.section-body').forEach(body=>{
-      if(body.dataset.yoPremium==='1')return;
-      const text=body.innerText||'';
-      if(!/━{5,}/.test(text))return;
-      const lines=text.split(/\n/).map(x=>x.trim()).filter(Boolean);
-      const groups=[];let g=null;
-      lines.forEach(x=>{if(sep.test(x))return;if(heading.test(x)){g={title:x,lines:[]};groups.push(g);}else if(g)g.lines.push(x);});
-      if(groups.length<2)return;
-      body.innerHTML='<div class="yo-premium-content">'+groups.map(x=>makeCard(x.title,x.lines)).join('')+'</div>';
-      body.dataset.yoPremium='1';
-    });
-  }
-  const run=()=>setTimeout(convert,300);
-  new MutationObserver(run).observe(document.getElementById('app')||document.body,{childList:true,subtree:true});
+  function convert(){document.querySelectorAll('.section-body').forEach(body=>{
+    if(body.dataset.yoPremium==='1')return;
+    const text=body.innerText||''; if(!/━{5,}/.test(text))return;
+    const lines=text.split(/\n/).map(x=>x.trim()).filter(Boolean), groups=[]; let g=null;
+    lines.forEach(x=>{if(sep.test(x))return;if(heading.test(x)){g={title:x,lines:[]};groups.push(g)}else if(g)g.lines.push(x)});
+    if(groups.length<2)return;
+    body.innerHTML='<div class="yo-premium-content">'+groups.map(x=>card(x.title,x.lines)).join('')+'</div>'; body.dataset.yoPremium='1';
+  })}
+  const run=()=>setTimeout(convert,250); new MutationObserver(run).observe(document.getElementById('app')||document.body,{childList:true,subtree:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
 })();
 </script>'''
