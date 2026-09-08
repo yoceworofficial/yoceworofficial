@@ -1,0 +1,122 @@
+name: YOCEWOR Premium All Jobs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  premium-layout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply premium YOCEWOR recruitment layout
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('job-details.html')
+          s = p.read_text(encoding='utf-8')
+
+          marker = 'YOCEWOR_PREMIUM_ALL_JOBS_V2'
+          if marker in s:
+              print('Premium layout already installed')
+              raise SystemExit(0)
+
+          css = r'''
+/* YOCEWOR_PREMIUM_ALL_JOBS_V2 */
+:root{--yo-blue:#0b4f8a;--yo-deep:#082f55;--yo-accent:#f59e0b;--yo-bg:#f5f8fc;--yo-card:#fff;--yo-border:#e3eaf2;--yo-text:#203246;--yo-muted:#6b7b8c;--yo-green:#168a55}
+body{background:linear-gradient(180deg,#f7faff 0,#eef4fa 100%);color:var(--yo-text)}
+.top{background:linear-gradient(135deg,#072d50 0,#0b4f8a 70%,#126aa5 100%);border-bottom:3px solid var(--yo-accent);box-shadow:0 5px 22px #082f5522}
+.hero,.section{border:1px solid var(--yo-border);border-radius:18px;box-shadow:0 8px 28px #173b5d12;background:rgba(255,255,255,.98)}
+.hero{margin-bottom:22px}.hero-main{padding:24px}.hero h1{color:var(--yo-deep);font-weight:900;letter-spacing:-.3px}.badge{background:#eaf4ff;color:var(--yo-blue);border-color:#cfe4f8;border-radius:999px;padding:6px 12px}
+.facts{border-top:0;gap:10px;padding:14px;background:#f8fbff;margin-top:20px;border-radius:14px}.fact{border:1px solid var(--yo-border)!important;border-radius:12px;background:#fff;box-shadow:0 3px 12px #173b5d0b;padding:13px}.fact-label{color:var(--yo-muted)}.fact-value{color:var(--yo-deep);font-size:15px}
+.section{margin-bottom:20px;overflow:hidden}.section-head{padding:15px 18px;background:linear-gradient(90deg,#f7fbff,#fff);border-bottom:1px solid var(--yo-border)}.section-head .bar{width:5px;height:30px;background:linear-gradient(#f59e0b,#f97316);border-radius:99px}.section-head h2{font-size:20px;color:var(--yo-deep);font-weight:900}.section-body{padding:20px}
+.summary-grid{gap:12px}.summary-item{border:1px solid var(--yo-border);border-radius:14px;background:linear-gradient(145deg,#fff,#f7fbff);padding:14px;box-shadow:0 4px 14px #173b5d09}.summary-item small{color:var(--yo-muted)}.summary-item strong{color:var(--yo-deep);font-size:15px}
+.dates{border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--yo-border);border-radius:14px}.dates th{background:linear-gradient(90deg,var(--yo-deep),var(--yo-blue));padding:13px}.dates td{padding:13px;border-color:var(--yo-border)}
+.detail-block{border:1px solid var(--yo-border);border-radius:14px;background:#fbfdff;padding:15px;margin-bottom:11px}.detail-block:first-child{padding-top:15px}.detail-block:last-child{padding-bottom:15px;margin-bottom:0}.detail-block h3{color:var(--yo-blue);font-weight:900}
+.step{border:1px solid var(--yo-border);border-radius:14px;background:#fff;box-shadow:0 4px 13px #173b5d08;padding:13px 14px 13px 52px}.step:before{background:linear-gradient(135deg,var(--yo-blue),#1677b8);width:29px;height:29px;line-height:29px;top:12px}
+.notice{border:1px solid #f2d48b;border-left:5px solid #f59e0b;border-radius:13px;background:#fff9e9;padding:15px;color:#5f4b16}
+.links{grid-template-columns:repeat(2,minmax(0,1fr))}.link{border:1px solid var(--yo-border);border-radius:13px;background:#fff;padding:13px;box-shadow:0 3px 12px #173b5d08}.link a{border-radius:9px;background:var(--yo-deep)}
+.social-box{border-radius:15px;box-shadow:0 5px 18px #173b5d0b}
+/* Plain-text main content becomes real YOCEWOR cards */
+.yo-premium-content{display:grid;gap:13px}.yo-card{border:1px solid var(--yo-border);border-radius:16px;background:linear-gradient(145deg,#fff,#f8fbff);padding:18px;box-shadow:0 5px 18px #173b5d0b}.yo-card-title{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:var(--yo-deep);font-size:19px;font-weight:900}.yo-card-title:before{content:'';width:5px;height:27px;border-radius:99px;background:linear-gradient(#f59e0b,#f97316);flex:0 0 auto}.yo-card p{margin:0 0 9px;color:#3d5062;font-size:15px}.yo-card p:last-child{margin-bottom:0}.yo-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.yo-stat{border:1px solid var(--yo-border);border-radius:13px;padding:13px;background:#fff}.yo-stat b{display:block;color:var(--yo-muted);font-size:11px;margin-bottom:3px}.yo-stat strong{display:block;color:var(--yo-deep);font-size:15px}.yo-card.yo-highlight{background:linear-gradient(135deg,#eef7ff,#fff);border-color:#cfe2f5}
+@media(max-width:700px){.links{grid-template-columns:1fr}.yo-stat-grid{grid-template-columns:1fr}.yo-card{padding:15px}.section-body{padding:15px}}
+'''
+
+          js = r'''
+<script id="yocewor-premium-content-v2">
+(function(){
+  const SEP=/^[━─—\-_=]{5,}$/;
+  const known={
+    '📌 भर्ती एक नजर में':'📌 भर्ती एक नज़र में','📌 भर्ती एक नजर में':'📌 भर्ती एक नज़र में',
+    '📅 महत्वपूर्ण तिथियाँ':'📅 महत्वपूर्ण तिथियाँ','🎓 शैक्षणिक योग्यता':'🎓 शैक्षणिक योग्यता',
+    '🎂 आयु सीमा':'🎂 आयु सीमा','💳 आवेदन शुल्क':'💳 आवेदन शुल्क','🎯 चयन प्रक्रिया':'🎯 चयन प्रक्रिया',
+    '💰 वेतनमान':'💰 वेतनमान','📄 जरूरी दस्तावेज':'📄 जरूरी दस्तावेज','📝 आवेदन कैसे करें':'📝 आवेदन कैसे करें',
+    '⚠️ महत्वपूर्ण सूचना':'⚠️ महत्वपूर्ण सूचना','🏆 रिक्ति विवरण':'🏆 रिक्ति विवरण','📍 कार्य स्थान':'📍 कार्य स्थान'
+  };
+  function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function card(title,lines){
+    const clean=lines.filter(x=>x&&!SEP.test(x));
+    if(!clean.length)return '';
+    let html='<article class="yo-card '+(/महत्वपूर्ण सूचना/.test(title)?'yo-highlight':'')+'"><h3 class="yo-card-title">'+esc(known[title]||title)+'</h3>';
+    const stats=[];
+    clean.forEach(x=>{
+      const m=x.match(/^([^:]{2,35}):\s*(.+)$/);
+      if(m && /^(कुल पद|आवेदन|Notice|आवेदन शुरू|अंतिम तिथि|Correction|Exam Date|General\/OBC-NCL\/EWS|SC\/ST|Senior Personal Assistant|Personal Assistant|TA|MTS|Salary|वेतन|Age|आयु|योग्यता)/i.test(m[1])) stats.push([m[1],m[2]]);
+    });
+    if(stats.length>=2){html+='<div class="yo-stat-grid">'+stats.map(a=>'<div class="yo-stat"><b>'+esc(a[0])+'</b><strong>'+esc(a[1])+'</strong></div>').join('')+'</div>';
+      const used=new Set(stats.map(a=>a[0]+'|'+a[1]));
+      clean.forEach(x=>{const m=x.match(/^([^:]{2,35}):\s*(.+)$/);if(!(m&&used.has(m[1]+'|'+m[2])))html+='<p>'+esc(x)+'</p>';});
+    }else clean.forEach(x=>html+='<p>'+esc(x)+'</p>');
+    return html+'</article>';
+  }
+  function convert(root){
+    root.querySelectorAll('.section-body').forEach(body=>{
+      if(body.dataset.yoPremium==='1')return;
+      const text=body.innerText||'';
+      if(!/━{5,}/.test(text))return;
+      const raw=text.split(/\n/).map(x=>x.trim()).filter(Boolean);
+      const groups=[];let current=null;
+      raw.forEach(line=>{
+        if(SEP.test(line))return;
+        const isHeading=/^(📌|📅|🎓|🎂|💳|🎯|💰|📄|📝|⚠️|🏆|📍)/.test(line);
+        if(isHeading){current={title:line,lines:[]};groups.push(current);}else if(current)current.lines.push(line);else{current={title:'📋 जानकारी',lines:[line]};groups.push(current);}
+      });
+      if(groups.length<2)return;
+      body.innerHTML='<div class="yo-premium-content">'+groups.map(g=>card(g.title,g.lines)).join('')+'</div>';
+      body.dataset.yoPremium='1';
+    });
+  }
+  const run=()=>setTimeout(()=>convert(document),250);
+  new MutationObserver(run).observe(document.getElementById('app')||document.body,{childList:true,subtree:true});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+})();
+</script>
+'''
+
+          if '</head>' in s:
+              s=s.replace('</head>', '<style>'+css+'</style>\n</head>', 1)
+          else:
+              raise SystemExit('No </head> found')
+          if '</body>' in s:
+              s=s.replace('</body>', js+'\n</body>', 1)
+          else:
+              raise SystemExit('No </body> found')
+
+          p.write_text(s,encoding='utf-8')
+          print('Premium layout injected')
+
+      - name: Commit premium layout
+        run: |
+          git config user.name "YOCEWOR Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add job-details.html
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Apply premium YOCEWOR card layout to all recruitment pages"
+          git push
