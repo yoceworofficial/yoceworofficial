@@ -1,4 +1,4 @@
-// YOCEWOR homepage jobs fallback v2
+// YOCEWOR homepage jobs fallback v3
 (function(){
   'use strict';
   const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
@@ -6,9 +6,9 @@
   const isAnswerKey=j=>String(j&&j.type||'').toLowerCase().replace(/[-\s]+/g,'_')==='answer_key';
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function target(){return document.getElementById('jobList')||document.getElementById('jobsList')||document.querySelector('[data-home-jobs]');}
+  function hasRenderedJobs(box){return !!(box&&box.querySelector('.item'))}
   function render(rows){
     const box=target(); if(!box) return false;
-    if(box.children.length) return true;
     const jobs=(rows||[]).filter(j=>!isAnswerKey(j));
     if(!jobs.length){box.innerHTML='<div class="empty">अभी कोई published recruitment नहीं है।</div>';return true;}
     box.innerHTML=jobs.slice(0,12).map(j=>{
@@ -29,7 +29,7 @@
     });
   }
   async function run(){
-    const box=target(); if(!box||box.children.length) return;
+    const box=target(); if(!box||hasRenderedJobs(box)) return;
     try{
       const clientLib=await loadClient();
       if(!clientLib||typeof clientLib.createClient!=='function') throw new Error('Supabase client unavailable');
@@ -39,6 +39,6 @@
       render(data||[]);
     }catch(e){console.error('YOCEWOR home jobs fallback:',e);}
   }
-  function start(){setTimeout(run,800);setTimeout(run,2500);setTimeout(run,5000);}
+  function start(){setTimeout(run,700);setTimeout(run,2000);setTimeout(run,4500);setTimeout(run,8000);}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
