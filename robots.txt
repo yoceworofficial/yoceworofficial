@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://yocewor.in/sitemap.xml
+
+# YOCEWOR deployment refresh — homepage jobs loading fix
