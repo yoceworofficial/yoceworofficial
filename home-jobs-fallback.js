@@ -1,4 +1,4 @@
-// YOCEWOR homepage jobs fallback v3
+// YOCEWOR homepage jobs fallback v4
 (function(){
   'use strict';
   const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
@@ -6,7 +6,7 @@
   const isAnswerKey=j=>String(j&&j.type||'').toLowerCase().replace(/[-\s]+/g,'_')==='answer_key';
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function target(){return document.getElementById('jobList')||document.getElementById('jobsList')||document.querySelector('[data-home-jobs]');}
-  function hasRenderedJobs(box){return !!(box&&box.querySelector('.item'))}
+  function hasRenderedJobs(box){return !!(box&&box.querySelector('.item-title')&&box.querySelector('.item-actions'));}
   function render(rows){
     const box=target(); if(!box) return false;
     const jobs=(rows||[]).filter(j=>!isAnswerKey(j));
@@ -18,27 +18,17 @@
     }).join('');
     return true;
   }
-  function loadClient(){
-    if(window.supabase && typeof window.supabase.createClient==='function') return Promise.resolve(window.supabase);
-    return new Promise(function(resolve,reject){
-      const s=document.createElement('script');
-      s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-      s.onload=function(){resolve(window.supabase);};
-      s.onerror=reject;
-      document.head.appendChild(s);
-    });
-  }
   async function run(){
     const box=target(); if(!box||hasRenderedJobs(box)) return;
     try{
-      const clientLib=await loadClient();
-      if(!clientLib||typeof clientLib.createClient!=='function') throw new Error('Supabase client unavailable');
-      const db=clientLib.createClient(SUPABASE_URL,SUPABASE_KEY);
-      const {data,error}=await db.from('jobs').select('id,title,type,department,start_date,last_date,vacancies,qualification,age,salary,description,apply_url,notification_url,created_at,updated_at,publish_date,published_at,published').eq('published',true).order('updated_at',{ascending:false}).order('created_at',{ascending:false}).limit(1000);
-      if(error) throw error;
-      render(data||[]);
-    }catch(e){console.error('YOCEWOR home jobs fallback:',e);}
+      const fields='id,title,type,department,start_date,last_date,vacancies,qualification,age,salary,description,apply_url,notification_url,created_at,updated_at,publish_date,published_at,published';
+      const url=SUPABASE_URL+'/rest/v1/jobs?select='+encodeURIComponent(fields)+'&published=eq.true&order=updated_at.desc,created_at.desc&limit=1000';
+      const r=await fetch(url,{method:'GET',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store'});
+      if(!r.ok) throw new Error('Supabase REST HTTP '+r.status);
+      const rows=await r.json();
+      render(Array.isArray(rows)?rows:[]);
+    }catch(e){console.error('YOCEWOR home jobs fallback v4:',e);}
   }
-  function start(){setTimeout(run,700);setTimeout(run,2000);setTimeout(run,4500);setTimeout(run,8000);}
+  function start(){setTimeout(run,500);setTimeout(run,1500);setTimeout(run,3000);setTimeout(run,6000);setTimeout(run,10000);}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
