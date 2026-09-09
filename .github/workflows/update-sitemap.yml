@@ -1,0 +1,35 @@
+name: Update YOCEWOR Sitemap
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/update-sitemap.mjs'
+      - '.github/workflows/update-sitemap.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sitemap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate sitemap from published Supabase records
+        run: node scripts/update-sitemap.mjs
+
+      - name: Commit sitemap when changed
+        run: |
+          if git diff --quiet -- sitemap.xml; then
+            echo 'Sitemap unchanged.'
+            exit 0
+          fi
+          git config user.name 'YOCEWOR Sitemap Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add sitemap.xml
+          git commit -m 'SEO: update sitemap from published content'
+          git push
