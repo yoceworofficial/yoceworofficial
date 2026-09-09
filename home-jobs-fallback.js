@@ -1,3 +1,4 @@
+// YOCEWOR homepage jobs fallback v1
 (function(){
   'use strict';
   const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
