@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Inject fallback script into homepage
+      - name: Activate fallback script on homepage
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -22,16 +22,18 @@ jobs:
           if not p.exists():
               raise SystemExit('index.html not found')
           s=p.read_text(encoding='utf-8')
-          tag='<script src="home-jobs-fallback.js?home-jobs-fallback-v3"></script>'
-          if tag not in s:
+          new='<script src="home-jobs-fallback.js?home-jobs-fallback-v4"></script>'
+          import re
+          pattern=r'<script\s+src="home-jobs-fallback\.js\?home-jobs-fallback-[^"]+"\s*></script>'
+          if re.search(pattern,s):
+              s=re.sub(pattern,new,s,count=1)
+          elif new not in s:
               marker='</body>'
               if marker not in s:
                   raise SystemExit('index.html has no </body> marker')
-              s=s.replace(marker,tag+'\n'+marker,1)
-              p.write_text(s,encoding='utf-8')
-              print('Injected home jobs fallback v3')
-          else:
-              print('Fallback v3 already injected')
+              s=s.replace(marker,new+'\n'+marker,1)
+          p.write_text(s,encoding='utf-8')
+          print('Homepage fallback v4 activated')
           PY
       - name: Commit homepage patch
         run: |
@@ -42,5 +44,5 @@ jobs:
           git config user.name 'YOCEWOR Bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git commit -m 'Activate homepage jobs fallback v3 [skip ci]'
+          git commit -m 'Activate homepage jobs fallback v4 [skip ci]'
           git push
