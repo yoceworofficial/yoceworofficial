@@ -1,4 +1,4 @@
-// YOCEWOR homepage live layer v5 — coding only, no images
+// YOCEWOR homepage live layer v6 — compact cards, real SVG social icons, live data
 (function(){
   'use strict';
   const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
@@ -16,11 +16,14 @@
     const box=target(); if(!box) return false;
     const jobs=(rows||[]).filter(j=>!isAnswerKey(j));
     if(!jobs.length){box.innerHTML='<div class="empty">अभी कोई published recruitment नहीं है।</div>';return true;}
-    box.innerHTML=jobs.slice(0,12).map((j,i)=>{
+    box.innerHTML=jobs.slice(0,10).map((j,i)=>{
       const title=esc(j.title||'Government Recruitment');
       const detail='job-details.html?id='+encodeURIComponent(j.id||'');
       const apply=j.apply_url?'<a class="btn green home-apply" href="'+esc(j.apply_url)+'" target="_blank" rel="noopener">Apply ↗</a>':'';
-      return '<article class="item"><div class="item-title"><span class="job-rank">'+(i+1)+'</span>'+title+(i===0?'<span class="new">NEW</span>':'')+'</div><div class="meta">Department: '+esc(j.department||'—')+' • Qualification: '+esc(j.qualification||'—')+' • Vacancy: '+esc(j.vacancies==null?'—':j.vacancies)+' • Age: '+esc(j.age||'—')+' • Last Date: '+esc(j.last_date||'—')+' • Salary: '+esc(j.salary||'—')+'</div><div class="item-actions"><a class="btn home-details" href="'+detail+'">पूरी जानकारी</a>'+apply+'</div></article>';
+      const vacancy=esc(j.vacancies==null?'—':j.vacancies);
+      const last=esc(j.last_date||'—');
+      const dept=esc(j.department||'');
+      return '<article class="item"><div class="item-main"><div class="item-title"><span class="job-rank">'+(i+1)+'</span>'+title+(i===0?'<span class="new">LIVE</span>':'')+'</div><div class="job-mini"><span>📌 '+(dept||'Recruitment')+'</span><span>👥 '+vacancy+' Posts</span><span>📅 '+last+'</span></div></div><div class="item-actions"><a class="btn home-details" href="'+detail+'">पूरी जानकारी</a>'+apply+'</div></article>';
     }).join('');
     return true;
   }
@@ -29,27 +32,28 @@
     const jobs=(rows||[]).filter(j=>!isAnswerKey(j)).slice(0,8);
     if(!jobs.length) return;
     const items=jobs.map(j=>'<a href="job-details.html?id='+encodeURIComponent(j.id||'')+'">🔥 '+esc(j.title||'Latest Recruitment')+' • Last Date: '+esc(j.last_date||'—')+'</a>').join('');
-    track.innerHTML=items+items;
-    track.classList.add('live-scroll');
+    track.innerHTML=items+items;track.classList.add('live-scroll');
   }
   function updateHero(rows){
     const hero=document.querySelector('.hero-grid>div'); if(!hero||hero.querySelector('.hero-stats')) return;
     const count=(rows||[]).filter(j=>!isAnswerKey(j)).length;
-    hero.insertAdjacentHTML('beforeend','<div class="hero-stats"><div class="hero-stat"><strong>'+count+'+</strong><span>Published Jobs</span></div><div class="hero-stat"><strong>LIVE</strong><span>Fresh Updates</span></div><div class="hero-stat"><strong>100%</strong><span>Information Focused</span></div></div>');
+    hero.insertAdjacentHTML('beforeend','<div class="hero-stats"><div class="hero-stat"><i>💼</i><div><strong>'+count+'+</strong><span>Latest Jobs</span></div></div><div class="hero-stat"><i>⚡</i><div><strong>LIVE</strong><span>Fresh Updates</span></div></div><div class="hero-stat"><i>🛡️</i><div><strong>100%</strong><span>Trusted Info</span></div></div></div>');
   }
   function polishSocial(){
     document.querySelectorAll('.social a').forEach(a=>{
       if(a.dataset.yoceworIcon) return;
       const t=(a.textContent||'').toLowerCase();
-      if(t.includes('whatsapp')) a.insertAdjacentHTML('afterbegin',icon.wa);
-      else if(t.includes('telegram')) a.insertAdjacentHTML('afterbegin',icon.tg);
-      else if(t.includes('instagram')) a.insertAdjacentHTML('afterbegin',icon.ig);
+      a.innerHTML=(t.includes('telegram')?icon.tg:t.includes('instagram')?icon.ig:icon.wa)+'<span>'+esc(t.includes('whatsapp')?(t.includes('channel')?'WhatsApp Channel':'WhatsApp Group'):t.includes('telegram')?'Telegram':'Instagram')+'</span>';
       a.dataset.yoceworIcon='1';
     });
   }
   function style(){
-    if(document.getElementById('yocewor-home-v5-style')) return;
-    const s=document.createElement('style');s.id='yocewor-home-v5-style';s.textContent='.social a svg{width:16px;height:16px;display:inline-block;vertical-align:-3px;margin-right:5px}.social a{display:inline-flex;align-items:center;gap:2px}.job-rank{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#0878c9;color:#fff;font-size:10px;margin-right:8px;vertical-align:1px}.home-details{background:linear-gradient(135deg,#0878c9,#063b68)!important;border-color:#0878c9!important}.home-apply{background:linear-gradient(135deg,#07966b,#087653)!important}.item-actions .btn.orange{display:none!important}#jobs .item-actions{gap:7px}.live-scroll a{flex:0 0 auto}.live-scroll{overflow:hidden!important}.new{float:right}.hero-stats{position:relative;z-index:2}';document.head.appendChild(s);
+    if(document.getElementById('yocewor-home-v6-style')) return;
+    const s=document.createElement('style');s.id='yocewor-home-v6-style';s.textContent=`
+      .social a svg{width:17px;height:17px;display:block;flex:0 0 17px}.social a{display:inline-flex!important;align-items:center;gap:6px!important}
+      .social a:before{display:none!important}.job-rank{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:50%;background:linear-gradient(135deg,#0b83ca,#063b68);color:#fff;font-size:10px;margin-right:8px;vertical-align:1px}.item-main{min-width:0}.job-mini{display:flex;flex-wrap:wrap;gap:5px 12px;margin:5px 0 0;padding-left:31px;color:#60798b;font-size:9.5px;line-height:1.4}.job-mini span{white-space:nowrap}.home-details{background:linear-gradient(135deg,#087fc4,#063b68)!important;border-color:#087fc4!important}.home-apply{background:linear-gradient(135deg,#079a69,#087653)!important}.item-actions .btn.orange{display:none!important}#jobs .item-actions{gap:6px}.live-scroll a{flex:0 0 auto}.live-scroll{overflow:hidden!important}.new{float:right;background:#07935f;color:#fff;border-radius:10px;padding:3px 7px;font-size:8px}.hero-stats{position:relative;z-index:2;display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:9px!important;margin-top:15px!important}.hero-stat{display:flex!important;align-items:center!important;gap:8px!important;min-height:50px!important;padding:8px 10px!important;border-radius:11px!important;border:1px solid #ffffff42!important;background:#ffffff14!important}.hero-stat i{font-style:normal!important;font-size:21px!important}.hero-stat strong{font-size:17px!important;color:#fff!important;display:block!important}.hero-stat span{font-size:9px!important;color:#e7f6ff!important;display:block!important}.hero:before{background:linear-gradient(90deg,transparent 0 4%,#ffffff18 4% 5%,transparent 5% 10%,#ffffff18 10% 11%,transparent 11% 16%,#ffffff18 16% 17%,transparent 17% 22%,#ffffff18 22% 23%,transparent 23% 28%,#ffffff18 28% 29%,transparent 29% 34%,#ffffff18 34% 35%,transparent 35% 40%,#ffffff18 40% 41%,transparent 41% 46%,#ffffff18 46% 47%,transparent 47% 52%,#ffffff18 52% 53%,transparent 53% 58%,#ffffff18 58% 59%,transparent 59% 64%,#ffffff18 64% 65%,transparent 65% 70%,#ffffff18 70% 71%,transparent 71% 76%,#ffffff18 76% 77%,transparent 77% 82%,#ffffff18 82% 83%,transparent 83% 88%,#ffffff18 88% 89%,transparent 89%) ,linear-gradient(180deg,#ffffff00 0 15%,#ffffff14 15% 17%,#ffffff00 17% 24%,#ffffff12 24% 26%,#ffffff00 26% 33%,#ffffff10 33% 35%,#ffffff00 35% 100%)!important;clip-path:polygon(0 55%,8% 48%,16% 53%,24% 40%,32% 47%,40% 34%,48% 43%,56% 29%,64% 37%,72% 22%,80% 31%,88% 15%,100% 22%,100% 100%,0 100%)!important}
+      @media(max-width:560px){.job-mini{padding-left:30px;font-size:8.5px;gap:3px 8px}.hero-stats{gap:5px!important}.hero-stat{padding:6px 5px!important;min-height:43px!important}.hero-stat strong{font-size:12px!important}.hero-stat span{font-size:7px!important}.hero-stat i{font-size:14px!important}.social a{font-size:8px!important;padding:6px 7px!important}}
+    `;document.head.appendChild(s);
   }
   async function run(){
     const box=target(); if(!box) return;
@@ -61,7 +65,7 @@
       const rows=await r.json();
       if(!hasFullDetails(box)) render(Array.isArray(rows)?rows:[]);
       updateTicker(Array.isArray(rows)?rows:[]);updateHero(Array.isArray(rows)?rows:[]);polishSocial();style();
-    }catch(e){console.error('YOCEWOR home live layer v5:',e);style();polishSocial();}
+    }catch(e){console.error('YOCEWOR home live layer v6:',e);style();polishSocial();}
   }
   function start(){[300,900,1800,3500,7000].forEach(t=>setTimeout(run,t));setInterval(run,20000);}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
