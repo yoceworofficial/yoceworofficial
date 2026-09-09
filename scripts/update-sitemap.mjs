@@ -2,7 +2,7 @@ import fs from 'node:fs';
 
 const SUPABASE_URL = 'https://mzntgjyecymcpzciklfk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
-const API = `${SUPABASE_URL}/rest/v1/jobs?select=slug,updated_at,date_posted&published=eq.true&slug=not.is.null&order=updated_at.desc&limit=5000`;
+const API = `${SUPABASE_URL}/rest/v1/jobs?select=id,updated_at,date_posted&published=eq.true&order=updated_at.desc&limit=5000`;
 
 const esc = (s) => String(s ?? '')
   .replaceAll('&', '&amp;')
@@ -27,15 +27,17 @@ const staticUrls = [
   'https://yocewor.in/important-notice.html',
   'https://yocewor.in/privacy.html',
   'https://yocewor.in/terms.html',
+  'https://yocewor.in/contact.html',
   'https://yocewor.in/advertise.html',
 ];
 
 const rows = staticUrls.map((url) => `  <url><loc>${url}</loc></url>`);
 for (const job of jobs) {
-  const slug = String(job.slug || '').trim();
-  if (!slug) continue;
+  const id = String(job.id || '').trim();
+  if (!id) continue;
   const lastmod = String(job.updated_at || job.date_posted || '').slice(0, 10);
-  rows.push(`  <url><loc>https://yocewor.in/${encodeURIComponent(slug).replaceAll('%2F', '/')}/</loc>${lastmod ? `<lastmod>${esc(lastmod)}</lastmod>` : ''}</url>`);
+  const url = `https://yocewor.in/job-details.html?id=${encodeURIComponent(id)}`;
+  rows.push(`  <url><loc>${esc(url)}</loc>${lastmod ? `<lastmod>${esc(lastmod)}</lastmod>` : ''}</url>`);
 }
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${rows.join('\n')}\n</urlset>\n`;
