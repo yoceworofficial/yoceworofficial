@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#123A63">
+<meta name="description" content="YOCEWOR site search — सरकारी भर्ती, परीक्षा, रिजल्ट, एडमिट कार्ड और उत्तर कुंजी खोजें।">
+<title>YOCEWOR — Search</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Devanagari",sans-serif;background:#eef3f7;color:#172b3d}.wrap{width:min(1100px,94%);margin:auto}.top{background:#102f4f;color:#fff;border-bottom:3px solid #d6a63a;padding:9px 0;font-size:12px}.head{background:#fff;border-bottom:1px solid #d7e0e8;padding:18px 0}.headin{display:flex;align-items:center;gap:12px}.logo{width:50px;height:50px;border-radius:10px;background:#123a63;color:#fff;display:grid;place-items:center;font-size:25px;font-weight:900;border:2px solid #d6a63a}.head h1{margin:0;color:#123a63;font-size:25px}.head small{color:#687986}.back{margin-left:auto;text-decoration:none;background:#123a63;color:#fff;padding:9px 12px;border-radius:5px;font-weight:800;font-size:12px}.main{padding:22px 0}.box{background:#fff;border:1px solid #d2dde6;border-radius:8px;padding:18px;box-shadow:0 4px 15px #173b5910}.search{display:flex;border:2px solid #d6a63a;border-radius:6px;overflow:hidden}.search input{flex:1;min-width:0;border:0;outline:0;padding:13px;font-size:15px}.search button{border:0;background:#d6a63a;color:#102f4f;font-weight:900;padding:0 18px}.status{padding:15px 2px;color:#60717e;font-size:13px}.list{display:grid;gap:10px}.item{border:1px solid #d2dde6;border-left:4px solid #c98a12;border-radius:6px;padding:13px}.title{font-weight:900;color:#123a63;font-size:15px;line-height:1.5}.meta{color:#687986;font-size:11px;margin-top:5px;line-height:1.6}.actions{margin-top:9px}.btn{display:inline-block;text-decoration:none;background:#123a63;color:#fff;padding:7px 10px;border-radius:5px;font-size:11px;font-weight:800}.empty{text-align:center;padding:35px 10px;color:#697985;border:1px dashed #bdcbd5;border-radius:6px}@media(max-width:560px){.headin{flex-wrap:wrap}.back{margin-left:0}.search input{font-size:13px}.search button{padding:0 12px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap">🇮🇳 YOCEWOR • सरकारी भर्ती एवं परीक्षा पोर्टल</div></div>
+<header class="head"><div class="wrap headin"><div class="logo">Y</div><div><h1>YOCEWOR Search</h1><small>Published jobs और exam updates खोजें</small></div><a class="back" href="index.html">🏠 Home</a></div></header>
+<main class="wrap main"><div class="box"><div class="search"><input id="q" autocomplete="off" placeholder="भर्ती या परीक्षा खोजें..."><button id="go">Search</button></div><div id="status" class="status">खोजने के लिए नाम लिखें।</div><div id="results" class="list"></div></div></main>
+<script>
+const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
+const SUPABASE_KEY='YOUR_SUPABASE_ANON_KEY';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const qEl=document.getElementById('q'),statusEl=document.getElementById('status'),resultsEl=document.getElementById('results');
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function runSearch(){const q=qEl.value.trim();if(!q){statusEl.textContent='कृपया भर्ती या परीक्षा का नाम लिखें।';resultsEl.innerHTML='';return;} location.hash='q='+encodeURIComponent(q); searchJobs(q);}
+async function searchJobs(q){statusEl.textContent='खोज जारी है…';resultsEl.innerHTML='';const {data,error}=await sb.from('jobs').select('id,title,department,qualification,last_date,type').eq('published',true).order('created_at',{ascending:false}).limit(1000);if(error){statusEl.textContent='Search अभी उपलब्ध नहीं है।';return;}const needle=q.toLowerCase();const rows=(data||[]).filter(x=>[x.title,x.department,x.qualification,x.type].some(v=>String(v||'').toLowerCase().includes(needle)));statusEl.textContent=rows.length+' result'+(rows.length===1?'':'s')+' मिले।';if(!rows.length){resultsEl.innerHTML='<div class="empty">इस नाम से कोई प्रकाशित भर्ती नहीं मिली।</div>';return;}resultsEl.innerHTML=rows.map(x=>`<article class="item"><div class="title">${esc(x.title)}</div><div class="meta">${esc(x.department||'YOCEWOR')} • ${esc(x.qualification||'Qualification details उपलब्ध')} ${x.last_date?'• Last Date: '+esc(x.last_date):''}</div><div class="actions"><a class="btn" href="${x.type==='answer_key'?'answer-key-detail.html?id='+encodeURIComponent(x.id):'job-details.html?id='+encodeURIComponent(x.id)}">View Details</a></div></article>`).join('');}
+function init(){const raw=location.hash.startsWith('#q=')?decodeURIComponent(location.hash.slice(3)):new URLSearchParams(location.search).get('q')||'';qEl.value=raw;if(raw)searchJobs(raw);}
+qEl.addEventListener('keydown',e=>{if(e.key==='Enter')runSearch();});document.getElementById('go').addEventListener('click',runSearch);init();
+</script>
+</body></html>
