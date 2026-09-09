@@ -122,6 +122,18 @@ jobs:
               s = re.sub(r'</head>', ga + '\n</head>', s, count=1, flags=re.I)
               p.write_text(s, encoding='utf-8')
           PY
+      - name: Inject homepage jobs fallback
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          if p.exists():
+            s=p.read_text(encoding='utf-8')
+            tag='<script src="home-jobs-fallback.js?home-jobs-fallback-v1"></script>'
+            if tag not in s:
+              s=s.replace('</body>',tag+'\n</body>',1)
+              p.write_text(s,encoding='utf-8')
+          PY
       - name: Verify AdSense files before publish
         run: |
           test -s ads.txt
