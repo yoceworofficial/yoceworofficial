@@ -1,6 +1,11 @@
 name: Fix HTML Tags In Job Content
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'job-details.html'
+      - '.github/workflows/fix-html-tags-in-job-content.yml'
   workflow_dispatch:
 
 permissions:
