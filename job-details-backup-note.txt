@@ -1,0 +1,1 @@
+Temporary recovery marker: job-details.html restored to the last known working blob after the card-style revision caused a JavaScript loading failure. Remove this marker later if desired.
