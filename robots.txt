@@ -3,4 +3,4 @@ Allow: /
 
 Sitemap: https://yocewor.in/sitemap.xml
 
-# YOCEWOR deployment refresh — homepage jobs loading fix
+# YOCEWOR SEO/deployment refresh — 2026-09-11
