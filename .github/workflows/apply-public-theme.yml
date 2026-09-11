@@ -13,6 +13,7 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
+          import re
           skip = {'admin.html','admin-dashboard.html','owner-dashboard.html','dashboard.html','team-management-live.html','departments.html','department-login.html','content.html','content-live-fixed.html','settings.html'}
           theme='<link rel="stylesheet" href="/yocewor-theme.css">'
           ads='<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2660794738235284" crossorigin="anonymous"></script>'
@@ -25,10 +26,15 @@ jobs:
                   s=s.replace('</head>',theme+'\n</head>',1)
               if 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' not in s and '</head>' in s:
                   s=s.replace('</head>',ads+'\n</head>',1)
-              if p.name not in {'job-details.html','answer-key-detail.html'} and '<link rel="canonical"' not in s and '</head>' in s:
+              if '<link rel="canonical"' not in s and '</head>' in s:
                   rel=p.as_posix()
-                  if rel=='index.html': rel=''
+                  if rel=='index.html':
+                      rel=''
+                  elif p.name=='index.html':
+                      rel=p.parent.as_posix().strip('./')+'/'
                   s=s.replace('</head>',f'<link rel="canonical" href="https://yocewor.in/{rel}">\n</head>',1)
+              # Existing route-folder canonicals should never expose /index.html.
+              s=re.sub(r'(https://yocewor\\.in/[^"<>]+?)/index\\.html(["\'])',r'\1\2',s)
               if s!=original:
                   p.write_text(s,encoding='utf-8')
 
