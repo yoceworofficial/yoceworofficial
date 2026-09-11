@@ -25,6 +25,29 @@ jobs:
         uses: actions/checkout@v4
       - name: Configure Pages
         uses: actions/configure-pages@v5
+      - name: Apply YOCEWOR V2 public brand system
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          public_names = {
+            'index.html','latest-jobs.html','updates.html','important-notice.html','answer-key.html',
+            'answer-key-detail.html','privacy.html','terms.html','contact.html','about.html','disclaimer.html',
+            'advertise.html','community-guidelines.html','expired-jobs.html','search.html','live.html','live-notice.html',
+            'help.html','job-details.html'
+          }
+          css_tag='<link rel="stylesheet" href="/yocewor-brand-v2.css?v=20260911">'
+          icon_tag='<link rel="icon" href="/assets/yocewor-mark-v2.svg" type="image/svg+xml">'
+          for p in Path('.').glob('*.html'):
+            if p.name not in public_names:
+              continue
+            s=p.read_text(encoding='utf-8')
+            if 'yocewor-brand-v2.css' not in s and re.search(r'</head>',s,flags=re.I):
+              s=re.sub(r'</head>',css_tag+'\n</head>',s,count=1,flags=re.I)
+            if 'yocewor-mark-v2.svg' not in s and re.search(r'</head>',s,flags=re.I):
+              s=re.sub(r'</head>',icon_tag+'\n</head>',s,count=1,flags=re.I)
+            p.write_text(s,encoding='utf-8')
+          PY
       - name: Normalize Owner auth references
         run: |
           python3 - <<'PY'
@@ -85,7 +108,7 @@ jobs:
             'content.html','content-live.html','content-live-fixed.html','content-owner.html','creator-engine.html',
             'dashboard.html','department-login.html','departments.html','edit-content.html','editor.html',
             'editor-dashboard.html','editor-job-submit.html','first-login.html','gm.html','gm-content.html',
-            'gm-dashboard.html','gm-manage-users.html','id-card.html','job.html','job-review.html','login.html',
+            'gm-dashboard.html','gm-manage-users.html','id-card.html','job.html','job-review.html','live-notice.html','login.html',
             'owner.html','owner-control.html','owner-dashboard.html','owner-setup.html','settings.html',
             'staff-id-card.html','team-approvals.html','team-login.html','team-management.html',
             'team-management-live.html','team-management-v2.html','team-requests.html','team-requests-v2.html',
@@ -149,19 +172,19 @@ jobs:
           import re
 
           ga = '''<!-- Google tag (gtag.js) -->
-          <script async src="https://www.googletagmanager.com/gtag/js?id=G-8PVG5XNL3H"></script>
+          <script async src="https://www.googletagmanager.com/gtag/js?id=G-8PV5G5XNL3H"></script>
           <script>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-8PVG5XNL3H');
+          gtag('config', 'G-8PV5G5XNL3H');
           </script>'''
 
           for p in Path('.').rglob('*.html'):
             if any(part in {'.git', 'node_modules', '_site'} for part in p.parts):
               continue
             s = p.read_text(encoding='utf-8')
-            if 'G-8PVG5XNL3H' not in s and re.search(r'</head>', s, flags=re.I):
+            if 'G-8PV5G5XNL3H' not in s and re.search(r'</head>', s, flags=re.I):
               s = re.sub(r'</head>', ga + '\n</head>', s, count=1, flags=re.I)
               p.write_text(s, encoding='utf-8')
           PY
