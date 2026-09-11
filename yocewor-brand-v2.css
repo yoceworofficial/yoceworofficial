@@ -3,7 +3,7 @@
 html{scroll-behavior:smooth}body{background:radial-gradient(circle at 10% 0,#fff 0 18%,transparent 42%),linear-gradient(180deg,#f8fcfe 0,#edf6fa 100%)!important;color:var(--yo-ink)!important;font-family:Arial,"Noto Sans Devanagari","Mangal",sans-serif!important}
 .top{background:linear-gradient(105deg,var(--yo-navy2),var(--yo-navy) 52%,#0878b5)!important;border-bottom:3px solid var(--yo-gold)!important;box-shadow:0 5px 18px rgba(3,29,53,.14)}
 .header{background:rgba(255,255,255,.96)!important;border-bottom:1px solid var(--yo-line)!important;box-shadow:0 4px 18px rgba(6,43,79,.05)}
-.logo,.seal{background:linear-gradient(145deg,var(--yo-navy),var(--yo-blue)) center/cover no-repeat url("assets/yocewor-mark-v2.svg")!important;border:0!important;border-radius:17px!important;color:transparent!important;box-shadow:0 7px 20px rgba(6,43,79,.18)!important;overflow:hidden}
+.logo,.seal{background-image:url("assets/yocewor-mark-v2.svg")!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;background-color:var(--yo-navy)!important;border:0!important;border-radius:17px!important;color:transparent!important;box-shadow:0 7px 20px rgba(6,43,79,.18)!important;overflow:hidden}
 .logo:before,.logo:after,.seal:before,.seal:after{display:none!important}
 .brand h1,.brand strong{color:var(--yo-navy)!important;font-weight:950!important;letter-spacing:1.2px!important}.brand p,.brand small{color:var(--yo-muted)!important;opacity:1!important}
 .back{background:linear-gradient(135deg,var(--yo-navy),var(--yo-blue))!important;border:0!important;border-radius:10px!important;box-shadow:0 5px 14px rgba(6,43,79,.15)!important}
