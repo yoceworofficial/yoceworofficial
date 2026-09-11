@@ -30,3 +30,4 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Apply YOCEWOR public design system"
           git push
+# Deployment trigger refresh — 2026-09-11
