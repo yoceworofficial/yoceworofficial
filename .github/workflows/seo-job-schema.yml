@@ -1,5 +1,6 @@
 name: YOCEWOR Recruitment SEO Schema
 
+# Triggered patch verification — 2026-09-11
 on:
   push:
     branches: [main]
