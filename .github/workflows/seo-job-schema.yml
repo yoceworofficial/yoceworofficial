@@ -19,7 +19,6 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          import re
 
           path = Path('job-details.html')
           if not path.exists():
@@ -44,6 +43,7 @@ jobs:
     const addMeta=(name,content)=>{if(!content)return;let m=document.querySelector('meta[name="'+name+'"]');if(!m){m=document.createElement('meta');m.name=name;document.head.appendChild(m)}m.content=content};
     const addLink=(rel,href)=>{let l=document.querySelector('link[rel="'+rel+'"]');if(!l){l=document.createElement('link');l.rel=rel;document.head.appendChild(l)}l.href=href};
     const setSchema=(id,obj)=>{let s=document.getElementById(id);if(!s){s=document.createElement('script');s.id=id;s.type='application/ld+json';document.head.appendChild(s)}s.textContent=JSON.stringify(obj)};
+    const isoDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(norm(v).slice(0,10))?norm(v).slice(0,10):'';
 
     const p=new URLSearchParams(location.search), key=norm(p.get('id')), requestedSlug=norm(p.get('slug'))||location.pathname.split('/').filter(Boolean).pop();
     let q=db.from('jobs').select('*').eq('published',true);
@@ -59,12 +59,9 @@ jobs:
     const summary=textOnly(first(job,['summary','short_description','intro','description','content','details']));
     const dept=norm(first(job,['department','organization','employer','company','recruiting_organization','authority']));
     const locationValue=norm(first(job,['location','job_location','work_location','place','state','posting_location']));
-    const datePosted=norm(first(job,['date_posted','publish_date','published_at','created_at'])).slice(0,10);
-    const lastDate=norm(first(job,['last_date','application_last_date','closing_date','valid_through']));
+    const datePosted=isoDate(first(job,['date_posted','publish_date','published_at','created_at']));
+    const lastDate=isoDate(first(job,['last_date','application_last_date','closing_date','valid_through']));
     const vacancies=norm(first(job,['vacancies','vacancy','total_vacancies','posts']));
-    const qualification=textOnly(first(job,['qualification','eligibility','educational_qualification','education']));
-    const salary=textOnly(first(job,['salary','pay_scale','pay_level','salary_details']));
-    const age=textOnly(first(job,['age_limit','age','age_limit_details']));
     const applyUrl=norm(first(job,['apply_url','application_url','apply_link']));
 
     document.title=title+' | YOCEWOR';
@@ -94,10 +91,9 @@ jobs:
       'hiringOrganization':{'@type':'Organization','name':dept},
       'jobLocation':{'@type':'Place','address':{'@type':'PostalAddress','addressLocality':locationValue,'addressCountry':'IN'}}
     };
-    if(lastDate)posting.validThrough=lastDate.length>=10?lastDate:'2026-12-31';
+    if(lastDate)posting.validThrough=lastDate;
     if(vacancies && /^\d+(?:\.\d+)?$/.test(vacancies.replace(/,/g,'')))posting.totalJobOpenings=Number(vacancies.replace(/,/g,''));
     if(applyUrl && /^https?:\/\//i.test(applyUrl))posting.directApply=false;
-    if(salary)posting.baseSalary={'@type':'MonetaryAmount','currency':'INR','value':{'@type':'QuantitativeValue','value':salary}};
     setSchema('yocewor-jobposting-schema',posting);
   }catch(e){console.warn('YOCEWOR SEO schema:',e)}
 })();
