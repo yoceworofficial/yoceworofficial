@@ -2,7 +2,7 @@ import fs from 'node:fs';
 
 const SUPABASE_URL = 'https://mzntgjyecymcpzciklfk.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
-const API = `${SUPABASE_URL}/rest/v1/jobs?select=id,updated_at,date_posted&published=eq.true&order=updated_at.desc&limit=5000`;
+const API = `${SUPABASE_URL}/rest/v1/jobs?select=id,slug,updated_at,date_posted,published,type&published=eq.true&order=updated_at.desc&limit=5000`;
 
 const esc = (s) => String(s ?? '')
   .replaceAll('&', '&amp;')
@@ -25,18 +25,24 @@ const staticUrls = [
   'https://yocewor.in/latest-jobs.html',
   'https://yocewor.in/updates.html',
   'https://yocewor.in/important-notice.html',
+  'https://yocewor.in/answer-key.html',
   'https://yocewor.in/privacy.html',
   'https://yocewor.in/terms.html',
   'https://yocewor.in/contact.html',
+  'https://yocewor.in/about.html',
+  'https://yocewor.in/disclaimer.html',
   'https://yocewor.in/advertise.html',
 ];
 
 const rows = staticUrls.map((url) => `  <url><loc>${url}</loc></url>`);
 for (const job of jobs) {
   const id = String(job.id || '').trim();
-  if (!id) continue;
+  const slug = String(job.slug || '').trim();
+  if (!id && !slug) continue;
   const lastmod = String(job.updated_at || job.date_posted || '').slice(0, 10);
-  const url = `https://yocewor.in/job-details.html?id=${encodeURIComponent(id)}`;
+  const url = slug
+    ? `https://yocewor.in/${encodeURIComponent(slug)}/`
+    : `https://yocewor.in/job-details.html?id=${encodeURIComponent(id)}`;
   rows.push(`  <url><loc>${esc(url)}</loc>${lastmod ? `<lastmod>${esc(lastmod)}</lastmod>` : ''}</url>`);
 }
 
