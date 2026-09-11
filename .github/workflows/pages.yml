@@ -172,19 +172,19 @@ jobs:
           import re
 
           ga = '''<!-- Google tag (gtag.js) -->
-          <script async src="https://www.googletagmanager.com/gtag/js?id=G-8PV5G5XNL3H"></script>
+          <script async src="https://www.googletagmanager.com/gtag/js?id=G-8PVG5XNL3H"></script>
           <script>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', 'G-8PV5G5XNL3H');
+          gtag('config', 'G-8PVG5XNL3H');
           </script>'''
 
           for p in Path('.').rglob('*.html'):
             if any(part in {'.git', 'node_modules', '_site'} for part in p.parts):
               continue
             s = p.read_text(encoding='utf-8')
-            if 'G-8PV5G5XNL3H' not in s and re.search(r'</head>', s, flags=re.I):
+            if 'G-8PVG5XNL3H' not in s and re.search(r'</head>', s, flags=re.I):
               s = re.sub(r'</head>', ga + '\n</head>', s, count=1, flags=re.I)
               p.write_text(s, encoding='utf-8')
           PY
