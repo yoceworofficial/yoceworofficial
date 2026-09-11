@@ -1,4 +1,4 @@
-/* YOCEWOR HOME LIVE — stable homepage renderer v3 */
+/* YOCEWOR HOME LIVE — stable homepage renderer v4 */
 (function(){
 'use strict';
 const U='https://mzntgjyecymcpzciklfk.supabase.co';
@@ -16,50 +16,57 @@ function jobCard(j,label='पूरी जानकारी →'){
  const apply=j.apply_url?'<a class="btn green home-apply" href="'+esc(j.apply_url)+'" target="_blank" rel="noopener">Official Apply ↗</a>':'';
  return '<article class="item home-job"><div class="item-main"><div class="item-title">'+esc(j.title||'Government Update')+'</div><div class="job-mini"><span>📌 '+esc(j.department||'YOCEWOR')+'</span><span>👥 '+esc(j.vacancies??'—')+' Posts</span><span>📅 '+date(j.last_date)+'</span></div></div><div class="item-actions"><a class="btn home-details" href="'+detail(j)+'">'+esc(label)+'</a>'+apply+'</div></article>';
 }
-function renderList(id,rows,label,emptyText){
- const box=document.getElementById(id);if(!box)return;
- box.innerHTML=rows.length?rows.slice(0,8).map(j=>jobCard(j,label)).join(''):'<div class="empty">'+esc(emptyText)+'</div>';
-}
-function setSection(id,rows){
- const section=document.getElementById(id);if(!section)return;
- const visible=rows.length>0;
- section.hidden=!visible;
- const link=document.querySelector('[href="#'+id+'"]');if(link)link.closest('a')?.setAttribute('aria-hidden',visible?'false':'true');
-}
+function renderList(id,rows,label,emptyText){const box=document.getElementById(id);if(!box)return;box.innerHTML=rows.length?rows.slice(0,8).map(j=>jobCard(j,label)).join(''):'<div class="empty">'+esc(emptyText)+'</div>';}
+function setSection(id,rows){const section=document.getElementById(id);if(!section)return;const visible=rows.length>0;section.hidden=!visible;const link=document.querySelector('[href="#'+id+'"]');if(link)link.closest('a')?.setAttribute('aria-hidden',visible?'false':'true');}
 function social(){document.querySelectorAll('.social a').forEach(a=>{if(a.dataset.yoceworHomeIcon)return;const t=(a.textContent||'').toLowerCase();const type=t.includes('telegram')?'tg':t.includes('instagram')?'ig':'wa';const label=t.includes('whatsapp')?(t.includes('channel')?'WhatsApp Channel':'WhatsApp Group'):type==='tg'?'Telegram':'Instagram';const icon=type==='tg'?'➤':type==='ig'?'◎':'◉';a.innerHTML='<span aria-hidden="true">'+icon+'</span><span>'+label+'</span>';a.dataset.yoceworHomeIcon='1';});}
-function css(){if(document.getElementById('yocewor-home-live-v3-style'))return;const s=document.createElement('style');s.id='yocewor-home-live-v3-style';s.textContent=`
-.home-job{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important;padding:10px!important}.home-job .item-title{font-size:12px!important;line-height:1.45!important}.home-job .job-mini{display:flex!important;flex-wrap:wrap!important;gap:3px 12px!important;margin-top:3px!important;font-size:9px!important;color:#657d8e!important}.home-job .item-actions{display:flex!important;gap:5px!important;flex-wrap:wrap!important;margin:0!important}.home-job .item-actions .btn{font-size:9px!important;padding:7px 9px!important;border-radius:7px!important;white-space:nowrap!important}.home-details{background:#087fbd!important;color:#fff!important}.home-apply{background:#07945f!important;color:#fff!important}.home-job .new,.home-job .orange{display:none!important}
-[hidden]{display:none!important}@media(max-width:560px){.home-job{grid-template-columns:1fr!important}.home-job .item-actions{margin-top:5px!important}.home-job .item-title{font-size:11px!important}.home-job .job-mini{font-size:8px!important;gap:2px 7px!important}}
-`;document.head.appendChild(s)}
-async function load(){
- try{
-  const r=await fetch(U+'/rest/v1/jobs?select='+encodeURIComponent(F)+'&published=eq.true&order=updated_at.desc,created_at.desc&limit=1000',{headers:{apikey:K,Authorization:'Bearer '+K,Accept:'application/json'},cache:'no-store'});
-  if(!r.ok)throw Error('Supabase HTTP '+r.status);
-  const rows=await r.json();
-  const all=Array.isArray(rows)?rows:[];
-  const jobs=all.filter(isJob);
-  const active=jobs.filter(j=>!j.last_date||new Date(j.last_date+'T23:59:59')>=new Date());
-  const showJobs=(active.length?active:jobs).slice(0,8);
-  const updates=all.filter(j=>!isAnswer(j)).slice(0,8);
-  const admit=all.filter(j=>hasType(j,['admit_card','admit','hall','प्रवेश']));
-  const result=all.filter(j=>hasType(j,['result','रिजल्ट']));
-  const syllabus=all.filter(j=>hasType(j,['syllabus','सिलेबस']));
-  const admission=all.filter(j=>hasType(j,['admission']));
-  renderList('jobList',showJobs,'पूरी जानकारी →','अभी कोई प्रकाशित भर्ती उपलब्ध नहीं है।');
-  renderList('updateList',updates,'Update देखें →','अभी कोई नवीनतम update उपलब्ध नहीं है।');
-  renderList('admitList',admit,'Admit Card →','अभी कोई Admit Card update उपलब्ध नहीं है।');
-  renderList('resultList',result,'Result देखें →','अभी कोई Result update उपलब्ध नहीं है।');
-  renderList('syllabusList',syllabus,'Syllabus →','अभी कोई Syllabus update उपलब्ध नहीं है।');
-  renderList('admissionList',admission,'Admission →','अभी कोई Admission update उपलब्ध नहीं है।');
-  setSection('admit',admit);setSection('result',result);setSection('syllabus',syllabus);setSection('admission',admission);
-  const track=document.getElementById('tickerTrack');
-  if(track){const t=updates.slice(0,8).map(j=>'<a href="'+detail(j)+'">🔥 '+esc(j.title||'Latest Update')+' • '+date(j.last_date)+'</a>').join('');track.innerHTML=t||'<span>YOCEWOR पर नवीनतम अपडेट देखें।</span>';track.classList.toggle('live-scroll',!!t);}
-  social();css();
- }catch(e){
-  console.error('YOCEWOR home live v3:',e);social();css();
-  ['jobList','updateList','admitList','resultList','syllabusList','admissionList'].forEach(id=>{const b=document.getElementById(id);if(b)b.innerHTML='<div class="empty">Live updates अभी उपलब्ध नहीं हो सके। कृपया थोड़ी देर बाद फिर देखें।</div>';});
- }
+function info(){
+ if(document.getElementById('yocewor-info-center'))return;
+ const footer=document.querySelector('.footer');if(!footer)return;
+ const el=document.createElement('section');el.id='yocewor-info-center';el.className='yo-info-center';
+ el.innerHTML=`<div class="wrap">
+<section class="yo-info-intro"><div><span class="yo-kicker">🇮🇳 YOCEWOR INFORMATION CENTER</span><h2>YOCEWOR — सही जानकारी, सही समय पर</h2><p>YOCEWOR एक स्वतंत्र information portal है जो सरकारी नौकरी, recruitment, admit card, answer key, result, syllabus, admission और परीक्षा से जुड़ी महत्वपूर्ण जानकारी को एक जगह व्यवस्थित करने का प्रयास करता है। हमारा उद्देश्य information को आसान, स्पष्ट और उपयोगी बनाना है।</p></div><div class="yo-trust-badge"><b>🛡️ Official Source First</b><span>आवेदन से पहले संबंधित विभाग की official notification जरूर देखें।</span></div></section>
+<div class="yo-info-grid">
+<section class="yo-info-card"><h3>📌 About YOCEWOR</h3><p>YOCEWOR का focus सरकारी भर्ती और परीक्षा updates को category-wise, compact और आसान navigation के साथ उपलब्ध कराना है। Recruitment, Admit Card, Answer Key, Result और अन्य sections को अलग रखा गया है ताकि सही जानकारी जल्दी मिले।</p><div class="yo-mini-links"><a href="latest-jobs.html">💼 Latest Jobs</a><a href="answer-key.html">🔑 Answer Key</a><a href="#admit">🎫 Admit Card</a><a href="#result">📊 Results</a><a href="#syllabus">📚 Syllabus</a><a href="#admission">🎓 Admission</a></div></section>
+<section class="yo-info-card"><h3>✅ Verification Guide</h3><ul><li>भर्ती की अंतिम तिथि और eligibility official notification से मिलाएँ।</li><li>Apply करने के लिए official department/agency link को प्राथमिकता दें।</li><li>Fee, exam date, vacancy और age limit को notification से verify करें।</li><li>Answer Key और Result के लिए official source check करें।</li><li>YOCEWOR को सूचना-सुविधा portal मानें; final authority संबंधित संस्था है।</li></ul></section>
+<section class="yo-info-card"><h3>📰 What We Provide</h3><div class="yo-provide"><b>Recruitment</b><span>Vacancy, qualification, dates और apply information</span><b>Exam Updates</b><span>Admit Card, exam date, answer key और result</span><b>Education</b><span>Syllabus, admission और useful notices</span><b>Quick Access</b><span>Compact category-wise navigation और search</span></div></section>
+</div>
+<section class="yo-faq"><div class="yo-faq-head"><div><span class="yo-kicker">HELP & FAQ</span><h2>अक्सर पूछे जाने वाले सवाल</h2></div><span>20 useful answers</span></div><div class="yo-faq-grid">
+<details><summary>YOCEWOR क्या है?</summary><p>YOCEWOR सरकारी नौकरी, recruitment और परीक्षा से जुड़ी information को category-wise उपलब्ध कराने वाला स्वतंत्र information portal है।</p></details>
+<details><summary>Latest Government Jobs कहाँ देखें?</summary><p>Homepage के Latest Jobs section या Latest Jobs page पर प्रकाशित भर्ती देखें।</p></details>
+<details><summary>क्या YOCEWOR सरकारी वेबसाइट है?</summary><p>नहीं। YOCEWOR एक स्वतंत्र सूचना portal है और किसी सरकारी विभाग का आधिकारिक प्रतिनिधि होने का दावा नहीं करता।</p></details>
+<details><summary>क्या YOCEWOR पर दी गई जानकारी verify करनी चाहिए?</summary><p>हाँ। महत्वपूर्ण details को संबंधित department की official notification और official website से जरूर verify करें।</p></details>
+<details><summary>सरकारी नौकरी के लिए apply कैसे करें?</summary><p>भर्ती की official notification पढ़ें और उपलब्ध official apply link से आवेदन पूरा करें।</p></details>
+<details><summary>क्या YOCEWOR आवेदन जमा करता है?</summary><p>नहीं। YOCEWOR मुख्यतः information और official links उपलब्ध कराता है; application संबंधित संस्था की website पर होता है।</p></details>
+<details><summary>Admit Card कहाँ मिलेगा?</summary><p>Homepage के Admit Card section और संबंधित भर्ती के official source link से प्रवेश पत्र देखें।</p></details>
+<details><summary>Answer Key कहाँ मिलेगी?</summary><p>Answer Key को अलग section में रखा गया है। Latest Jobs में Answer Key items शामिल नहीं किए जाते।</p></details>
+<details><summary>Result कैसे check करें?</summary><p>Result section में update देखें और final result के लिए संबंधित परीक्षा संस्था की official result page खोलें।</p></details>
+<details><summary>Syllabus कहाँ मिलेगा?</summary><p>Homepage के Syllabus section में उपलब्ध update देखें; final syllabus notification/official source से confirm करें।</p></details>
+<details><summary>क्या Latest Jobs में सभी updates आते हैं?</summary><p>नहीं। Latest Jobs में मुख्यतः job/recruitment type की प्रकाशित vacancies दिखाई जाती हैं। अन्य categories अलग रखी जाती हैं।</p></details>
+<details><summary>Vacancy और eligibility कहाँ verify करें?</summary><p>Official notification सबसे भरोसेमंद स्रोत है। YOCEWOR की summary को notification से cross-check करें।</p></details>
+<details><summary>Last Date बदल सकती है?</summary><p>हाँ। विभाग extension या correction जारी कर सकता है, इसलिए आवेदन से पहले latest official notice जरूर देखें।</p></details>
+<details><summary>क्या YOCEWOR पर job alerts मिलते हैं?</summary><p>Website के updates के साथ YOCEWOR के उपलब्ध social channels पर भी महत्वपूर्ण updates share किए जा सकते हैं।</p></details>
+<details><summary>क्या सभी सरकारी exams cover होते हैं?</summary><p>YOCEWOR उपलब्ध और प्रकाशित महत्वपूर्ण recruitment तथा exam updates को cover करने का प्रयास करता है; coverage पूर्ण होने की गारंटी नहीं है।</p></details>
+<details><summary>Official notification क्यों जरूरी है?</summary><p>क्योंकि eligibility, fee, dates, documents, selection process और अन्य नियमों की अंतिम authority संबंधित संस्था की notification होती है।</p></details>
+<details><summary>YOCEWOR की information कब update होती है?</summary><p>नई जानकारी उपलब्ध होने पर portal data update किया जाता है। फिर भी final action से पहले official source check करना जरूरी है।</p></details>
+<details><summary>गलत या outdated information दिखे तो क्या करें?</summary><p>Contact/feedback channel के माध्यम से सूचना दें ताकि content को review और आवश्यक होने पर update किया जा सके।</p></details>
+<details><summary>क्या YOCEWOR से संपर्क किया जा सकता है?</summary><p>हाँ। Footer में Contact Us उपलब्ध है; feedback या correction के लिए वही channel इस्तेमाल करें।</p></details>
+<details><summary>क्या YOCEWOR किसी भर्ती की guarantee देता है?</summary><p>नहीं। YOCEWOR केवल information सुविधा देता है। Selection, appointment या application acceptance संबंधित संस्था के नियमों पर निर्भर है।</p></details>
+</div></section>
+<section class="yo-policy-grid">
+<div class="yo-policy"><h3>⚖️ Disclaimer</h3><p>YOCEWOR पर दी गई जानकारी सुविधा और awareness के लिए है। भर्ती, परीक्षा, fee, eligibility, dates, answer key और result से संबंधित अंतिम एवं आधिकारिक जानकारी संबंधित विभाग/संस्था की official notification और website से ही मान्य मानी जानी चाहिए।</p></div>
+<div class="yo-policy"><h3>✍️ Editorial & Information Policy</h3><p>हम information को स्पष्ट category में रखने, महत्वपूर्ण fields को compact रूप में दिखाने और official source links को प्राथमिकता देने का प्रयास करते हैं। Correction मिलने पर उपलब्ध जानकारी को review किया जा सकता है।</p></div>
+<div class="yo-policy"><h3>🔐 Privacy & Terms</h3><p>Website के उपयोग, privacy और user responsibilities के लिए उपलब्ध Privacy Policy तथा Terms & Conditions pages देखें।</p><div class="yo-mini-links"><a href="privacy.html">Privacy Policy →</a><a href="terms.html">Terms & Conditions →</a><a href="contact.html">Contact Us →</a></div></div>
+</section>
+</div>`;
+ footer.parentNode.insertBefore(el,footer);
 }
-function init(){load();setInterval(load,20000)}
+function css(){if(document.getElementById('yocewor-home-live-v4-style'))return;const s=document.createElement('style');s.id='yocewor-home-live-v4-style';s.textContent=`
+.home-job{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important;padding:10px!important}.home-job .item-title{font-size:12px!important;line-height:1.45!important}.home-job .job-mini{display:flex!important;flex-wrap:wrap!important;gap:3px 12px!important;margin-top:3px!important;font-size:9px!important;color:#657d8e!important}.home-job .item-actions{display:flex!important;gap:5px!important;flex-wrap:wrap!important;margin:0!important}.home-job .item-actions .btn{font-size:9px!important;padding:7px 9px!important;border-radius:7px!important;white-space:nowrap!important}.home-details{background:#087fbd!important;color:#fff!important}.home-apply{background:#07945f!important;color:#fff!important}.home-job .new,.home-job .orange{display:none!important}
+.yo-info-center{background:#f1f4f7;border-top:1px solid #d5dee6;padding:18px 0 4px}.yo-info-intro{background:#fff;border:1px solid #d5dee6;border-radius:5px;padding:18px;display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:12px}.yo-kicker{display:inline-block;background:#082a4a;color:#fff;border-bottom:2px solid #e3a51b;padding:4px 8px;font-size:8px;font-weight:900;letter-spacing:.5px}.yo-info-intro h2{margin:8px 0 5px;color:#082a4a;font-size:22px}.yo-info-intro p{margin:0;color:#566a78;font-size:10px;line-height:1.75;max-width:900px}.yo-trust-badge{min-width:220px;background:#f7fafc;border:1px solid #d5dee6;border-left:3px solid #e3a51b;border-radius:4px;padding:10px}.yo-trust-badge b{display:block;color:#082a4a;font-size:10px}.yo-trust-badge span{display:block;color:#657684;font-size:8.5px;line-height:1.5;margin-top:4px}.yo-info-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-bottom:12px}.yo-info-card,.yo-policy{background:#fff;border:1px solid #d5dee6;border-radius:5px;padding:13px}.yo-info-card h3,.yo-policy h3{margin:0 0 7px;color:#082a4a;font-size:12px;border-bottom:2px solid #e3a51b;padding-bottom:6px}.yo-info-card p,.yo-info-card li,.yo-policy p{color:#5e7180;font-size:9px;line-height:1.7}.yo-info-card p{margin:0}.yo-info-card ul{margin:0;padding-left:16px}.yo-info-card li{margin:3px 0}.yo-mini-links{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:9px}.yo-mini-links a{display:block!important;background:#f7fafc;border:1px solid #dbe4ea;padding:5px 6px!important;margin:0!important;color:#0d5f91!important;font-size:8.5px!important;text-decoration:none!important;border-radius:3px}.yo-provide{display:grid;grid-template-columns:1fr;gap:2px}.yo-provide b{color:#082a4a;font-size:9px}.yo-provide span{color:#657684;font-size:8.5px;margin-bottom:4px}.yo-faq{background:#fff;border:1px solid #d5dee6;border-radius:5px;margin-bottom:12px;overflow:hidden}.yo-faq-head{background:#082a4a;color:#fff;border-bottom:3px solid #e3a51b;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}.yo-faq-head h2{margin:5px 0 0;font-size:15px}.yo-faq-head>span{font-size:8px;color:#d5e1e9}.yo-faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;padding:6px 12px 10px}.yo-faq details{border-bottom:1px solid #e5ebef;padding:7px 0}.yo-faq summary{cursor:pointer;color:#0d5f91;font-size:9.5px;font-weight:800;list-style:none}.yo-faq summary::-webkit-details-marker{display:none}.yo-faq summary:before{content:'+';display:inline-grid;place-items:center;width:16px;height:16px;margin-right:5px;background:#f1f4f7;color:#082a4a;border-radius:3px;font-weight:900}.yo-faq details[open] summary:before{content:'−';background:#e3a51b}.yo-faq details p{margin:6px 21px 2px;color:#657684;font-size:8.5px;line-height:1.65}.yo-policy-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}.yo-policy p{margin:0}.yo-policy .yo-mini-links{margin-top:7px}
+@media(max-width:900px){.yo-info-grid,.yo-policy-grid{grid-template-columns:1fr 1fr}.yo-info-intro{align-items:flex-start}.yo-trust-badge{min-width:190px}.yo-faq-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.yo-info-intro{display:block;padding:13px}.yo-info-intro h2{font-size:18px}.yo-trust-badge{margin-top:10px;min-width:0}.yo-info-grid,.yo-policy-grid{grid-template-columns:1fr}.yo-faq-head{align-items:flex-start}.yo-faq-head>span{display:none}.yo-faq-grid{padding:4px 10px 8px}.yo-faq summary{font-size:9px}.yo-faq details p{font-size:8.2px}}
+[hidden]{display:none!important}`;document.head.appendChild(s)}
+async function load(){try{const r=await fetch(U+'/rest/v1/jobs?select='+encodeURIComponent(F)+'&published=eq.true&order=updated_at.desc,created_at.desc&limit=1000',{headers:{apikey:K,Authorization:'Bearer '+K,Accept:'application/json'},cache:'no-store'});if(!r.ok)throw Error('Supabase HTTP '+r.status);const rows=await r.json();const all=Array.isArray(rows)?rows:[];const jobs=all.filter(isJob);const active=jobs.filter(j=>!j.last_date||new Date(j.last_date+'T23:59:59')>=new Date());const showJobs=(active.length?active:jobs).slice(0,8);const updates=all.filter(j=>!isAnswer(j)).slice(0,8);const admit=all.filter(j=>hasType(j,['admit_card','admit','hall','प्रवेश']));const result=all.filter(j=>hasType(j,['result','रिजल्ट']));const syllabus=all.filter(j=>hasType(j,['syllabus','सिलेबस']));const admission=all.filter(j=>hasType(j,['admission']));renderList('jobList',showJobs,'पूरी जानकारी →','अभी कोई प्रकाशित भर्ती उपलब्ध नहीं है।');renderList('updateList',updates,'Update देखें →','अभी कोई नवीनतम update उपलब्ध नहीं है।');renderList('admitList',admit,'Admit Card →','अभी कोई Admit Card update उपलब्ध नहीं है।');renderList('resultList',result,'Result देखें →','अभी कोई Result update उपलब्ध नहीं है।');renderList('syllabusList',syllabus,'Syllabus →','अभी कोई Syllabus update उपलब्ध नहीं है।');renderList('admissionList',admission,'Admission →','अभी कोई Admission update उपलब्ध नहीं है।');setSection('admit',admit);setSection('result',result);setSection('syllabus',syllabus);setSection('admission',admission);const track=document.getElementById('tickerTrack');if(track){const t=updates.slice(0,8).map(j=>'<a href="'+detail(j)+'">🔥 '+esc(j.title||'Latest Update')+' • '+date(j.last_date)+'</a>').join('');track.innerHTML=t||'<span>YOCEWOR पर नवीनतम अपडेट देखें।</span>';track.classList.toggle('live-scroll',!!t)}social();info();css()}catch(e){console.error('YOCEWOR home live v4:',e);social();info();css();['jobList','updateList','admitList','resultList','syllabusList','admissionList'].forEach(id=>{const b=document.getElementById(id);if(b)b.innerHTML='<div class="empty">Live updates अभी उपलब्ध नहीं हो सके। कृपया थोड़ी देर बाद फिर देखें।</div>'})}}
+function init(){info();css();load();setInterval(load,20000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
