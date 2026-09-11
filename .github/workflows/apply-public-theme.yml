@@ -1,0 +1,32 @@
+name: Apply YOCEWOR Public Theme
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  theme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject public theme
+        shell: python
+        run: |
+          from pathlib import Path
+          skip = {'admin.html','admin-dashboard.html','owner-dashboard.html','dashboard.html','team-management-live.html','departments.html','department-login.html','content.html','content-live-fixed.html','settings.html'}
+          for p in Path('.').rglob('*.html'):
+              if any(part.startswith('.') for part in p.parts) or p.name in skip:
+                  continue
+              s=p.read_text(encoding='utf-8')
+              tag='<link rel="stylesheet" href="/yocewor-theme.css">'
+              if tag not in s and '</head>' in s:
+                  s=s.replace('</head>',tag+'\n</head>',1)
+                  p.write_text(s,encoding='utf-8')
+      - name: Commit theme injection
+        run: |
+          git config user.name "YOCEWOR Theme Bot"
+          git config user.email "actions@github.com"
+          git add '*.html'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Apply YOCEWOR public design system"
+          git push
