@@ -47,5 +47,6 @@ async function loadHome(){const q='id,title,type,department,start_date,last_date
 function doSearch(){const q=document.getElementById('searchInput').value.trim().toLowerCase();if(!q){document.getElementById('searchMsg').textContent='भर्ती या परीक्षा का नाम लिखें।';return}const el=[...document.querySelectorAll('.jobtitle')].find(x=>x.textContent.toLowerCase().includes(q));if(el){el.closest('.job').scrollIntoView({behavior:'smooth',block:'center'});el.closest('.job').style.outline='3px solid #f0b323';setTimeout(()=>el.closest('.job').style.outline='',1800);document.getElementById('searchMsg').textContent='Update मिल गया।'}else document.getElementById('searchMsg').textContent='इस नाम का update homepage पर नहीं मिला।'}
 document.getElementById('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});loadHome();setInterval(loadHome,30000);
 </script>
+<script src="home-jobs-fallback.js?home-jobs-fallback-v4"></script>
 </body>
 </html>
