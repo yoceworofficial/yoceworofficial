@@ -116,7 +116,7 @@ jobs:
                 s=s.replace('</main>',legal+'\n</main>',1)
               p.write_text(s,encoding='utf-8')
           PY
-      - name: Add AdSense verification and ads.txt to public content pages only
+      - name: Add AdSense verification and ads.txt to content-rich public pages only
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -124,15 +124,14 @@ jobs:
 
           adsense = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2660794738235284" crossorigin="anonymous"></script>'
           meta = '<meta name="google-adsense-account" content="ca-pub-2660794738235284">'
-          public_names = {
-            'index.html','latest-jobs.html','updates.html','important-notice.html','answer-key.html',
-            'answer-key-detail.html','privacy.html','terms.html','contact.html','about.html','disclaimer.html',
-            'advertise.html','community-guidelines.html','expired-jobs.html','search.html','live.html','live-notice.html',
-            'help.html','job-details.html'
+          ad_pages = {
+            'index.html','job-details.html','answer-key-detail.html','about.html','disclaimer.html',
+            'privacy.html','terms.html','contact.html','advertise.html','community-guidelines.html',
+            'important-notice.html','updates.html'
           }
 
           for p in Path('.').glob('*.html'):
-            if p.name not in public_names:
+            if p.name not in ad_pages:
               continue
             s = p.read_text(encoding='utf-8')
             if 'client=ca-pub-2660794738235284' not in s and re.search(r'</head>', s, flags=re.I):
