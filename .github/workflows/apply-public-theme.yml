@@ -34,7 +34,7 @@ jobs:
                       rel=p.parent.as_posix().strip('./')+'/'
                   s=s.replace('</head>',f'<link rel="canonical" href="https://yocewor.in/{rel}">\n</head>',1)
               # Existing route-folder canonicals should never expose /index.html.
-              s=re.sub(r'(https://yocewor\\.in/[^"<>]+?)/index\\.html(["\'])',r'\1\2',s)
+              s=re.sub(r'(https://yocewor\.in/[^"<>]+?)/index\.html(["\'])',r'\1\2',s)
               if s!=original:
                   p.write_text(s,encoding='utf-8')
 
