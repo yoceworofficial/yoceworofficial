@@ -22,15 +22,29 @@ function htmlDescription(j){const parts=[];const add=v=>{const t=clean(v);if(t)p
 function isJob(j){return jobTypes.has(String(j.type||'').toLowerCase().replace(/[-\s]+/g,'_'))}
 
 let tableStyleAdded=false;
-function addTableStyles(){if(tableStyleAdded)return;tableStyleAdded=true;const s=document.createElement('style');s.id='yocewor-structured-tables-v2';s.textContent=`
-.yo-table-wrap{width:100%;overflow:visible;border:1px solid #d9e5ef;border-radius:12px;background:#fff;box-shadow:0 4px 14px #173b5d0a}
-.yo-table{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;font-size:13px;word-break:break-word}
+function addTableStyles(){if(tableStyleAdded)return;tableStyleAdded=true;const s=document.createElement('style');s.id='yocewor-structured-tables-v3';s.textContent=`
+.yo-table-wrap{width:100%;max-width:100%;min-width:0;overflow:hidden;border:1px solid #d9e5ef;border-radius:12px;background:#fff;box-shadow:0 4px 14px #173b5d0a;box-sizing:border-box}
+.yo-table{width:100%;max-width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;font-size:13px;word-break:break-word}
 .yo-table th{background:linear-gradient(135deg,#083b66,#1267a6);color:#fff;text-align:left;padding:9px 7px;font-weight:800;white-space:normal;overflow-wrap:anywhere;line-height:1.35}
 .yo-table td{border-top:1px solid #e2e9ef;padding:8px 7px;vertical-align:top;color:#34495b;overflow-wrap:anywhere;word-break:break-word;line-height:1.45}
 .yo-table tr:nth-child(even) td{background:#f8fbfd}.yo-table td strong{color:#082f55}.yo-table .total td{background:#fff8e7;font-weight:800;color:#082f55}.yo-table-note{margin-top:8px;color:#657482;font-size:12px;line-height:1.6}
-@media(max-width:560px){.yo-table{font-size:10.5px}.yo-table th,.yo-table td{padding:6px 4px;line-height:1.3}.yo-table-wrap{border-radius:9px}.yo-table-note{font-size:11px}}
+@media(max-width:560px){
+ .yo-table-wrap{width:100%;max-width:100%;overflow:hidden;border-radius:10px}
+ .yo-table{display:block;width:100%;max-width:100%;min-width:0;font-size:12px}
+ .yo-table thead{display:none}
+ .yo-table tbody{display:block;width:100%}
+ .yo-table tr{display:block;width:100%;margin:0;border-bottom:1px solid #dfe8f1;padding:7px 0;background:#fff}
+ .yo-table tr:last-child{border-bottom:0}
+ .yo-table td{display:flex;width:100%;min-width:0;box-sizing:border-box;justify-content:space-between;align-items:flex-start;gap:10px;border:0!important;padding:6px 8px!important;background:transparent!important;line-height:1.4;text-align:right}
+ .yo-table td:before{content:attr(data-label);display:block;flex:0 0 43%;max-width:43%;color:#587087;font-weight:800;text-align:left;overflow-wrap:anywhere}
+ .yo-table td{overflow-wrap:anywhere;word-break:break-word}
+ .yo-table td strong{color:#082f55}
+ .yo-table .total{border-top:2px solid #efd28a;background:#fff8e7!important}
+ .yo-table .total td{background:#fff8e7!important;font-weight:800}
+ .yo-table-note{font-size:11px;margin:7px 2px 0}
+}
 `;document.head.appendChild(s)}
-function table(headers,rows,note=''){addTableStyles();const head='<thead><tr>'+headers.map(h=>'<th>'+escHtml(h)+'</th>').join('')+'</tr></thead>';const body='<tbody>'+rows.map(r=>'<tr'+(r.__total?' class="total"':'')+'>'+r.cells.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('')+'</tbody>';return '<div class="yo-table-wrap"><table class="yo-table">'+head+body+'</table></div>'+(note?'<div class="yo-table-note">'+escHtml(note)+'</div>':'')}
+function table(headers,rows,note=''){addTableStyles();const head='<thead><tr>'+headers.map(h=>'<th>'+escHtml(h)+'</th>').join('')+'</tr></thead>';const body='<tbody>'+rows.map(r=>'<tr'+(r.__total?' class="total"':'')+'>'+r.cells.map((x,i)=>'<td data-label="'+escHtml(headers[i]||'')+'">'+x+'</td>').join('')+'</tr>').join('')+'</tbody>';return '<div class="yo-table-wrap"><table class="yo-table">'+head+body+'</table></div>'+(note?'<div class="yo-table-note">'+escHtml(note)+'</div>':'')}
 const c=v=>escHtml(v),bold=v=>'<strong>'+c(v)+'</strong>',total=cells=>({cells,__total:true});
 function tableForHeading(h){const key=clean(h).toLowerCase();
 if(key.includes('delhi police vacancy')&&key.includes('पुरुष'))return table(['श्रेणी','Open','ESM Other','ESM Special','कुल'],[{cells:['UR','77','5','5',bold('87')]},{cells:['OBC','49','3','2',bold('54')]},{cells:['SC','27','2','1',bold('30')]},{cells:['ST','13','1','0',bold('14')]},{cells:['EWS','18','1','1',bold('20')]},total(['कुल','184','12','9',bold('205')])],'Delhi Police पुरुष SI में कुल 205 पद हैं।');
