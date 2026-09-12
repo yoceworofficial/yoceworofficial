@@ -25,14 +25,43 @@
 </main>
 <footer class="footer"><div class="page"><b>YOCEWOR</b><div>Government Jobs & Exam Information Portal • © 2026 YOCEWOR</div></div></footer>
 <script>
-const db=supabase.createClient('https://mzntgjyecymcpzciklfk.supabase.co','sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn');
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));let all=[];
-const isAnswerKey=j=>String(j?.type||'').toLowerCase().replace(/[-\s]+/g,'_')==='answer_key';
-const isJobType=j=>{const t=String(j?.type||'').toLowerCase().replace(/[-\s]+/g,'_');return ['job','recruitment','latest_jobs'].includes(t)||String(j?.type||'')==='Latest Jobs'};
-const dateOnly=s=>{const m=String(s||'').match(/^(\d{4}-\d{2}-\d{2})/);return m?m[1]:null};const today=()=>new Date().toISOString().slice(0,10);
-async function load(){const {data,error}=await db.from('jobs').select('id,title,department,start_date,last_date,qualification,vacancies,age,salary,description,apply_url,notification_url,created_at,updated_at,publish_date,published_at,type').eq('published',true).order('updated_at',{ascending:false}).order('created_at',{ascending:false}).limit(1000);if(error){document.getElementById('status').textContent='Published jobs could not be loaded.';return}const d=today();all=(data||[]).filter(j=>!isAnswerKey(j)&&isJobType(j)&&(!dateOnly(j.last_date)||dateOnly(j.last_date)>=d));document.getElementById('notice').innerHTML=all.slice(0,8).map(j=>`<a href="job.html?id=${encodeURIComponent(j.id)}" style="color:#123b5d;font-weight:800;text-decoration:none;margin-right:18px">◆ ${esc(j.title||'नई भर्ती')} ${j.last_date?`• ${esc(j.last_date)}`:''}</a>`).join('')||'अभी कोई active recruitment नहीं है।';render()}
-function render(){const q=document.getElementById('q').value.trim().toLowerCase(),from=document.getElementById('from').value,to=document.getElementById('to').value,sort=document.getElementById('sort').value;let rows=all.filter(j=>(!q||[j.title,j.department,j.qualification,j.description].some(v=>String(v||'').toLowerCase().includes(q)))&&(!from||!j.start_date||j.start_date>=from)&&(!to||!j.last_date||j.last_date<=to));if(sort==='last')rows.sort((a,b)=>String(a.last_date||'9999').localeCompare(String(b.last_date||'9999')));document.getElementById('status').textContent=`${rows.length} active jobs found`;document.getElementById('jobs').innerHTML=rows.length?rows.map(j=>`<article class="card"><div class="cardhead"><h2>${esc(j.title||'Government Recruitment')}</h2></div><div class="cardbody"><div class="meta"><div><b>Department</b>${esc(j.department||'—')}</div><div><b>Start Date</b>${esc(j.start_date||'—')}</div><div><b>Last Date</b>${esc(j.last_date||'—')}</div><div><b>Qualification</b>${esc(j.qualification||'—')}</div><div><b>Vacancies</b>${esc(j.vacancies||'—')}</div><div><b>Age</b>${esc(j.age||'—')}</div><div><b>Salary</b>${esc(j.salary||'—')}</div></div><div class="desc">${esc(j.description||'विस्तृत जानकारी के लिए पूर्ण विवरण खोलें।')}</div><div class="actions"><a class="btn" href="job.html?id=${encodeURIComponent(j.id)}">Full Details</a>${j.apply_url?`<a class="btn green" href="${esc(j.apply_url)}" target="_blank" rel="noopener">Apply Online ↗</a>`:''}${j.notification_url?`<a class="btn" href="${esc(j.notification_url)}" target="_blank" rel="noopener">Notification ↗</a>`:''}</div></div></article>`).join(''):'<div class="empty">इस filter के अनुसार कोई active job नहीं मिली।</div>'}
-['q','from','to','sort'].forEach(id=>document.getElementById(id).addEventListener('input',render));load().catch(()=>document.getElementById('status').textContent='Unable to load published jobs.');
+const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
+const SUPABASE_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let all=[];
+const normType=v=>String(v??'').toLowerCase().trim().replace(/[-\s]+/g,'_');
+const isAnswerKey=j=>normType(j?.type)==='answer_key';
+const isJobType=j=>['job','recruitment','latest_jobs','state_government_jobs','central_government_jobs','government_jobs'].includes(normType(j?.type))||String(j?.type||'')==='Latest Jobs';
+const dateOnly=s=>{const m=String(s||'').match(/^(\d{4}-\d{2}-\d{2})/);return m?m[1]:null};
+const today=()=>new Date().toISOString().slice(0,10);
+async function load(){
+  const fields='id,title,slug,department,start_date,last_date,qualification,vacancies,age,salary,description,apply_url,notification_url,created_at,updated_at,publish_date,published_at,type,published';
+  const url=SUPABASE_URL+'/rest/v1/jobs?select='+encodeURIComponent(fields)+'&published=eq.true&order=updated_at.desc,created_at.desc&limit=1000';
+  try{
+    const r=await fetch(url,{method:'GET',headers:{apikey:SUPABASE_KEY,Accept:'application/json'},cache:'no-store',credentials:'omit'});
+    if(!r.ok)throw new Error('Supabase REST HTTP '+r.status);
+    const data=await r.json();
+    if(!Array.isArray(data))throw new Error('Invalid jobs response');
+    const d=today();
+    all=data.filter(j=>!isAnswerKey(j)&&isJobType(j)&&(!dateOnly(j.last_date)||dateOnly(j.last_date)>=d));
+    document.getElementById('notice').innerHTML=all.slice(0,8).map(j=>{const href=j.slug?'job.html?slug='+encodeURIComponent(j.slug):'job.html?id='+encodeURIComponent(j.id);return `<a href="${href}" style="color:#123b5d;font-weight:800;text-decoration:none;margin-right:18px">◆ ${esc(j.title||'नई भर्ती')} ${j.last_date?`• ${esc(j.last_date)}`:''}</a>`}).join('')||'अभी कोई active recruitment नहीं है।';
+    render();
+  }catch(e){
+    console.error('YOCEWOR latest jobs:',e);
+    document.getElementById('status').textContent='Published jobs could not be loaded. कृपया refresh करें।';
+    document.getElementById('jobs').innerHTML='<div class="empty">Recruitment data अभी load नहीं हो सका। कृपया थोड़ी देर बाद refresh करें।</div>';
+  }
+}
+function render(){
+  const q=document.getElementById('q').value.trim().toLowerCase(),from=document.getElementById('from').value,to=document.getElementById('to').value,sort=document.getElementById('sort').value;
+  let rows=all.filter(j=>(!q||[j.title,j.department,j.qualification,j.description].some(v=>String(v||'').toLowerCase().includes(q)))&&(!from||!j.start_date||j.start_date>=from)&&(!to||!j.last_date||j.last_date<=to));
+  if(sort==='last')rows.sort((a,b)=>String(a.last_date||'9999').localeCompare(String(b.last_date||'9999')));
+  document.getElementById('status').textContent=`${rows.length} active jobs found`;
+  document.getElementById('jobs').innerHTML=rows.length?rows.map(j=>{const href=j.slug?'job.html?slug='+encodeURIComponent(j.slug):'job.html?id='+encodeURIComponent(j.id);return `<article class="card"><div class="cardhead"><h2>${esc(j.title||'Government Recruitment')}</h2></div><div class="cardbody"><div class="meta"><div><b>Department</b>${esc(j.department||'—')}</div><div><b>Start Date</b>${esc(j.start_date||'—')}</div><div><b>Last Date</b>${esc(j.last_date||'—')}</div><div><b>Qualification</b>${esc(j.qualification||'—')}</div><div><b>Vacancies</b>${esc(j.vacancies||'—')}</div><div><b>Age</b>${esc(j.age||'—')}</div><div><b>Salary</b>${esc(j.salary||'—')}</div></div><div class="desc">${esc(j.description||'विस्तृत जानकारी के लिए पूर्ण विवरण खोलें।')}</div><div class="actions"><a class="btn" href="${href}">Full Details</a>${j.apply_url?`<a class="btn green" href="${esc(j.apply_url)}" target="_blank" rel="noopener">Apply Online ↗</a>`:''}${j.notification_url?`<a class="btn" href="${esc(j.notification_url)}" target="_blank" rel="noopener">Notification ↗</a>`:''}</div></div></article>`}).join(''):'<div class="empty">इस filter के अनुसार कोई active job नहीं मिली।</div>';
+}
+['q','from','to','sort'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+load();
+setInterval(load,30000);
 </script>
 </body>
 </html>
