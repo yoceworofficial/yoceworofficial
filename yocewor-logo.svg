@@ -1,26 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 560" role="img" aria-label="YOCEWOR logo">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#FFD23F"/>
-      <stop offset=".38" stop-color="#FF8A00"/>
-      <stop offset=".72" stop-color="#FF2F5F"/>
-      <stop offset="1" stop-color="#B51DFF"/>
-    </linearGradient>
-    <linearGradient id="text" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset=".58" stop-color="#FFFFFF"/>
-      <stop offset=".76" stop-color="#FF9A2F"/>
-      <stop offset="1" stop-color="#FF4DAA"/>
-    </linearGradient>
-    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="12" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <g filter="url(#glow)" fill="url(#g)">
-    <path d="M350 292 C322 235 285 184 222 151 L115 96 L143 178 L214 223 L158 190 L184 271 C205 321 251 351 300 370 L300 445 C300 458 310 466 322 459 C352 441 370 416 378 385 C386 354 376 320 350 292Z"/>
-    <path d="M350 292 C378 235 415 184 478 151 L585 96 L557 178 L486 223 L542 190 L516 271 C495 321 449 351 400 370 L400 445 C400 458 390 466 378 459 C348 441 330 416 322 385 C314 354 324 320 350 292Z"/>
-    <path d="M350 292 C336 269 320 247 298 229 L238 193 L278 242 C308 278 330 318 350 359 C370 318 392 278 422 242 L462 193 L402 229 C380 247 364 269 350 292Z" fill="#FFB11B"/>
-  </g>
-  <text x="350" y="520" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="78" font-weight="900" letter-spacing="2" fill="url(#text)">YOCEWOR</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="YOCEWOR Education and Opportunities logo">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1769e0"/><stop offset=".55" stop-color="#6846d9"/><stop offset="1" stop-color="#d94f9d"/></linearGradient>
+<linearGradient id="book" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dce9ff"/></linearGradient>
+</defs>
+<circle cx="256" cy="256" r="244" fill="#fff" stroke="#183c78" stroke-width="16"/>
+<circle cx="256" cy="256" r="214" fill="#f5f8ff" stroke="url(#g)" stroke-width="10"/>
+<path d="M102 292c28 75 89 124 154 135M410 292c-28 75-89 124-154 135" fill="none" stroke="#4e82d7" stroke-width="15" stroke-linecap="round"/>
+<path d="M134 309c17 55 55 92 99 109M378 309c-17 55-55 92-99 109" fill="none" stroke="#a7bfea" stroke-width="8" stroke-linecap="round"/>
+<path d="M256 130l32 47 55 16-44 35 2 56-45-22-45 22 2-56-44-35 55-16z" fill="url(#g)"/>
+<path d="M171 267c35-20 61-19 85 3v72c-25-18-53-19-85-2z" fill="url(#book)" stroke="#1e4e91" stroke-width="8"/>
+<path d="M341 267c-35-20-61-19-85 3v72c25-18 53-19 85-2z" fill="url(#book)" stroke="#1e4e91" stroke-width="8"/>
+<path d="M256 270v72" stroke="#1e4e91" stroke-width="8"/>
+<text x="256" y="82" text-anchor="middle" font-family="Arial,sans-serif" font-size="38" font-weight="900" letter-spacing="5" fill="#183c78">YOCEWOR</text>
+<text x="256" y="446" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="800" letter-spacing="1.5" fill="#183c78">EDUCATION • JOBS • OPPORTUNITIES</text>
 </svg>
