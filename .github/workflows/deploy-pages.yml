@@ -27,6 +27,24 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Apply final YOCEWOR architecture assets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ('index.html','job-details.html'):
+              p=Path(name)
+              if not p.exists():
+                  continue
+              s=p.read_text(encoding='utf-8')
+              css='<link rel="stylesheet" href="/yocewor-final-architecture.css?v=20260913">'
+              js='<script src="/yocewor-final-architecture.js?v=20260913"></script>'
+              if css not in s:
+                  s=s.replace('</head>',css+'\n</head>',1)
+              if js not in s:
+                  s=s.replace('</body>',js+'\n</body>',1)
+              p.write_text(s,encoding='utf-8')
+          PY
+
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
@@ -36,4 +54,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-# YOCEWOR deployment repair trigger 2026-09-13
+# YOCEWOR final architecture deployment 2026-09-13
