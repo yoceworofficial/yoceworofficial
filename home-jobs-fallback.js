@@ -3,7 +3,7 @@
   'use strict';
   const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
   const SUPABASE_KEY='sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn';
-  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=s=>String(s==null?'':s).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
   const norm=t=>String(t||'').trim().toLowerCase().replace(/[-\s]+/g,'_');
   const isAnswerKey=j=>norm(j&&j.type)==='answer_key';
   const isJob=j=>['job','recruitment','latest_jobs','state_government_jobs','central_government_jobs','government_jobs'].includes(norm(j&&j.type));
@@ -16,15 +16,15 @@
     const today=new Date(); today.setHours(23,59,59,999);
     const active=jobs.filter(j=>!j.last_date||new Date(String(j.last_date)+'T23:59:59')>=today);
     const shown=(active.length?active:jobs).slice(0,10);
-    if(!shown.length){box.innerHTML='<div class="empty">अभी कोई published recruitment उपलब्ध नहीं है।</div>';return true;}
+    if(!shown.length){box.innerHTML='<div class=\"empty\">अभी कोई published recruitment उपलब्ध नहीं है।</div>';return true;}
     box.innerHTML=shown.map((j,i)=>{
       const title=esc(j.title||'Government Recruitment');
       const detail=j.slug?'job.html?slug='+encodeURIComponent(j.slug):'job.html?id='+encodeURIComponent(j.id||'');
-      const apply=j.apply_url?'<a class="btn green home-apply" href="'+esc(j.apply_url)+'" target="_blank" rel="noopener">Apply ↗</a>':'';
+      const apply=j.apply_url?'<a class=\"btn green home-apply\" href=\"'+esc(j.apply_url)+'\" target=\"_blank\" rel=\"noopener\">Apply ↗</a>':'';
       const vacancy=esc(j.vacancies==null?'—':j.vacancies);
       const last=esc(j.last_date||'—');
       const dept=esc(j.department||'Recruitment');
-      return '<article class="item"><div class="item-main"><div class="item-title"><span class="job-rank">'+(i+1)+'</span>'+title+(i===0?'<span class="new">LIVE</span>':'')+'</div><div class="job-mini"><span>📌 '+dept+'</span><span>👥 '+vacancy+' Posts</span><span>📅 '+last+'</span></div></div><div class="item-actions"><a class="btn home-details" href="'+detail+'">पूरी जानकारी</a>'+apply+'</div></article>';
+      return '<article class=\"item\"><div class=\"item-main\"><div class=\"item-title\"><span class=\"job-rank\">'+(i+1)+'</span>'+title+(i===0?'<span class=\"new\">LIVE</span>':'')+'</div><div class=\"job-mini\"><span>📌 '+dept+'</span><span>👥 '+vacancy+' Posts</span><span>📅 '+last+'</span></div></div><div class=\"item-actions\"><a class=\"btn home-details\" href=\"'+detail+'\">पूरी जानकारी</a>'+apply+'</div></article>';
     }).join('');
     return true;
   }
@@ -32,31 +32,36 @@
     const track=document.getElementById('tickerTrack'); if(!track)return;
     const jobs=(Array.isArray(rows)?rows:[]).filter(j=>!isAnswerKey(j)).slice(0,8);
     if(!jobs.length)return;
-    const items=jobs.map(j=>{const detail=j.slug?'job.html?slug='+encodeURIComponent(j.slug):'job.html?id='+encodeURIComponent(j.id||'');return '<a href="'+detail+'">🔥 '+esc(j.title||'Latest Recruitment')+' • Last Date: '+esc(j.last_date||'—')+'</a>';}).join('');
+    const items=jobs.map(j=>{const detail=j.slug?'job.html?slug='+encodeURIComponent(j.slug):'job.html?id='+encodeURIComponent(j.id||'');return '<a href=\"'+detail+'\">🔥 '+esc(j.title||'Latest Recruitment')+' • Last Date: '+esc(j.last_date||'—')+'</a>';}).join('');
     track.innerHTML=items+items;track.classList.add('live-scroll');
   }
   function updateHero(rows){
     const hero=document.querySelector('.hero-grid>div'); if(!hero||hero.querySelector('.hero-stats'))return;
     const count=(Array.isArray(rows)?rows:[]).filter(j=>!isAnswerKey(j)&&isJob(j)).length;
-    hero.insertAdjacentHTML('beforeend','<div class="hero-stats"><div class="hero-stat"><i>💼</i><div><strong>'+count+'</strong><span>Published Jobs</span></div></div><div class="hero-stat"><i>⚡</i><div><strong>LIVE</strong><span>Fresh Updates</span></div></div><div class="hero-stat"><i>🛡️</i><div><strong>OFFICIAL</strong><span>Source First</span></div></div></div>');
+    hero.insertAdjacentHTML('beforeend','<div class=\"hero-stats\"><div class=\"hero-stat\"><i>💼</i><div><strong>'+count+'</strong><span>Published Jobs</span></div></div><div class=\"hero-stat\"><i>⚡</i><div><strong>LIVE</strong><span>Fresh Updates</span></div></div><div class=\"hero-stat\"><i>🛡️</i><div><strong>OFFICIAL</strong><span>Source First</span></div></div></div>');
   }
   function polishSocial(){document.querySelectorAll('.social a').forEach(a=>{if(a.dataset.yoceworIcon)return;const t=(a.textContent||'').toLowerCase();a.dataset.yoceworIcon='1';a.setAttribute('aria-label',t.includes('telegram')?'Telegram':t.includes('instagram')?'Instagram':t.includes('channel')?'WhatsApp Channel':'WhatsApp Group');});}
   function seoAndMobileFixes(){
-    let m=document.querySelector('meta[name="description"]');
+    let m=document.querySelector('meta[name=\"description\"]');
     if(!m){m=document.createElement('meta');m.name='description';document.head.appendChild(m)}
-    m.setAttribute('content',"YOCEWOR is India's education and opportunities platform for the latest government jobs, recruitment, exams, results, admit cards, syllabus, scholarships and admissions.");
-    let icon=document.querySelector('link[rel="icon"]');
+    m.setAttribute('content',\"YOCEWOR is India's education and opportunities platform for the latest government jobs, recruitment, exams, results, admit cards, syllabus, scholarships and admissions.\");
+    let icon=document.querySelector('link[rel=\"icon\"]');
     if(!icon){icon=document.createElement('link');icon.rel='icon';document.head.appendChild(icon)}
     icon.href='/yocewor-logo.svg?v=20260913';
     icon.type='image/svg+xml';
-    let apple=document.querySelector('link[rel="apple-touch-icon"]');
+    let apple=document.querySelector('link[rel=\"apple-touch-icon\"]');
     if(!apple){apple=document.createElement('link');apple.rel='apple-touch-icon';document.head.appendChild(apple)}
     apple.href='/yocewor-logo.svg?v=20260913';
     let schema=document.getElementById('yoceworHomeOrganizationSchema');
-    if(!schema){schema=document.createElement('script');schema.id='yoceworHomeOrganizationSchema';schema.type='application/ld+json';schema.textContent=JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":"YOCEWOR","url":"https://yocewor.in/","logo":"https://yocewor.in/yocewor-logo.svg","description":"India's Education & Opportunities Platform"});document.head.appendChild(schema)}
+    if(!schema){schema=document.createElement('script');schema.id='yoceworHomeOrganizationSchema';schema.type='application/ld+json';schema.textContent=JSON.stringify({\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"YOCEWOR\",\"url\":\"https://yocewor.in/\",\"logo\":\"https://yocewor.in/yocewor-logo.svg\",\"description\":\"India's Education & Opportunities Platform\"});document.head.appendChild(schema)}
     if(document.getElementById('yocewor-final-mobile-fix'))return;
     const s=document.createElement('style');s.id='yocewor-final-mobile-fix';s.textContent=`
       .brand-logo,.hero-logo,.foot-brand img{display:block!important;visibility:visible!important;opacity:1!important;object-fit:contain!important}
+      /* Header cleanup: remove Create Account, Notifications, Messages and Profile; keep More. */
+      .top-right a[href=\"#create\"],.top-right a[href=\"#login\"]{display:none!important}
+      .account{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:6px!important}
+      .account a:nth-child(-n+3){display:none!important}
+      .account a:nth-child(4){display:flex!important}
       @media(max-width:900px){
         .wrap{width:94%!important;max-width:none!important}
         .head{display:grid!important;grid-template-columns:180px minmax(0,1fr) 150px!important;align-items:center!important;gap:7px!important;min-height:78px!important;padding:5px 0!important}
@@ -95,6 +100,7 @@
         .footer-row{grid-template-columns:1fr!important;gap:10px!important}.foot-links{justify-content:flex-start!important}.social{justify-content:flex-start!important}.tagline{text-align:left!important}
       }
       @media(max-width:430px){.head{grid-template-columns:160px minmax(0,1fr) 112px!important;gap:4px!important}.brand-logo{width:52px!important;height:52px!important;flex-basis:52px!important}.brand h1{font-size:18px!important}.brand p{font-size:7px!important}.account{gap:3px!important}.account a{font-size:0!important}.account a svg{width:16px!important;height:16px!important}.search{height:38px!important}.search input{font-size:9px!important}.search button{min-width:52px!important;font-size:8px!important}.hero-slogan{flex-basis:78px!important;min-width:78px!important}.hero-slogan::before,.hero-slogan::after{font-size:10px!important}.join{min-width:52px!important;font-size:7px!important;padding:6px 4px!important}.columns{grid-template-columns:repeat(3,1fr)!important}.job-list li{font-size:7px!important}}
+      @media(max-width:760px){.account{display:flex!important}.account a:nth-child(-n+3){display:none!important}.account a:nth-child(4){display:flex!important;font-size:0!important}}
     `;document.head.appendChild(s);
   }
   function style(){
@@ -120,7 +126,7 @@
   async function run(){
     const box=target();if(!box)return;
     try{const rows=await fetchRows();if(!hasFullDetails(box))render(rows);updateTicker(rows);updateHero(rows);polishSocial();style();seoAndMobileFixes();box.dataset.liveLoaded='true';}
-    catch(e){console.error('YOCEWOR public recruitment loader:',e);style();polishSocial();seoAndMobileFixes();if(!box.dataset.liveLoaded&&!box.querySelector('.job,.item'))box.innerHTML='<div class="empty">Recruitment data अभी load नहीं हो सका। कृपया refresh करें।</div>';}
+    catch(e){console.error('YOCEWOR public recruitment loader:',e);style();polishSocial();seoAndMobileFixes();if(!box.dataset.liveLoaded&&!box.querySelector('.job,.item'))box.innerHTML='<div class=\"empty\">Recruitment data अभी load नहीं हो सका। कृपया refresh करें।</div>';}
   }
   function start(){style();seoAndMobileFixes();[0,500,1500,3500].forEach(t=>setTimeout(run,t));setInterval(run,20000);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
