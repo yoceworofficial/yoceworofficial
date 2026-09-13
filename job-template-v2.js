@@ -4,9 +4,10 @@
   const clean=s=>String(s??'').trim();
   const safeUrl=u=>{try{const x=new URL(String(u));return /^https?:$/.test(x.protocol)?x.href:''}catch(e){return ''}};
   const params=new URLSearchParams(location.search), id=params.get('id'), slug=params.get('slug')||location.pathname.split('/').filter(Boolean).pop();
+  const db2=window.supabase?.createClient?.('https://mzntgjyecymcpzciklfk.supabase.co','sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn');
   async function apply(){
-    if(!window.supabase||!window.db) return false;
-    const key=clean(id), cleanSlug=clean(slug); let q=window.db.from('jobs').select('*').eq('published',true);
+    if(!db2) return false;
+    const key=clean(id), cleanSlug=clean(slug); let q=db2.from('jobs').select('*').eq('published',true);
     q=key?q.eq('id',key):q.eq('slug',decodeURIComponent(cleanSlug));
     const {data:j,error}=await q.maybeSingle(); if(error||!j) return false;
     const app=document.getElementById('app'); if(!app||app.querySelector('[data-task4="1"]')) return true;
