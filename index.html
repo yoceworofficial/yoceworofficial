@@ -5,7 +5,22 @@
 <meta name="theme-color" content="#eef4ff"><meta name="description" content="YOCEWOR — India's Education & Opportunities Platform. Latest government jobs, education, exams, results, scholarships, admit cards, syllabus and admissions."><meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="https://yocewor.in/">
 <title>YOCEWOR — India's Education & Opportunities Platform</title>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"YOCEWOR","url":"https://yocewor.in/","description":"India's Education & Opportunities Platform","publisher":{"@type":"Organization","name":"YOCEWOR","url":"https://yocewor.in/","logo":{"@type":"ImageObject","url":"https://yocewor.in/yocewor-logo.svg"}},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://yocewor.in/latest-jobs.html?q={search_term_string}"},"query-input":"required name=search_term_string"}}</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2660794738235284" crossorigin="anonymous"></script>
+<script>
+let hindi=false;
+function toggleLang(){
+  hindi=!hindi;
+  document.documentElement.lang=hindi?'hi':'en';
+  const btn=document.getElementById('langBtn'); if(btn) btn.textContent=hindi?'English':'हिंदी';
+  const map={
+    'मुख्य पृष्ठ':'Home','नवीनतम भर्ती':'Latest Jobs','लेटेस्ट अपडेट':'Latest Updates','एडमिट कार्ड':'Admit Card','रिजल्ट':'Results','भर्ती खोजें':'Search Jobs','महत्वपूर्ण सूचना':'Important Notice',
+    'नवीनतम भर्ती':'Latest Jobs','ताज़ा अपडेट':'Latest Updates','नवीनतम सरकारी भर्तियाँ':'Latest Government Jobs','प्रवेश पत्र और परीक्षा सूचना':'Admit Card and Exam Information','परीक्षा परिणाम और मेरिट':'Results and Merit','नवीनतम सरकारी अपडेट':'Latest Updates'
+  };
+  document.querySelectorAll('.nav a').forEach(a=>{if(!a.dataset.en){a.dataset.hi=a.textContent.trim();a.dataset.en=map[a.dataset.hi]||a.dataset.hi;}a.textContent=hindi?a.dataset.hi:a.dataset.en;});
+  const title=document.querySelector('.hero h2'); if(title){title.dataset.hi=title.dataset.hi||title.textContent; title.dataset.en='Government Jobs & Important Information'; title.textContent=hindi?title.dataset.hi:title.dataset.en;}
+  const text=document.querySelector('.hero p'); if(text){text.dataset.hi=text.dataset.hi||text.textContent; text.dataset.en='Find the latest government jobs, examinations, admit cards and results — clear, organized and in one place.'; text.textContent=hindi?text.dataset.hi:text.dataset.en;}
+  const search=document.querySelector('.search input'); if(search) search.placeholder=hindi?'भर्ती, परीक्षा या विभाग खोजें...':'Search jobs, exams or departments...';
+}
+</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2660794738235284" crossorigin="anonymous"></script>
 <style>
 :root{--navy:#0b2b69;--blue:#1877e8;--purple:#7445e8;--pink:#df3d9c;--teal:#10a891;--orange:#ed8742;--cyan:#25a9dc;--ink:#10285b;--muted:#50658b;--line:#d8e4f4;--shadow:0 7px 22px rgba(32,72,130,.08)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#f8fbff 0,#fff 55%,#f7fbff 100%);color:var(--ink);font-family:Arial,"Noto Sans Devanagari",sans-serif;font-size:14px}a{text-decoration:none;color:inherit}button,input{font:inherit}.wrap{width:min(1480px,96%);margin:auto}
