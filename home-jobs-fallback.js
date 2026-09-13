@@ -1,4 +1,4 @@
-// YOCEWOR homepage live layer v7 — reliable public recruitment loader
+// YOCEWOR homepage live layer v8 — reliable public recruitment loader + final polish
 (function(){
   'use strict';
   const SUPABASE_URL='https://mzntgjyecymcpzciklfk.supabase.co';
@@ -32,10 +32,7 @@
     const track=document.getElementById('tickerTrack'); if(!track)return;
     const jobs=(Array.isArray(rows)?rows:[]).filter(j=>!isAnswerKey(j)).slice(0,8);
     if(!jobs.length)return;
-    const items=jobs.map(j=>{
-      const detail=j.slug?'job.html?slug='+encodeURIComponent(j.slug):'job.html?id='+encodeURIComponent(j.id||'');
-      return '<a href="'+detail+'">🔥 '+esc(j.title||'Latest Recruitment')+' • Last Date: '+esc(j.last_date||'—')+'</a>';
-    }).join('');
+    const items=jobs.map(j=>{const detail=j.slug?'job.html?slug='+encodeURIComponent(j.slug):'job.html?id='+encodeURIComponent(j.id||'');return '<a href="'+detail+'">🔥 '+esc(j.title||'Latest Recruitment')+' • Last Date: '+esc(j.last_date||'—')+'</a>';}).join('');
     track.innerHTML=items+items;track.classList.add('live-scroll');
   }
   function updateHero(rows){
@@ -43,17 +40,66 @@
     const count=(Array.isArray(rows)?rows:[]).filter(j=>!isAnswerKey(j)&&isJob(j)).length;
     hero.insertAdjacentHTML('beforeend','<div class="hero-stats"><div class="hero-stat"><i>💼</i><div><strong>'+count+'</strong><span>Published Jobs</span></div></div><div class="hero-stat"><i>⚡</i><div><strong>LIVE</strong><span>Fresh Updates</span></div></div><div class="hero-stat"><i>🛡️</i><div><strong>OFFICIAL</strong><span>Source First</span></div></div></div>');
   }
-  function polishSocial(){
-    document.querySelectorAll('.social a').forEach(a=>{
-      if(a.dataset.yoceworIcon)return;
-      const t=(a.textContent||'').toLowerCase();
-      a.dataset.yoceworIcon='1';
-      a.setAttribute('aria-label',t.includes('telegram')?'Telegram':t.includes('instagram')?'Instagram':t.includes('channel')?'WhatsApp Channel':'WhatsApp Group');
-    });
+  function polishSocial(){document.querySelectorAll('.social a').forEach(a=>{if(a.dataset.yoceworIcon)return;const t=(a.textContent||'').toLowerCase();a.dataset.yoceworIcon='1';a.setAttribute('aria-label',t.includes('telegram')?'Telegram':t.includes('instagram')?'Instagram':t.includes('channel')?'WhatsApp Channel':'WhatsApp Group');});}
+  function seoAndMobileFixes(){
+    let m=document.querySelector('meta[name="description"]');
+    if(!m){m=document.createElement('meta');m.name='description';document.head.appendChild(m)}
+    m.setAttribute('content',"YOCEWOR is India's education and opportunities platform for the latest government jobs, recruitment, exams, results, admit cards, syllabus, scholarships and admissions.");
+    let icon=document.querySelector('link[rel="icon"]');
+    if(!icon){icon=document.createElement('link');icon.rel='icon';document.head.appendChild(icon)}
+    icon.href='/yocewor-logo.svg?v=20260913';
+    icon.type='image/svg+xml';
+    let apple=document.querySelector('link[rel="apple-touch-icon"]');
+    if(!apple){apple=document.createElement('link');apple.rel='apple-touch-icon';document.head.appendChild(apple)}
+    apple.href='/yocewor-logo.svg?v=20260913';
+    let schema=document.getElementById('yoceworHomeOrganizationSchema');
+    if(!schema){schema=document.createElement('script');schema.id='yoceworHomeOrganizationSchema';schema.type='application/ld+json';schema.textContent=JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":"YOCEWOR","url":"https://yocewor.in/","logo":"https://yocewor.in/yocewor-logo.svg","description":"India's Education & Opportunities Platform"});document.head.appendChild(schema)}
+    if(document.getElementById('yocewor-final-mobile-fix'))return;
+    const s=document.createElement('style');s.id='yocewor-final-mobile-fix';s.textContent=`
+      .brand-logo,.hero-logo,.foot-brand img{display:block!important;visibility:visible!important;opacity:1!important;object-fit:contain!important}
+      @media(max-width:900px){
+        .wrap{width:94%!important;max-width:none!important}
+        .head{display:grid!important;grid-template-columns:180px minmax(0,1fr) 150px!important;align-items:center!important;gap:7px!important;min-height:78px!important;padding:5px 0!important}
+        .brand{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:7px!important;min-width:0!important;padding:4px 0!important}
+        .brand-logo{width:58px!important;height:58px!important;flex:0 0 58px!important}
+        .brand h1{font-size:22px!important;line-height:1!important;white-space:nowrap!important;margin:0!important}
+        .brand p{font-size:8px!important;line-height:1.1!important;white-space:nowrap!important;margin:3px 0 0!important}
+        .search{height:40px!important;min-width:0!important;width:100%!important}
+        .search input{font-size:10px!important;min-width:0!important}
+        .search button{min-width:58px!important;font-size:9px!important;padding:0 8px!important}
+        .account{display:flex!important;justify-content:flex-end!important;align-items:center!important;gap:6px!important;min-width:0!important;overflow:hidden!important}
+        .account a{font-size:9px!important;white-space:nowrap!important;display:flex!important;align-items:center!important;gap:2px!important}
+        .account a svg{width:17px!important;height:17px!important;margin:0!important;flex:none!important}
+        .hero{height:110px!important;min-height:110px!important}
+        .hero-inner{height:100%!important;padding:7px 10px!important;gap:7px!important;display:flex!important;align-items:center!important}
+        .hero-logo{width:62px!important;height:62px!important;flex:0 0 62px!important}
+        .hero-copy{min-width:0!important;flex:1 1 auto!important}
+        .hero-copy h2{font-size:16px!important;line-height:1.05!important;white-space:nowrap!important;margin:0!important}
+        .hero-copy b{font-size:8px!important;line-height:1.1!important;white-space:nowrap!important}
+        .hero-links{font-size:7px!important;gap:4px!important;margin-top:4px!important;white-space:nowrap!important;overflow:hidden!important}
+        .hero-links a:after{margin-left:4px!important}
+        .hero-slogan{display:block!important;visibility:visible!important;opacity:1!important;flex:0 0 92px!important;min-width:92px!important;max-width:92px!important;margin-left:auto!important;font-size:0!important;line-height:1.05!important;text-align:center!important;overflow:visible!important}
+        .hero-slogan::before{content:'Better Opportunities';display:block!important;font-size:12px!important;font-family:cursive!important;font-style:italic!important}
+        .hero-slogan::after{content:'Brighter Future';display:block!important;font-size:12px!important;font-family:cursive!important;font-style:italic!important;text-decoration:underline!important;text-decoration-color:#176fe2!important;text-underline-offset:3px!important}
+        .hero-slogan div{height:2px!important;margin-top:3px!important;background:#176fe2!important;transform:skew(-25deg)!important}
+        .join{display:block!important;min-width:60px!important;padding:7px!important;font-size:8px!important;margin-left:3px!important}
+        .join-sub{display:block!important;font-size:5px!important;margin-top:3px!important;white-space:nowrap!important}
+        .quick{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+        .quick-card{height:62px!important;padding:6px!important;gap:5px!important;min-width:0!important}
+        .quick-card h3{font-size:10px!important;white-space:nowrap!important}
+        .quick-card p{font-size:6px!important;white-space:nowrap!important;overflow:hidden!important}
+        .qicon{width:27px!important;height:27px!important;flex:0 0 27px!important}.qicon svg{width:23px!important;height:23px!important}
+        .columns{grid-template-columns:repeat(3,1fr)!important;gap:5px!important;padding:5px!important}
+        .column-head{height:37px!important;font-size:10px!important;padding:0 7px!important;gap:5px!important;white-space:nowrap!important}.column-head svg{width:16px!important;flex:none!important}
+        .column-body{min-height:255px!important;padding:6px!important}.job-list{padding-left:14px!important}.job-list li{font-size:7.5px!important;line-height:1.35!important;padding:2px 0!important}
+        .footer-row{grid-template-columns:1fr!important;gap:10px!important}.foot-links{justify-content:flex-start!important}.social{justify-content:flex-start!important}.tagline{text-align:left!important}
+      }
+      @media(max-width:430px){.head{grid-template-columns:160px minmax(0,1fr) 112px!important;gap:4px!important}.brand-logo{width:52px!important;height:52px!important;flex-basis:52px!important}.brand h1{font-size:18px!important}.brand p{font-size:7px!important}.account{gap:3px!important}.account a{font-size:0!important}.account a svg{width:16px!important;height:16px!important}.search{height:38px!important}.search input{font-size:9px!important}.search button{min-width:52px!important;font-size:8px!important}.hero-slogan{flex-basis:78px!important;min-width:78px!important}.hero-slogan::before,.hero-slogan::after{font-size:10px!important}.join{min-width:52px!important;font-size:7px!important;padding:6px 4px!important}.columns{grid-template-columns:repeat(3,1fr)!important}.job-list li{font-size:7px!important}}
+    `;document.head.appendChild(s);
   }
   function style(){
-    if(document.getElementById('yocewor-home-v7-style'))return;
-    const s=document.createElement('style');s.id='yocewor-home-v7-style';s.textContent=`
+    if(document.getElementById('yocewor-home-v8-style'))return;
+    const s=document.createElement('style');s.id='yocewor-home-v8-style';s.textContent=`
       .social a{display:inline-flex!important;align-items:center;gap:6px!important}
       .job-rank{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:50%;background:linear-gradient(135deg,#0b83ca,#063b68);color:#fff;font-size:10px;margin-right:8px;vertical-align:1px}
       .item-main{min-width:0}.job-mini{display:flex;flex-wrap:wrap;gap:5px 12px;margin:5px 0 0;padding-left:31px;color:#60798b;font-size:9.5px;line-height:1.4}.job-mini span{white-space:nowrap}
@@ -73,19 +119,9 @@
   }
   async function run(){
     const box=target();if(!box)return;
-    try{
-      const rows=await fetchRows();
-      if(!hasFullDetails(box))render(rows);
-      updateTicker(rows);updateHero(rows);polishSocial();style();
-      box.dataset.liveLoaded='true';
-    }catch(e){
-      console.error('YOCEWOR public recruitment loader:',e);
-      style();polishSocial();
-      if(!box.dataset.liveLoaded && !box.querySelector('.job,.item')){
-        box.innerHTML='<div class="empty">Recruitment data अभी load नहीं हो सका। कृपया refresh करें।</div>';
-      }
-    }
+    try{const rows=await fetchRows();if(!hasFullDetails(box))render(rows);updateTicker(rows);updateHero(rows);polishSocial();style();seoAndMobileFixes();box.dataset.liveLoaded='true';}
+    catch(e){console.error('YOCEWOR public recruitment loader:',e);style();polishSocial();seoAndMobileFixes();if(!box.dataset.liveLoaded&&!box.querySelector('.job,.item'))box.innerHTML='<div class="empty">Recruitment data अभी load नहीं हो सका। कृपया refresh करें।</div>';}
   }
-  function start(){style();[0,500,1500,3500].forEach(t=>setTimeout(run,t));setInterval(run,20000);}
+  function start(){style();seoAndMobileFixes();[0,500,1500,3500].forEach(t=>setTimeout(run,t));setInterval(run,20000);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
