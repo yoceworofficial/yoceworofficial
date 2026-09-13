@@ -1,16 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="YOCEWOR Education and Opportunities logo">
-<defs>
-<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1769e0"/><stop offset=".55" stop-color="#6846d9"/><stop offset="1" stop-color="#d94f9d"/></linearGradient>
-<linearGradient id="book" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dce9ff"/></linearGradient>
-</defs>
-<circle cx="256" cy="256" r="244" fill="#fff" stroke="#183c78" stroke-width="16"/>
-<circle cx="256" cy="256" r="214" fill="#f5f8ff" stroke="url(#g)" stroke-width="10"/>
-<path d="M102 292c28 75 89 124 154 135M410 292c-28 75-89 124-154 135" fill="none" stroke="#4e82d7" stroke-width="15" stroke-linecap="round"/>
-<path d="M134 309c17 55 55 92 99 109M378 309c-17 55-55 92-99 109" fill="none" stroke="#a7bfea" stroke-width="8" stroke-linecap="round"/>
-<path d="M256 130l32 47 55 16-44 35 2 56-45-22-45 22 2-56-44-35 55-16z" fill="url(#g)"/>
-<path d="M171 267c35-20 61-19 85 3v72c-25-18-53-19-85-2z" fill="url(#book)" stroke="#1e4e91" stroke-width="8"/>
-<path d="M341 267c-35-20-61-19-85 3v72c25-18 53-19 85-2z" fill="url(#book)" stroke="#1e4e91" stroke-width="8"/>
-<path d="M256 270v72" stroke="#1e4e91" stroke-width="8"/>
-<text x="256" y="82" text-anchor="middle" font-family="Arial,sans-serif" font-size="38" font-weight="900" letter-spacing="5" fill="#183c78">YOCEWOR</text>
-<text x="256" y="446" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="800" letter-spacing="1.5" fill="#183c78">EDUCATION • JOBS • OPPORTUNITIES</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="YOCEWOR logo"><defs><linearGradient id="p" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2f7fe8"/><stop offset=".55" stop-color="#7146e8"/><stop offset="1" stop-color="#d84da5"/></linearGradient></defs><circle cx="256" cy="256" r="242" fill="#fff" stroke="#163d78" stroke-width="12"/><circle cx="256" cy="256" r="215" fill="#fbfcff" stroke="#6d88b7" stroke-width="4"/><text x="256" y="82" text-anchor="middle" font-family="Arial,sans-serif" font-size="38" font-weight="900" letter-spacing="5" fill="#173d79">YOCEWOR</text><path d="M104 278c12 62 49 112 102 139M408 278c-12 62-49 112-102 139" fill="none" stroke="#5d83bd" stroke-width="11" stroke-linecap="round"/><path d="M133 292c13 45 39 78 76 101M379 292c-13 45-39 78-76 101" fill="none" stroke="#b5c7e8" stroke-width="6" stroke-linecap="round"/><path d="M256 126l28 42 49 14-39 31 2 49-40-20-40 20 2-49-39-31 49-14z" fill="url(#p)"/><path d="M158 270c34-20 68-19 98 5v75c-30-19-64-21-98-3z" fill="#fff" stroke="#214d8f" stroke-width="8"/><path d="M354 270c-34-20-68-19-98 5v75c30-19 64-21 98-3z" fill="#fff" stroke="#214d8f" stroke-width="8"/><path d="M256 275v75" stroke="#214d8f" stroke-width="7"/><path d="M165 386h182" stroke="url(#p)" stroke-width="5" stroke-linecap="round"/><text x="256" y="424" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="800" letter-spacing="1.2" fill="#173d79">YOUR WORLD • YOUR VOICE</text></svg>
