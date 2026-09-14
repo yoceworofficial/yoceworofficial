@@ -1,0 +1,61 @@
+name: YOCEWOR Final Pages Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: yocewor-final-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Apply final YOCEWOR homepage architecture
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          css = '<link rel="stylesheet" href="/yocewor-final-architecture.css?v=20260914">'
+          js = '<script src="/yocewor-final-architecture.js?v=20260914"></script>'
+          brand = '<link rel="stylesheet" href="/yocewor-brand-v2.css?v=20260914">'
+          icon = '<link rel="icon" href="/assets/yocewor-mark-v2.svg" type="image/svg+xml">'
+
+          for name in ('index.html','job-details.html'):
+              p=Path(name)
+              if not p.exists():
+                  continue
+              s=p.read_text(encoding='utf-8')
+              for marker,tag in (("yocewor-final-architecture.css",css),("yocewor-brand-v2.css",brand),("yocewor-mark-v2.svg",icon)):
+                  if marker not in s:
+                      s=re.sub(r'</head>',tag+'\n</head>',s,count=1,flags=re.I)
+              if name in ('index.html','job-details.html') and 'yocewor-final-architecture.js' not in s:
+                  s=re.sub(r'</body>',js+'\n</body>',s,count=1,flags=re.I)
+              p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Upload final site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
