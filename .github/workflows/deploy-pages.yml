@@ -36,8 +36,8 @@ jobs:
               if not p.exists():
                   continue
               s=p.read_text(encoding='utf-8')
-              css='<link rel="stylesheet" href="/yocewor-final-architecture.css?v=20260913">'
-              js='<script src="/yocewor-final-architecture.js?v=20260913"></script>'
+              css='<link rel="stylesheet" href="/yocewor-final-architecture.css?v=20260915">'
+              js='<script src="/yocewor-final-architecture.js?v=20260915"></script>'
               if css not in s:
                   s=s.replace('</head>',css+'\n</head>',1)
               if js not in s:
