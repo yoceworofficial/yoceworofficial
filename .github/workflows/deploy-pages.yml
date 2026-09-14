@@ -43,6 +43,17 @@ jobs:
               if js not in s:
                   s=s.replace('</body>',js+'\n</body>',1)
               p.write_text(s,encoding='utf-8')
+
+          p=Path('job.html')
+          if p.exists():
+              s=p.read_text(encoding='utf-8')
+              css='<link rel="stylesheet" href="/yocewor-job-master.css?v=20260914">'
+              js='<script src="/yocewor-job-master.js?v=20260914"></script>'
+              if css not in s:
+                  s=s.replace('</head>',css+'\n</head>',1)
+              if js not in s:
+                  s=s.replace('</body>',js+'\n</body>',1)
+              p.write_text(s,encoding='utf-8')
           PY
 
       - name: Upload site
@@ -53,5 +64,3 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
-
-# YOCEWOR final architecture deployment 2026-09-13
