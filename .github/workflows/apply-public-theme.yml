@@ -9,41 +9,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply public design, AdSense loader, canonical tags and owner-content safeguards
+      - name: Apply shared public metadata and preserve clean homepage
         shell: python
         run: |
           from pathlib import Path
           import re
-          skip = {'admin.html','admin-dashboard.html','owner-dashboard.html','dashboard.html','team-management-live.html','departments.html','department-login.html','content.html','content-live-fixed.html','settings.html'}
-          theme='<link rel="stylesheet" href="/yocewor-theme.css">'
-          reference='<link rel="stylesheet" href="/yocewor-public-reference.css?v=20260915">'
+          skip = {'index.html','admin.html','admin-dashboard.html','owner-dashboard.html','dashboard.html','team-management-live.html','departments.html','department-login.html','content.html','content-live-fixed.html','settings.html'}
           ads='<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2660794738235284" crossorigin="anonymous"></script>'
           for p in Path('.').rglob('*.html'):
               if any(part.startswith('.') for part in p.parts) or p.name in skip:
                   continue
               s=p.read_text(encoding='utf-8')
               original=s
-              if theme not in s and '</head>' in s:
-                  s=s.replace('</head>',theme+'\n</head>',1)
-              if reference not in s and '</head>' in s:
-                  s=s.replace('</head>',reference+'\n</head>',1)
               if 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' not in s and '</head>' in s:
                   s=s.replace('</head>',ads+'\n</head>',1)
               if '<link rel="canonical"' not in s and '</head>' in s:
                   rel=p.as_posix()
-                  if rel=='index.html':
-                      rel=''
-                  elif p.name=='index.html':
-                      rel=p.parent.as_posix().strip('./')+'/'
                   s=s.replace('</head>',f'<link rel="canonical" href="https://yocewor.in/{rel}">\n</head>',1)
-              if p.name=='index.html' and p.parent.as_posix()!='.':
-                  route='https://yocewor.in/'+p.parent.as_posix().strip('./')+'/'
-                  s=re.sub(r'<link rel="canonical" href="[^"]+">',f'<link rel="canonical" href="{route}">',s,count=1)
               s=re.sub(r'(https://yocewor\.in/[^"<>]+?)/index\.html(["\'])',r'\1/\2',s)
               if s!=original:
                   p.write_text(s,encoding='utf-8')
 
-          # Task 4: load the dynamic Supabase article template adapter on recruitment detail pages.
           p=Path('job-details.html')
           if p.exists():
               s=p.read_text(encoding='utf-8')
@@ -51,27 +37,11 @@ jobs:
               if tag not in s and '</body>' in s:
                   s=s.replace('</body>',tag+'\n</body>',1)
                   p.write_text(s,encoding='utf-8')
-
-          # Keep the owner editor's friendly labels mapped to the canonical database types.
-          p=Path('content-live-fixed.html')
-          if p.exists():
-              s=p.read_text(encoding='utf-8')
-              marker='YOCEWOR_OWNER_TYPE_MAP_V1'
-              if marker not in s:
-                  needle="let current=null,role='';const $=id=>document.getElementById(id),v=id=>($(id)?.value||'').trim(),esc=s=>String(s??'').replace"
-                  insert="let current=null,role='';const TYPE_TO_DB={'Recruitment':'job','Result':'result','Admit Card':'admit_card','Answer Key':'answer_key','Exam / Syllabus':'syllabus','Exam / Date':'exam_date','Admission':'admission','Scholarship':'scholarship','Government Scheme':'scheme','General Notice':'latest_news'};const DB_TO_TYPE=Object.fromEntries(Object.entries(TYPE_TO_DB).map(([label,key])=>[key,label]));/* YOCEWOR_OWNER_TYPE_MAP_V1 */const $=id=>document.getElementById(id),v=id=>($(id)?.value||'').trim(),esc=s=>String(s??'').replace"
-                  if needle in s:
-                      s=s.replace(needle,insert,1)
-                  s=s.replace("type:v('type'),title:v('title')","type:TYPE_TO_DB[v('type')]||'latest_news',title:v('title')",1)
-                  s=s.replace("$('type').value=d.type||'Recruitment'","$('type').value=DB_TO_TYPE[String(d.type||'').toLowerCase()]||d.type||'Recruitment'",1)
-                  s=s.replace("if(!o.slug)o.slug=o.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')","if(!o.slug){const base=o.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');o.slug=base||('yocewor-update-'+Date.now())}",1)
-                  p.write_text(s,encoding='utf-8')
-      - name: Commit public improvements
+      - name: Commit metadata improvements
         run: |
-          git config user.name "YOCEWOR Theme Bot"
+          git config user.name "YOCEWOR Metadata Bot"
           git config user.email "actions@github.com"
           git add '*.html' '**/*.html'
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Apply YOCEWOR public reference build"
+          git commit -m "Preserve clean YOCEWOR homepage"
           git push
-# Deployment trigger refresh — 2026-09-15 Reference Build
