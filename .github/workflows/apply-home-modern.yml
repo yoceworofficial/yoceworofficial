@@ -1,40 +1,10 @@
 name: Apply YOCEWOR Modern Homepage
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
-  apply:
+  disabled:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Inject YOCEWOR homepage architecture
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          assets=[
-            '<link rel="stylesheet" href="home-modern.css?v=20260909">',
-            '<link rel="stylesheet" href="/yocewor-final-architecture.css?v=20260916">',
-            '<script src="home-live.js?v=20260909"></script>',
-            '<script src="/yocewor-final-architecture.js?v=20260916"></script>'
-          ]
-          for asset in assets:
-              if asset not in s:
-                  if asset.startswith('<link'):
-                      s=s.replace('</head>',asset+'\n</head>',1)
-                  else:
-                      s=s.replace('</body>',asset+'\n</body>',1)
-          p.write_text(s,encoding='utf-8')
-          PY
-      - name: Commit
-        run: |
-          if git diff --quiet; then echo 'Architecture already applied'; exit 0; fi
-          git config user.name 'YOCEWOR Bot'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html
-          git commit -m 'Apply YOCEWOR reference homepage architecture [skip ci]'
-          git push
+      - run: echo "Legacy homepage injection is disabled; the clean Sarkari Result-style homepage is maintained directly in index.html."
