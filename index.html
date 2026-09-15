@@ -36,6 +36,7 @@ function toggleLang(){
 </style>
 <link rel="stylesheet" href="home-modern.css?v=20260909">
 <link rel="stylesheet" href="/yocewor-theme.css">
+<link rel="stylesheet" href="/yocewor-final-architecture.css?v=20260916">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute"><defs>
@@ -64,4 +65,5 @@ async function loadJobs(){try{const fields='id,title,slug,department,start_date,
 function doSearch(){const q=document.getElementById('searchInput').value.trim();location.href=q?'latest-jobs.html?q='+encodeURIComponent(q):'latest-jobs.html';return false}loadJobs();setInterval(loadJobs,30000);
 </script><script src="home-jobs-fallback.js?home-jobs-fallback-v4"></script>
 <script src="home-live.js?v=20260909"></script>
+<script src="/yocewor-final-architecture.js?v=20260916"></script>
 </body></html>
