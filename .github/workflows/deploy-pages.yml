@@ -27,32 +27,18 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Apply final YOCEWOR architecture assets
+      - name: Apply YOCEWOR public reference build
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          for name in ('index.html','job-details.html'):
-              p=Path(name)
-              if not p.exists():
+          skip = {'admin.html','admin-dashboard.html','owner-dashboard.html','dashboard.html','team-management-live.html','departments.html','department-login.html','content.html','content-live-fixed.html','settings.html'}
+          ref_css='<link rel="stylesheet" href="/yocewor-public-reference.css?v=20260915">'
+          for p in Path('.').rglob('*.html'):
+              if any(part.startswith('.') for part in p.parts) or p.name in skip:
                   continue
               s=p.read_text(encoding='utf-8')
-              css='<link rel="stylesheet" href="/yocewor-final-architecture.css?v=20260916">'
-              js='<script src="/yocewor-final-architecture.js?v=20260916"></script>'
-              if css not in s:
-                  s=s.replace('</head>',css+'\n</head>',1)
-              if js not in s:
-                  s=s.replace('</body>',js+'\n</body>',1)
-              p.write_text(s,encoding='utf-8')
-
-          p=Path('job.html')
-          if p.exists():
-              s=p.read_text(encoding='utf-8')
-              css='<link rel="stylesheet" href="/yocewor-job-master.css?v=20260914">'
-              js='<script src="/yocewor-job-master.js?v=20260914"></script>'
-              if css not in s:
-                  s=s.replace('</head>',css+'\n</head>',1)
-              if js not in s:
-                  s=s.replace('</body>',js+'\n</body>',1)
+              if ref_css not in s and '</head>' in s:
+                  s=s.replace('</head>',ref_css+'\n</head>',1)
               p.write_text(s,encoding='utf-8')
           PY
 
