@@ -1,19 +1,15 @@
 name: Deploy YOCEWOR to GitHub Pages
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: pages
   cancel-in-progress: true
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -23,30 +19,30 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Configure Pages
         uses: actions/configure-pages@v5
-
-      - name: Apply YOCEWOR public reference build
+      - name: Prepare clean public site
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          skip = {'admin.html','admin-dashboard.html','owner-dashboard.html','dashboard.html','team-management-live.html','departments.html','department-login.html','content.html','content-live-fixed.html','settings.html'}
-          ref_css='<link rel="stylesheet" href="/yocewor-public-reference.css?v=20260915">'
-          for p in Path('.').rglob('*.html'):
-              if any(part.startswith('.') for part in p.parts) or p.name in skip:
-                  continue
-              s=p.read_text(encoding='utf-8')
-              if ref_css not in s and '</head>' in s:
-                  s=s.replace('</head>',ref_css+'\n</head>',1)
-              p.write_text(s,encoding='utf-8')
+          # The homepage is a clean build and must not receive legacy theme/architecture injection.
+          # Other public pages keep their existing templates and data systems.
+          p=Path('index.html')
+          if not p.exists(): raise SystemExit('index.html missing')
+          s=p.read_text(encoding='utf-8')
+          for tag in [
+              '<link rel="stylesheet" href="/yocewor-final-architecture.css?v=20260916">',
+              '<script src="/yocewor-final-architecture.js?v=20260916"></script>',
+              '<link rel="stylesheet" href="/yocewor-public-reference.css?v=20260915">',
+              '<link rel="stylesheet" href="/yocewor-theme.css">'
+          ]:
+              s=s.replace(tag,'')
+          p.write_text(s,encoding='utf-8')
           PY
-
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
-
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
