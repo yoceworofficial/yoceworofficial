@@ -1,1 +1,0 @@
-# YOCEWOR release rules
