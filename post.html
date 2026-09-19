@@ -4,14 +4,38 @@
 <body><header class="site-header"><div class="site-wrap header-inner"><a class="site-title" href="/">YOCEWOR</a><nav aria-label="Primary navigation"><a href="/">Home</a><a href="/category.html?category=latest-jobs">Latest Jobs</a><a href="/category.html?category=admit-card">Admit Card</a><a href="/category.html?category=answer-key">Answer Key</a><a href="/category.html?category=result">Result</a></nav></div></header>
 <main class="site-wrap article" id="article"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a> &gt; <span id="crumb">Update</span></nav><p class="muted">Loading...</p></main>
 <footer class="site-footer"><div class="site-wrap footer-inner"><div>© <span id="year"></span> YOCEWOR</div><div class="footer-links"><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy-policy.html">Privacy Policy</a><a href="/disclaimer.html">Disclaimer</a><a href="/terms.html">Terms & Conditions</a></div></div></footer>
+<script src="/config.js?v=20260919-5"></script>
 <script>
 (async()=>{
 const root=document.getElementById("article"),slug=new URLSearchParams(location.search).get("slug");document.getElementById("year").textContent=new Date().getFullYear();
 if(!slug){notFound();return}
 try{
- const r=await fetch("https://mzntgjyecymcpzciklfk.supabase.co/functions/v1/public-post?slug="+encodeURIComponent(slug),{cache:"no-store"});
- if(!r.ok) throw new Error("HTTP "+r.status);
- const {post,sections,links,related}=await r.json();
+ let payload;
+ try{
+   const r=await fetch("https://mzntgjyecymcpzciklfk.supabase.co/functions/v1/public-post?slug="+encodeURIComponent(slug),{cache:"no-store"});
+   if(!r.ok) throw new Error("HTTP "+r.status);
+   payload=await r.json();
+   if(!payload?.post) throw new Error("Invalid API payload");
+ }catch(apiError){
+   console.warn("public-post failed; using REST fallback",apiError);
+   const key=window.YOCEWOR_CONFIG?.supabasePublishableKey||"";
+   if(!key) throw apiError;
+   const headers={apikey:key,Authorization:"Bearer "+key};
+   const base="https://mzntgjyecymcpzciklfk.supabase.co/rest/v1";
+   const get=async path=>{const x=await fetch(base+path,{headers,cache:"no-store"});if(!x.ok)throw new Error("REST "+x.status);return x.json()};
+   const posts=await get("/posts?select=*&slug=eq."+encodeURIComponent(slug)+"&status=eq.published&limit=1");
+   if(!posts.length) return notFound();
+   const p=posts[0];
+   const [cats,jobs,sections,links,related]=await Promise.all([
+     get("/categories?select=id,name,slug&id=eq."+encodeURIComponent(p.category_id)+"&limit=1"),
+     get("/jobs?select=*&post_id=eq."+encodeURIComponent(p.id)+"&limit=1"),
+     get("/post_sections?select=*&post_id=eq."+encodeURIComponent(p.id)+"&order=sort_order.asc"),
+     get("/post_links?select=*&post_id=eq."+encodeURIComponent(p.id)+"&order=sort_order.asc"),
+     get("/posts?select=title,slug,published_at&category_id=eq."+encodeURIComponent(p.category_id)+"&status=eq.published&id=neq."+encodeURIComponent(p.id)+"&order=published_at.desc&limit=5")
+   ]);
+   payload={post:{...p,categories:cats[0]||null,jobs:jobs||[]},sections:sections||[],links:links||[],related:related||[]};
+ }
+ const {post,sections,links,related}=payload;
  if(!post) return notFound();
  const desc=post.seo_description||post.excerpt; document.title=(post.seo_title||post.title)+" — YOCEWOR"; const canonical=document.querySelector('link[rel="canonical"]')||document.head.appendChild(Object.assign(document.createElement("link"),{rel:"canonical"})); canonical.href=post.canonical_url||location.href; const ogTitle=document.querySelector('meta[property="og:title"]'); if(ogTitle) ogTitle.content=post.seo_title||post.title; const ogDesc=document.querySelector('meta[property="og:description"]'); if(ogDesc) ogDesc.content=desc||"YOCEWOR government information update"; const ogUrl=document.querySelector('meta[property="og:url"]'); if(ogUrl) ogUrl.content=location.href; if(desc){const m=document.querySelector('meta[name="description"]');if(m)m.content=desc}
  let ld=document.createElement("script");ld.type="application/ld+json";ld.textContent=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":post.title,"description":desc||"YOCEWOR government information update","image":post.featured_image_url?[post.featured_image_url]:undefined,"datePublished":post.published_at||post.created_at,"dateModified":post.updated_at||post.published_at,"mainEntityOfPage":{"@type":"WebPage","@id":location.href},"author":{"@type":"Organization","name":"YOCEWOR"},"publisher":{"@type":"Organization","name":"YOCEWOR"}});document.head.appendChild(ld);
