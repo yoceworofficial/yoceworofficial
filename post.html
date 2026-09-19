@@ -1,57 +1,41 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="index,follow">
-  <meta name="description" content="YOCEWOR government information update">
-  <title>YOCEWOR</title>
-  <link rel="stylesheet" href="/styles.css">
-  <style>
-    .article{max-width:860px;margin:18px auto}
-    .article h1{font-size:28px;line-height:1.3;margin:0 0 8px}
-    .article .meta{color:#666;font-size:14px;margin-bottom:18px}
-    .article-section{margin:22px 0}
-    .article-section h2{font-size:21px;border-bottom:1px solid #bbb;padding-bottom:6px}
-    .info-table{width:100%;border-collapse:collapse}
-    .info-table th,.info-table td{border:1px solid #aaa;padding:8px;text-align:left;vertical-align:top}
-    .info-table th{font-weight:700;background:#f7f7f7}
-    .article-links{display:flex;flex-direction:column;gap:8px}
-    .article-links a{font-weight:600}
-    @media(max-width:700px){.article{margin:12px auto}.article h1{font-size:23px}.info-table{font-size:14px}}
-  </style>
-</head>
-<body>
-<header class="site-header"><div class="site-wrap header-inner"><a class="site-title" href="/">YOCEWOR</a><nav aria-label="Primary navigation"><a href="/">Home</a><a href="/category.html?category=latest-jobs">Latest Jobs</a><a href="/category.html?category=admit-card">Admit Card</a><a href="/category.html?category=answer-key">Answer Key</a><a href="/category.html?category=result">Result</a></nav></div></header>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="index,follow"><meta name="description" content="YOCEWOR government information update"><title>YOCEWOR</title><link rel="stylesheet" href="/styles.css">
+<style>.article{max-width:860px;margin:18px auto}.article h1{font-size:28px;line-height:1.3;margin:0 0 8px}.article h2{font-size:21px}.article .meta{color:#666;font-size:14px;margin-bottom:18px}.article-section{margin:22px 0}.article-section h2{border-bottom:1px solid #bbb;padding-bottom:6px}.info-table{width:100%;border-collapse:collapse}.info-table th,.info-table td{border:1px solid #aaa;padding:8px;text-align:left;vertical-align:top}.info-table th{font-weight:700;background:#f7f7f7}.article-links{display:flex;flex-direction:column;gap:8px}.article-links a{font-weight:600}.related-list{padding-left:20px}@media(max-width:700px){.article{margin:12px auto}.article h1{font-size:23px}.article h2{font-size:19px}.info-table{font-size:14px;display:block;overflow-x:auto;white-space:normal}.info-table th,.info-table td{min-width:120px}}</style></head>
+<body><header class="site-header"><div class="site-wrap header-inner"><a class="site-title" href="/">YOCEWOR</a><nav aria-label="Primary navigation"><a href="/">Home</a><a href="/category.html?category=latest-jobs">Latest Jobs</a><a href="/category.html?category=admit-card">Admit Card</a><a href="/category.html?category=answer-key">Answer Key</a><a href="/category.html?category=result">Result</a></nav></div></header>
 <main class="site-wrap article" id="article"><p class="muted">Loading...</p></main>
-<div class="channel-buttons"><a id="telegram-button" class="channel telegram" href="https://t.me/YOCEWOR" target="_blank" rel="noopener noreferrer">Telegram</a></div>
 <footer class="site-footer"><div class="site-wrap footer-inner"><div>© <span id="year"></span> YOCEWOR</div><div class="footer-links"><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy-policy.html">Privacy Policy</a><a href="/disclaimer.html">Disclaimer</a><a href="/terms.html">Terms & Conditions</a></div></div></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/config.js"></script>
-<script>
-(async()=>{
-  const client=supabase.createClient(YOCEWOR_CONFIG.supabaseUrl,YOCEWOR_CONFIG.supabasePublishableKey);
-  const slug=new URLSearchParams(location.search).get("slug");
-  const root=document.getElementById("article");
-  document.getElementById("year").textContent=new Date().getFullYear();
-  if(!slug){root.innerHTML="<h1>Page not found</h1><p><a href='/'>Go to homepage</a></p>";return;}
-  const {data:post,error}=await client.from("posts").select("*,categories(name,slug),jobs(*)").eq("slug",slug).eq("status","published").maybeSingle();
-  if(error||!post){root.innerHTML="<h1>Page not found</h1><p><a href='/'>Go to homepage</a></p>";return;}
-  document.title=post.seo_title||post.title+" — YOCEWOR";
-  const {data:sections}=await client.from("post_sections").select("*").eq("post_id",post.id).order("sort_order");
-  const {data:links}=await client.from("post_links").select("*").eq("post_id",post.id).order("sort_order");
-  let html="<p class='muted'>Home &gt; "+esc(post.categories?.name||"Update")+"</p><h1>"+esc(post.title)+"</h1>";
-  html+="<div class='meta'>Published: "+(post.published_at?new Date(post.published_at).toLocaleDateString("en-IN"):"-")+"</div>";
-  if(post.content_intro) html+="<p>"+esc(post.content_intro).replace(/\n/g,"<br>")+"</p>";
-  if(post.jobs?.length){const j=post.jobs[0];html+="<section class='article-section'><h2>Overview</h2><table class='info-table'>"+rows([["Recruitment Name",j.recruitment_name],["Organization",j.organization],["Post Name",j.post_name],["Total Vacancy",j.total_vacancy],["Qualification",j.qualification],["Age Limit",j.age_limit],["Application Mode",j.application_mode],["Job Location",j.job_location]])+"</table></section>";}
-  for(const s of sections||[]){html+="<section class='article-section'>"+(s.heading?"<h2>"+esc(s.heading)+"</h2>":"")+renderSection(s)+"</section>";}
-  if(links?.length){html+="<section class='article-section'><h2>Important Links</h2><div class='article-links'>"+links.map(l=>"<a href='"+escAttr(l.url)+"' target='_blank' rel='noopener noreferrer'>"+esc(l.label)+"</a>").join("")+"</div></section>";}
-  root.innerHTML=html;
-  function rows(a){return a.filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=="").map(x=>"<tr><th>"+esc(x[0])+"</th><td>"+esc(x[1])+"</td></tr>").join("");}
-  function renderSection(s){const c=s.content||{};if(s.section_type==="table"){const h=(c.headers||[]).map(x=>"<th>"+esc(x)+"</th>").join("");const rs=(c.rows||[]).map(r=>"<tr>"+r.map(x=>"<td>"+esc(x)+"</td>").join("")+"</tr>").join("");return "<table class='info-table'><thead><tr>"+h+"</tr></thead><tbody>"+rs+"</tbody></table>";}if(s.section_type==="list"){return "<ul>"+(c.items||[]).map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>";}if(s.section_type==="steps"){return "<ol>"+(c.items||[]).map(x=>"<li>"+esc(x)+"</li>").join("")+"</ol>";}if(s.section_type==="links"){return "<div class='article-links'>"+(c.items||[]).map(x=>"<a href='"+escAttr(x.url)+"' target='_blank' rel='noopener noreferrer'>"+esc(x.label)+"</a>").join("")+"</div>";}return "<p>"+esc(c.text||"").replace(/\n/g,"<br>")+"</p>";}
-  function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
-  function escAttr(v){return esc(v);}
-})();
-</script>
-</body>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/config.js"></script><script>
+(async()=>{const client=supabase.createClient(YOCEWOR_CONFIG.supabaseUrl,YOCEWOR_CONFIG.supabasePublishableKey),slug=new URLSearchParams(location.search).get("slug"),root=document.getElementById("article");document.getElementById("year").textContent=new Date().getFullYear();if(!slug){notFound();return}
+const {data:post,error}=await client.from("posts").select("*,categories(name,slug),jobs(*)").eq("slug",slug).eq("status","published").maybeSingle();if(error||!post){notFound();return}
+document.title=(post.seo_title||post.title)+" — YOCEWOR";const desc=post.seo_description||post.excerpt;if(desc){let m=document.querySelector('meta[name="description"]');if(m)m.setAttribute("content",desc)}
+const [{data:sections},{data:links}]=await Promise.all([client.from("post_sections").select("*").eq("post_id",post.id).order("sort_order"),client.from("post_links").select("*").eq("post_id",post.id).order("sort_order")]);
+let html="<p class='muted'><a href='/'>Home</a> &gt; "+esc(post.categories?.name||"Update")+"</p><h1>"+esc(post.title)+"</h1><div class='meta'>Published: "+fmt(post.published_at)+"</div>";
+if(post.content_intro)html+="<p>"+text(post.content_intro)+"</p>";
+const j=Array.isArray(post.jobs)&&post.jobs.length?post.jobs[0]:post.jobs;
+if(j){html+="<section class='article-section'><h2>Overview</h2><table class='info-table'>"+rows([["Recruitment Name",j.recruitment_name],["Organization",j.organization],["Post Name",j.post_name],["Total Vacancy",j.total_vacancy],["Application Mode",j.application_mode],["Job Location",j.job_location]])+"</table></section>";
+html+=jobSection("Important Dates",[["Application Start",fmtDate(j.application_start)],["Last Date",fmtDate(j.application_last_date)],["Exam Date",fmtDate(j.exam_date)]]);
+html+=jobSection("Eligibility",[["Educational Qualification",j.qualification],["Age Limit",j.age_limit]]);
+html+=jobSection("Application Fee",[["Fee",j.application_fee]]);
+html+=jobSection("Salary / Pay Scale",[["Salary",j.salary]]);
+html+=jobSection("Selection Process",[["Selection Process",j.selection_process]]);
+if(j.status_text)html+=jobSection("Status",[["Current Status",j.status_text]]);
+}
+for(const s of sections||[]){html+="<section class='article-section'>"+(s.heading?"<h2>"+esc(s.heading)+"</h2>":"")+renderSection(s)+"</section>"}
+if(links?.length){html+="<section class='article-section'><h2>Important Links</h2><div class='article-links'>"+links.map(l=>linkHtml(l.label,l.url)).join("")+"</div></section>"}
+if(post.official_source_url)html+="<section class='article-section'><h2>Official Source</h2>"+linkHtml("Official Source",post.official_source_url)+"</section>";
+html+="<p class='muted'>Last Updated: "+fmt(post.updated_at)+"</p>";
+const {data:related}=await client.from("posts").select("title,slug,published_at").eq("category_id",post.category_id).eq("status","published").neq("id",post.id).order("published_at",{ascending:false}).limit(5);
+if(related?.length)html+="<section class='article-section'><h2>Related Updates</h2><ul class='related-list'>"+related.map(x=>"<li><a href='/post.html?slug="+encodeURIComponent(x.slug)+"'>"+esc(x.title)+"</a></li>").join("")+"</ul></section>";
+root.innerHTML=html;
+function jobSection(title,pairs){const valid=pairs.filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=="");return valid.length?"<section class='article-section'><h2>"+title+"</h2><table class='info-table'>"+rows(valid)+"</table></section>":""}
+function rows(a){return a.map(x=>"<tr><th>"+esc(x[0])+"</th><td>"+text(x[1])+"</td></tr>").join("")}
+function renderSection(s){const c=s.content||{};if(s.section_type==="table"){const h=(c.headers||[]).map(x=>"<th>"+esc(x)+"</th>").join(""),rs=(c.rows||[]).map(r=>"<tr>"+r.map(x=>"<td>"+text(x)+"</td>").join("")+"</tr>").join("");return "<div style='overflow-x:auto'><table class='info-table'><thead><tr>"+h+"</tr></thead><tbody>"+rs+"</tbody></table></div>"}if(s.section_type==="list")return "<ul>"+(c.items||[]).map(x=>"<li>"+text(x)+"</li>").join("")+"</ul>";if(s.section_type==="steps")return "<ol>"+(c.items||[]).map(x=>"<li>"+text(x)+"</li>").join("")+"</ol>";if(s.section_type==="links")return "<div class='article-links'>"+(c.items||[]).map(x=>linkHtml(x.label,x.url)).join("")+"</div>";return "<p>"+text(c.text||"")+"</p>"}
+function linkHtml(label,url){const safe=safeUrl(url);return safe?"<a href='"+safe+"' target='_blank' rel='noopener noreferrer'>"+esc(label)+"</a>":""}
+function safeUrl(v){try{const u=new URL(String(v));return /^https?:$/.test(u.protocol)?escAttr(u.href):""}catch{return""}}
+function text(v){return esc(v).replace(/\n/g,"<br>")}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function escAttr(v){return esc(v)}
+function fmt(v){return v?new Date(v).toLocaleDateString("en-IN"):"-"}
+function fmtDate(v){return v?new Date(v+"T00:00:00").toLocaleDateString("en-IN"):""}
+function notFound(){root.innerHTML="<h1>Page not found</h1><p>The requested update could not be found.</p><p><a href='/'>Go to YOCEWOR Home</a></p>"}
+})();</script></body></html>
