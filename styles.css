@@ -28,14 +28,18 @@ nav a{font-size:14px}
 .related li{margin:5px 0}
 .floating{position:fixed;right:15px;bottom:15px;z-index:10}
 .floating a{display:block;padding:9px 12px;background:#eee;border:1px solid #777;border-radius:4px;text-decoration:none}
-.social-channels{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;margin:4px 0!important;padding:0!important;border:0!important;background:transparent!important;height:22px!important;min-height:22px!important}
-.social-channels h2,.social-intro{display:none!important}
-.social-grid{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;flex-wrap:nowrap!important;overflow:visible!important;padding:0!important;margin:0!important;height:18px!important}
-.social-card{display:flex!important;align-items:center!important;justify-content:center!important;width:18px!important;height:18px!important;min-width:18px!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important;flex:0 0 18px!important}
-.social-card:hover{transform:none!important}
-.social-icon-img{width:14px!important;height:14px!important;display:block!important;flex:0 0 14px!important;object-fit:contain!important}
+.social-channels{display:flex!important;align-items:center!important;justify-content:center!important;margin:10px 0!important;padding:0!important;border:0!important;background:transparent!important;width:100%!important}
+.social-grid{display:flex!important;align-items:center!important;justify-content:center!important;gap:14px!important;flex-wrap:nowrap!important;overflow:visible!important;padding:0!important;margin:0!important;height:40px!important}
+.social-card{display:flex!important;align-items:center!important;justify-content:center!important;width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important;flex:0 0 40px!important}
+.social-card:hover{transform:scale(1.06)!important}
+.social-icon-img{width:30px!important;height:30px!important;display:block!important;flex:0 0 30px!important;object-fit:contain!important}
 .social-card span{display:none}
 .social-card.inactive{cursor:default;opacity:.58}
+@media(max-width:800px){
+ .social-grid{gap:10px!important;height:34px!important}
+ .social-card{width:34px!important;height:34px!important;min-width:34px!important;flex-basis:34px!important}
+ .social-icon-img{width:26px!important;height:26px!important;flex-basis:26px!important}
+}
 footer,.site-footer{border-top:1px solid #bbb;margin-top:20px;padding:18px 0;text-align:center;font-size:13px}
 .footer-inner{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .footer-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
