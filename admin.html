@@ -8,23 +8,17 @@
 <style>
 :root{--blue:#0645ad;--border:#d7dbe2;--bg:#f5f7fa}
 body{background:var(--bg);font-family:Arial,Helvetica,sans-serif}
-.admin{max-width:1180px;width:94%;margin:20px auto}
-.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px #0000000a}
-h1,h2{margin:0 0 12px}.muted{color:#667085}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}
-label{font-weight:700;font-size:14px}
+.admin{max-width:1180px;width:94%;margin:20px auto}.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px #0000000a}
+h1,h2{margin:0 0 12px}.muted{color:#667085}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}label{font-weight:700;font-size:14px}
 input,select,textarea{width:100%;padding:10px;border:1px solid #cbd2dc;border-radius:8px;font:inherit;background:#fff}
-textarea{min-height:100px;resize:vertical}
-button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700}
+textarea{min-height:100px;resize:vertical}button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700}
 .primary{background:#0645ad;color:#fff}.danger{background:#b42318;color:#fff}.secondary{background:#eef2f7;color:#111827}
 .actions{display:flex;gap:8px;flex-wrap:wrap}.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-.post-list{display:grid;gap:8px}.post-item{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--border);border-radius:8px;padding:10px}.post-item strong{display:block}
-.section-row{border:1px solid var(--border);border-radius:10px;padding:12px;margin:10px 0;background:#fafbfc}
-.section-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}
-.preview{max-width:260px;max-height:150px;border-radius:8px;border:1px solid var(--border);display:none}
-.notice{padding:10px;border-radius:8px;background:#eef6ff;margin-bottom:12px}.error{background:#fff1f0;color:#b42318}
-.small{font-size:12px}
+.post-list{display:grid;gap:8px}.post-item{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--border);border-radius:8px;padding:10px}
+.post-item strong{display:block}.section-row{border:1px solid var(--border);border-radius:10px;padding:12px;margin:10px 0;background:#fafbfc}
+.section-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}.preview{max-width:260px;max-height:150px;border-radius:8px;border:1px solid var(--border);display:none}
+.notice{padding:10px;border-radius:8px;background:#eef6ff;margin-bottom:12px}.error{background:#fff1f0;color:#b42318}.small{font-size:12px}
 @media(max-width:700px){.grid{grid-template-columns:1fr}.admin{width:94%;margin:12px auto}.card{padding:13px}.post-item{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
@@ -38,82 +32,47 @@ button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:7
 <div class="field"><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password"></div>
 </div>
 <div class="actions" style="margin-top:12px"><button class="primary" id="loginBtn">Login</button></div>
-<hr style="margin:20px 0;border:0;border-top:1px solid #eee">
-<h2>First-time admin setup</h2>
-<p class="muted small">Only use this once. It creates the first private YOCEWOR admin account. Token is no longer required.</p>
-<div class="grid">
-<div class="field"><label>Admin email</label><input id="setupEmail" type="email"></div>
-<div class="field"><label>New password (10+ characters)</label><input id="setupPassword" type="password"></div>
-
-</div>
-<div class="actions" style="margin-top:12px"><button class="secondary" id="setupBtn">Create Admin Account</button></div>
 </section>
 
 <section id="appView" hidden>
 <div class="card topbar"><div><h1>YOCEWOR Admin Panel</h1><div id="who" class="muted"></div></div><div class="actions"><button class="primary" id="newBtn">+ New Vacancy / Article</button><button class="secondary" id="logoutBtn">Logout</button></div></div>
 <div id="appMsg"></div>
 <div class="grid">
-<section class="card">
-<h2>Posts</h2><div id="postList" class="post-list">Loading...</div>
-</section>
+<section class="card"><h2>Posts</h2><div id="postList" class="post-list">Loading...</div></section>
 <section class="card">
 <div class="topbar"><h2 id="editorTitle">New Post</h2><button class="secondary" id="previewBtn">Open Preview</button></div>
 <input type="hidden" id="postId">
 <div class="grid">
 <div class="field full"><label>Title</label><input id="title"></div>
-<div class="field"><label>Slug</label><input id="slug"></div>
-<div class="field"><label>Category</label><select id="category"></select></div>
+<div class="field"><label>Slug</label><input id="slug"></div><div class="field"><label>Category</label><select id="category"></select></div>
 <div class="field"><label>Status</label><select id="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
 <div class="field"><label>Published date/time</label><input id="publishedAt" type="datetime-local"></div>
-<div class="field full"><label>Excerpt</label><textarea id="excerpt"></textarea></div>
-<div class="field full"><label>Intro</label><textarea id="intro"></textarea></div>
+<div class="field full"><label>Excerpt</label><textarea id="excerpt"></textarea></div><div class="field full"><label>Intro</label><textarea id="intro"></textarea></div>
 <div class="field full"><label>Featured Photo</label><input id="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><img id="imagePreview" class="preview"><div id="imageUrl" class="small muted"></div></div>
 </div>
-
 <h2 style="margin-top:18px">Job / Vacancy Details</h2>
 <div class="grid">
-<div class="field"><label>Organization</label><input id="organization"></div>
-<div class="field"><label>Recruitment Name</label><input id="recruitmentName"></div>
-<div class="field"><label>Post Name</label><input id="postName"></div>
-<div class="field"><label>Total Vacancy</label><input id="totalVacancy" type="number"></div>
-<div class="field"><label>Application Mode</label><input id="applicationMode"></div>
-<div class="field"><label>Job Location</label><input id="jobLocation"></div>
-<div class="field"><label>Qualification</label><input id="qualification"></div>
-<div class="field"><label>Age Limit</label><input id="ageLimit"></div>
-<div class="field"><label>Application Fee</label><input id="applicationFee"></div>
-<div class="field"><label>Salary</label><input id="salary"></div>
-<div class="field"><label>Selection Process</label><input id="selectionProcess"></div>
-<div class="field"><label>Application Start</label><input id="applicationStart" type="date"></div>
-<div class="field"><label>Last Date</label><input id="lastDate" type="date"></div>
-<div class="field"><label>Exam Date</label><input id="examDate" type="date"></div>
+<div class="field"><label>Organization</label><input id="organization"></div><div class="field"><label>Recruitment Name</label><input id="recruitmentName"></div>
+<div class="field"><label>Post Name</label><input id="postName"></div><div class="field"><label>Total Vacancy</label><input id="totalVacancy" type="number"></div>
+<div class="field"><label>Application Mode</label><input id="applicationMode"></div><div class="field"><label>Job Location</label><input id="jobLocation"></div>
+<div class="field"><label>Qualification</label><input id="qualification"></div><div class="field"><label>Age Limit</label><input id="ageLimit"></div>
+<div class="field"><label>Application Fee</label><input id="applicationFee"></div><div class="field"><label>Salary</label><input id="salary"></div>
+<div class="field"><label>Selection Process</label><input id="selectionProcess"></div><div class="field"><label>Application Start</label><input id="applicationStart" type="date"></div>
+<div class="field"><label>Last Date</label><input id="lastDate" type="date"></div><div class="field"><label>Exam Date</label><input id="examDate" type="date"></div>
 <div class="field full"><label>Status Text</label><input id="statusText"></div>
 </div>
-
 <div class="topbar" style="margin-top:18px"><h2>Article Sections</h2><button class="secondary" id="addSectionBtn">+ Add Section</button></div>
-<p class="small muted">Text = paragraph. List/Steps = one item per line. Table = first line headers, then rows separated by tabs.</p>
-<div id="sections"></div>
-
-<div class="topbar" style="margin-top:18px"><h2>Important Links</h2><button class="secondary" id="addLinkBtn">+ Add Link</button></div>
-<div id="links"></div>
-
+<p class="small muted">Text = paragraph. List/Steps = one item per line. Table = first line headers, then rows separated by tabs.</p><div id="sections"></div>
+<div class="topbar" style="margin-top:18px"><h2>Important Links</h2><button class="secondary" id="addLinkBtn">+ Add Link</button></div><div id="links"></div>
 <div class="actions" style="margin-top:18px"><button class="primary" id="saveBtn">Save Post</button><button class="danger" id="deleteBtn" hidden>Delete Post</button></div>
-</section>
-</div>
-</section>
+</section></div></section>
 </main>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/config.js"></script>
-<script>
-const client=supabase.createClient(YOCEWOR_CONFIG.supabaseUrl,YOCEWOR_CONFIG.supabasePublishableKey);
-const $=id=>document.getElementById(id);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/config.js"></script><script>
+const client=supabase.createClient(YOCEWOR_CONFIG.supabaseUrl,YOCEWOR_CONFIG.supabasePublishableKey),$=id=>document.getElementById(id);
 let currentPost=null,currentSections=[],currentLinks=[],categories=[];
-
-function msg(text,error=false){$('appMsg').innerHTML=text?'<div class="notice '+(error?'error':'')+'">'+esc(text)+'</div>':''}
-function loginMsg(text,error=false){$('loginMsg').innerHTML=text?'<div class="notice '+(error?'error':'')+'">'+esc(text)+'</div>':''}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-function slugify(v){return String(v||'').toLowerCase().trim().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')}
-function isoLocal(v){if(!v)return '';const d=new Date(v);const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}
+function msg(text,error=false){$('appMsg').innerHTML=text?'<div class="notice '+(error?'error':'')+'">'+esc(text)+'</div>':''}function loginMsg(text,error=false){$('loginMsg').innerHTML=text?'<div class="notice '+(error?'error':'')+'">'+esc(text)+'</div>':''}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}function slugify(v){return String(v||'').toLowerCase().trim().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')}
+function isoLocal(v){if(!v)return '';const d=new Date(v),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}
 function resetForm(){currentPost=null;currentSections=[];currentLinks=[];$('editorTitle').textContent='New Post';$('postId').value='';['title','slug','excerpt','intro','organization','recruitmentName','postName','totalVacancy','applicationMode','jobLocation','qualification','ageLimit','applicationFee','salary','selectionProcess','statusText','imageUrl'].forEach(id=>$(id).value='');$('status').value='draft';$('publishedAt').value=isoLocal(new Date().toISOString());['applicationStart','lastDate','examDate'].forEach(id=>$(id).value='');$('imagePreview').style.display='none';$('sections').innerHTML='';$('links').innerHTML='';$('deleteBtn').hidden=true;addSection('text','');renderLinks()}
 function renderCategories(selected){$('category').innerHTML=categories.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('');if(selected)$('category').value=selected}
 async function loadPosts(){const {data,error}=await client.from('posts').select('id,title,slug,status,published_at,category_id,featured_image_url').order('updated_at',{ascending:false}).limit(100);if(error){msg(error.message,true);return}$('postList').innerHTML=(data||[]).map(p=>'<div class="post-item"><div><strong>'+esc(p.title)+'</strong><span class="small muted">'+esc(p.status)+' · '+esc(p.slug)+'</span></div><button class="secondary" data-edit="'+p.id+'">Edit</button></div>').join('')||'<div class="muted">No posts yet.</div>';document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editPost(b.dataset.edit))}
@@ -123,13 +82,12 @@ function addSection(type='text',heading='',content={}){const wrap=document.creat
 function parseSection(w){const type=w.querySelector('.secType').value,heading=w.querySelector('.secHeading').value.trim(),raw=w.querySelector('.secContent').value;let content={};if(type==='text')content={text:raw};else if(type==='list'||type==='steps')content={items:raw.split('\n').map(x=>x.trim()).filter(Boolean)};else if(type==='table'){const rows=raw.split('\n').filter(Boolean).map(line=>line.split('\t'));content={headers:rows.shift()||[],rows}}else if(type==='links'){content={items:raw.split('\n').filter(Boolean).map(line=>{const [label,...u]=line.split('|');return {label:label.trim(),url:u.join('|').trim()}})}}return {heading,section_type:type,content}}
 function addLink(label='',url='',type='other'){const w=document.createElement('div');w.className='section-row link-row';w.innerHTML='<div class="grid"><div class="field"><label>Label</label><input class="linkLabel" value="'+esc(label)+'"></div><div class="field"><label>URL</label><input class="linkUrl" value="'+esc(url)+'"></div><div class="field"><label>Type</label><select class="linkType"><option value="apply">Apply</option><option value="notification">Notification</option><option value="official">Official</option><option value="other">Other</option></select></div><div class="field"><button type="button" class="danger removeLink">Remove</button></div></div>';w.querySelector('.linkType').value=type;w.querySelector('.removeLink').onclick=()=>w.remove();$('links').appendChild(w)}
 function renderLinks(){if(!$('links').children.length)addLink()}
-async function uploadImage(){const f=$('image').files[0];if(!f)return $('imageUrl').value||'';if(f.size>5*1024*1024)throw new Error('Photo must be 5 MB or smaller.');const ext=(f.name.split('.').pop()||'jpg').toLowerCase();const path='posts/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;const {error}=await client.storage.from('post-images').upload(path,f,{contentType:f.type,upsert:false,cacheControl:'31536000'});if(error)throw error;const {data}=client.storage.from('post-images').getPublicUrl(path);return data.publicUrl}
+async function uploadImage(){const f=$('image').files[0];if(!f)return $('imageUrl').value||'';if(f.size>5*1024*1024)throw new Error('Photo must be 5 MB or smaller.');const ext=(f.name.split('.').pop()||'jpg').toLowerCase(),path='posts/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;const {error}=await client.storage.from('post-images').upload(path,f,{contentType:f.type,upsert:false,cacheControl:'31536000'});if(error)throw error;const {data}=client.storage.from('post-images').getPublicUrl(path);return data.publicUrl}
 function hasJob(){return ['organization','recruitmentName','postName','totalVacancy','applicationMode','jobLocation','qualification','ageLimit','applicationFee','salary','selectionProcess','applicationStart','lastDate','examDate','statusText'].some(id=>$(id).value.trim()!=='')}
-async function savePost(){msg('Saving...');try{const user=(await client.auth.getUser()).data.user;if(!user)throw new Error('Please login again.');let imageUrl=$('imageUrl').value.trim();if($('image').files[0])imageUrl=await uploadImage();const id=$('postId').value||crypto.randomUUID();const published=$('status').value==='published';const post={id,category_id:$('category').value,title:$('title').value.trim(),slug:($('slug').value.trim()||slugify($('title').value)),excerpt:$('excerpt').value.trim()||null,content_intro:$('intro').value.trim()||null,status:$('status').value,published_at:published?($('publishedAt').value?new Date($('publishedAt').value).toISOString():new Date().toISOString()):null,updated_at:new Date().toISOString(),featured_image_url:imageUrl||null};if(!post.title||!post.category_id||!post.slug)throw new Error('Title, slug and category are required.');const {error:pe}=await client.from('posts').upsert(post);if(pe)throw pe;await client.from('post_sections').delete().eq('post_id',id);const sectionRows=[...document.querySelectorAll('.section-row:not(.link-row)')].map(parseSection).filter(x=>x.heading||x.content.text||x.content.items?.length||x.content.headers?.length);if(sectionRows.length){const {error:e}=await client.from('post_sections').insert(sectionRows.map((x,i)=>({post_id:id,heading:x.heading||null,section_type:x.section_type,content:x.content,sort_order:i})));if(e)throw e}await client.from('post_links').delete().eq('post_id',id);const links=[...document.querySelectorAll('.link-row')].map((w,i)=>({post_id:id,label:w.querySelector('.linkLabel').value.trim(),url:w.querySelector('.linkUrl').value.trim(),link_type:w.querySelector('.linkType').value,sort_order:i})).filter(x=>x.label&&x.url);if(links.length){const {error:e}=await client.from('post_links').insert(links);if(e)throw e}await client.from('jobs').delete().eq('post_id',id);if(hasJob()){const job={post_id:id,organization:$('organization').value.trim()||null,recruitment_name:$('recruitmentName').value.trim()||null,post_name:$('postName').value.trim()||null,total_vacancy:$('totalVacancy').value?Number($('totalVacancy').value):null,application_mode:$('applicationMode').value.trim()||null,job_location:$('jobLocation').value.trim()||null,qualification:$('qualification').value.trim()||null,age_limit:$('ageLimit').value.trim()||null,application_fee:$('applicationFee').value.trim()||null,salary:$('salary').value.trim()||null,selection_process:$('selectionProcess').value.trim()||null,application_start:$('applicationStart').value||null,application_last_date:$('lastDate').value||null,exam_date:$('examDate').value||null,status_text:$('statusText').value.trim()||null};const {error:e}=await client.from('jobs').insert(job);if(e)throw e}msg('Saved successfully.');await loadPosts();await editPost(id)}catch(e){msg(e.message||String(e),true)}}
+async function savePost(){msg('Saving...');try{const user=(await client.auth.getUser()).data.user;if(!user)throw new Error('Please login again.');let imageUrl=$('imageUrl').value.trim();if($('image').files[0])imageUrl=await uploadImage();const id=$('postId').value||crypto.randomUUID(),published=$('status').value==='published',post={id,category_id:$('category').value,title:$('title').value.trim(),slug:($('slug').value.trim()||slugify($('title').value)),excerpt:$('excerpt').value.trim()||null,content_intro:$('intro').value.trim()||null,status:$('status').value,published_at:published?($('publishedAt').value?new Date($('publishedAt').value).toISOString():new Date().toISOString()):null,updated_at:new Date().toISOString(),featured_image_url:imageUrl||null};if(!post.title||!post.category_id||!post.slug)throw new Error('Title, slug and category are required.');const {error:pe}=await client.from('posts').upsert(post);if(pe)throw pe;await client.from('post_sections').delete().eq('post_id',id);const sectionRows=[...document.querySelectorAll('.section-row:not(.link-row)')].map(parseSection).filter(x=>x.heading||x.content.text||x.content.items?.length||x.content.headers?.length);if(sectionRows.length){const {error:e}=await client.from('post_sections').insert(sectionRows.map((x,i)=>({post_id:id,heading:x.heading||null,section_type:x.section_type,content:x.content,sort_order:i})));if(e)throw e}await client.from('post_links').delete().eq('post_id',id);const links=[...document.querySelectorAll('.link-row')].map((w,i)=>({post_id:id,label:w.querySelector('.linkLabel').value.trim(),url:w.querySelector('.linkUrl').value.trim(),link_type:w.querySelector('.linkType').value,sort_order:i})).filter(x=>x.label&&x.url);if(links.length){const {error:e}=await client.from('post_links').insert(links);if(e)throw e}await client.from('jobs').delete().eq('post_id',id);if(hasJob()){const job={post_id:id,organization:$('organization').value.trim()||null,recruitment_name:$('recruitmentName').value.trim()||null,post_name:$('postName').value.trim()||null,total_vacancy:$('totalVacancy').value?Number($('totalVacancy').value):null,application_mode:$('applicationMode').value.trim()||null,job_location:$('jobLocation').value.trim()||null,qualification:$('qualification').value.trim()||null,age_limit:$('ageLimit').value.trim()||null,application_fee:$('applicationFee').value.trim()||null,salary:$('salary').value.trim()||null,selection_process:$('selectionProcess').value.trim()||null,application_start:$('applicationStart').value||null,application_last_date:$('lastDate').value||null,exam_date:$('examDate').value||null,status_text:$('statusText').value.trim()||null};const {error:e}=await client.from('jobs').insert(job);if(e)throw e}msg('Saved successfully.');await loadPosts();await editPost(id)}catch(e){msg(e.message||String(e),true)}}
 async function deletePost(){const id=$('postId').value;if(!id||!confirm('Delete this post and its sections/links/job data?'))return;msg('Deleting...');const {error}=await client.from('posts').delete().eq('id',id);if(error){msg(error.message,true);return}resetForm();await loadPosts();msg('Post deleted.')}
 async function boot(){const {data:{session}}=await client.auth.getSession();if(session){const {data:u}=await client.auth.getUser();const {data:a}=await client.from('admin_users').select('user_id').eq('user_id',u.user.id).maybeSingle();if(a){$('loginView').hidden=true;$('appView').hidden=false;$('who').textContent=u.user.email||'';const {data:c}=await client.from('categories').select('*').eq('is_active',true).order('sort_order');categories=c||[];renderCategories();resetForm();await loadPosts();return}}}
 $('loginBtn').onclick=async()=>{loginMsg('');const {error}=await client.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){loginMsg(error.message,true);return}location.reload()}
-$('setupBtn').onclick=async()=>{loginMsg('Creating admin...');const r=await fetch(YOCEWOR_CONFIG.supabaseUrl+'/functions/v1/admin-bootstrap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('setupEmail').value.trim(),password:$('setupPassword').value})});const d=await r.json();if(!r.ok){loginMsg(d.error||'Setup failed.',true);return}loginMsg('Admin created. Now login above.')}
 $('logoutBtn').onclick=async()=>{await client.auth.signOut();location.reload()};$('newBtn').onclick=resetForm;$('saveBtn').onclick=savePost;$('deleteBtn').onclick=deletePost;$('addSectionBtn').onclick=()=>addSection('text','');$('addLinkBtn').onclick=()=>addLink();$('title').oninput=()=>{if(!$('postId').value||!$('slug').value)$('slug').value=slugify($('title').value)};$('image').onchange=()=>{const f=$('image').files[0];if(f){$('imagePreview').src=URL.createObjectURL(f);$('imagePreview').style.display='block'}};$('previewBtn').onclick=()=>{const s=$('slug').value.trim();if(s)window.open('/post.html?slug='+encodeURIComponent(s),'_blank')};boot();
 </script>
 </body></html>
