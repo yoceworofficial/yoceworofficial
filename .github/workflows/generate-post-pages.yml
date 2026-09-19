@@ -1,0 +1,67 @@
+name: Generate clean post pages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
+  push:
+    paths-ignore:
+      - "*/index.html"
+      - "**/index.html"
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Generate published post pages
+        env:
+          SUPABASE_URL: https://mzntgjyecymcpzciklfk.supabase.co
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const url = process.env.SUPABASE_URL;
+          const key = process.env.SUPABASE_ANON_KEY;
+          if (!key) throw new Error('SUPABASE_ANON_KEY secret is not configured');
+          const headers = { apikey: key, Authorization: 'Bearer ' + key };
+          const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+          const r = await fetch(url + '/rest/v1/posts?select=slug,title,seo_title,seo_description,content_intro,featured_image_url,status&status=eq.published&order=updated_at.desc&limit=1000', {headers});
+          if (!r.ok) throw new Error('Supabase posts request failed: ' + r.status + ' ' + await r.text());
+          const posts = await r.json();
+          const template = fs.readFileSync('post.html','utf8');
+          for (const post of posts) {
+            const slug = String(post.slug || '').trim();
+            if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) continue;
+            const title = post.seo_title || post.title || 'YOCEWOR';
+            const desc = post.seo_description || post.content_intro || post.title || 'YOCEWOR government information update';
+            const image = post.featured_image_url || 'https://yocewor.in/images/default-share.svg';
+            const canonical = 'https://yocewor.in/' + encodeURIComponent(slug) + '/';
+            let html = template;
+            html = html.replace(/<title>[^<]*<\/title>/i, '<title>' + esc(title) + '</title>');
+            html = html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/i, '$1' + esc(desc) + '$2');
+            html = html.replace(/(<meta\s+property="og:title"\s+content=")[^"]*(")/i, '$1' + esc(title) + '$2');
+            html = html.replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/i, '$1' + esc(desc) + '$2');
+            html = html.replace(/(<meta\s+property="og:url"\s+content=")[^"]*(")/i, '$1' + canonical + '$2');
+            html = html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*(")/i, '$1' + esc(image) + '$2');
+            html = html.replace(/(<meta\s+name="twitter:title"\s+content=")[^"]*(")/i, '$1' + esc(title) + '$2');
+            html = html.replace(/(<meta\s+name="twitter:description"\s+content=")[^"]*(")/i, '$1' + esc(desc) + '$2');
+            html = html.replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/i, '$1' + esc(image) + '$2');
+            fs.mkdirSync(slug, {recursive:true});
+            fs.writeFileSync(path.join(slug,'index.html'), html);
+          }
+          console.log('Generated', posts.length, 'published post page(s).');
+          NODE
+      - name: Commit generated pages
+        run: |
+          git config user.name "YOCEWOR Bot"
+          git config user.email "yoceworofficial@users.noreply.github.com"
+          git add -- */index.html
+          if git diff --cached --quiet; then echo "No generated page changes."; exit 0; fi
+          git commit -m "chore: sync clean post pages [skip ci]"
+          git push
