@@ -27,7 +27,7 @@ const fixedLinks=[
   {label:"Join Telegram Channel",button:"Join Now",url:"https://t.me/YOCEWOR"}
 ];
 const allLinks=[...(links||[]).map(l=>({label:l.label||"Important Link",button:"Click Here",url:l.url})),...fixedLinks];
-if(allLinks.length){html+="<section class='article-section'><h2>Important Links</h2><div style='overflow-x:auto'><table class='article-links'><thead><tr><th>Link Name</th><th>Button</th></tr></thead><tbody>"+allLinks.map(l=>"<tr><td>"+esc(l.label)+"</td><td class='link-open'>"+linkHtml(l.button,l.url)+"</td></tr>").join("")+"</tbody></table></div></section>"}
+if(allLinks.length){html+="<section class='article-section'><h2>"+esc(post.title)+" Important Links</h2><div style='overflow-x:auto'><table class='article-links'><tbody>"+allLinks.map(l=>"<tr><td>"+linkHtml(l.button,l.url)+"</td></tr>").join("")+"</tbody></table></div></section>"}
 html+="<p class='muted'>Last Updated: "+fmt(post.updated_at)+"</p>";
 const {data:related}=await client.from("posts").select("title,slug,published_at").eq("category_id",post.category_id).eq("status","published").neq("id",post.id).order("published_at",{ascending:false}).limit(5);
 if(related?.length)html+="<section class='article-section'><h2>Related Updates</h2><ul class='related-list'>"+related.map(x=>"<li><a href='/post.html?slug="+encodeURIComponent(x.slug)+"'>"+esc(x.title)+"</a></li>").join("")+"</ul></section>";
