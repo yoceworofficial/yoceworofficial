@@ -40,11 +40,11 @@ button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:7
 <div class="actions" style="margin-top:12px"><button class="primary" id="loginBtn">Login</button></div>
 <hr style="margin:20px 0;border:0;border-top:1px solid #eee">
 <h2>First-time admin setup</h2>
-<p class="muted small">Only use this once. It creates the first private YOCEWOR admin account.</p>
+<p class="muted small">Only use this once. It creates the first private YOCEWOR admin account. Token is no longer required.</p>
 <div class="grid">
 <div class="field"><label>Admin email</label><input id="setupEmail" type="email"></div>
 <div class="field"><label>New password (10+ characters)</label><input id="setupPassword" type="password"></div>
-<div class="field full"><label>One-time setup token</label><input id="setupToken" type="password"></div>
+
 </div>
 <div class="actions" style="margin-top:12px"><button class="secondary" id="setupBtn">Create Admin Account</button></div>
 </section>
@@ -129,7 +129,7 @@ async function savePost(){msg('Saving...');try{const user=(await client.auth.get
 async function deletePost(){const id=$('postId').value;if(!id||!confirm('Delete this post and its sections/links/job data?'))return;msg('Deleting...');const {error}=await client.from('posts').delete().eq('id',id);if(error){msg(error.message,true);return}resetForm();await loadPosts();msg('Post deleted.')}
 async function boot(){const {data:{session}}=await client.auth.getSession();if(session){const {data:u}=await client.auth.getUser();const {data:a}=await client.from('admin_users').select('user_id').eq('user_id',u.user.id).maybeSingle();if(a){$('loginView').hidden=true;$('appView').hidden=false;$('who').textContent=u.user.email||'';const {data:c}=await client.from('categories').select('*').eq('is_active',true).order('sort_order');categories=c||[];renderCategories();resetForm();await loadPosts();return}}}
 $('loginBtn').onclick=async()=>{loginMsg('');const {error}=await client.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){loginMsg(error.message,true);return}location.reload()}
-$('setupBtn').onclick=async()=>{loginMsg('Creating admin...');const r=await fetch(YOCEWOR_CONFIG.supabaseUrl+'/functions/v1/admin-bootstrap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('setupEmail').value.trim(),password:$('setupPassword').value,setup_token:$('setupToken').value})});const d=await r.json();if(!r.ok){loginMsg(d.error||'Setup failed.',true);return}loginMsg('Admin created. Now login above.')}
+$('setupBtn').onclick=async()=>{loginMsg('Creating admin...');const r=await fetch(YOCEWOR_CONFIG.supabaseUrl+'/functions/v1/admin-bootstrap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('setupEmail').value.trim(),password:$('setupPassword').value})});const d=await r.json();if(!r.ok){loginMsg(d.error||'Setup failed.',true);return}loginMsg('Admin created. Now login above.')}
 $('logoutBtn').onclick=async()=>{await client.auth.signOut();location.reload()};$('newBtn').onclick=resetForm;$('saveBtn').onclick=savePost;$('deleteBtn').onclick=deletePost;$('addSectionBtn').onclick=()=>addSection('text','');$('addLinkBtn').onclick=()=>addLink();$('title').oninput=()=>{if(!$('postId').value||!$('slug').value)$('slug').value=slugify($('title').value)};$('image').onchange=()=>{const f=$('image').files[0];if(f){$('imagePreview').src=URL.createObjectURL(f);$('imagePreview').style.display='block'}};$('previewBtn').onclick=()=>{const s=$('slug').value.trim();if(s)window.open('/post.html?slug='+encodeURIComponent(s),'_blank')};boot();
 </script>
 </body></html>
