@@ -8,6 +8,7 @@ function show(id, rows, error) {
   const el = document.getElementById(id);
   if (!el) return;
   if (error) {
+    console.error("YOCEWOR section load error:", id, error);
     el.innerHTML = "<p>Updates could not be loaded right now.</p>";
     return;
   }
@@ -23,6 +24,9 @@ function show(id, rows, error) {
 }
 
 async function load() {
+  const y = document.getElementById("year");
+  if (y) y.textContent = new Date().getFullYear();
+
   try {
     const { data: categories, error: catError } = await db
       .from("categories")
@@ -31,6 +35,7 @@ async function load() {
       .eq("is_active", true);
 
     if (catError) {
+      console.error("YOCEWOR categories load error:", catError);
       cats.forEach(slug => show(slug, [], true));
       return;
     }
@@ -43,6 +48,7 @@ async function load() {
         show(slug, []);
         return;
       }
+
       const { data, error } = await db
         .from("posts")
         .select("title,slug,published_at")
@@ -51,15 +57,12 @@ async function load() {
         .order("published_at", { ascending: false })
         .limit(10);
 
-      show(slug, data, error);
+      show(slug, data || [], error);
     }));
   } catch (error) {
     console.error("YOCEWOR homepage load error:", error);
     cats.forEach(slug => show(slug, [], true));
   }
-
-  const y = document.getElementById("year");
-  if (y) y.textContent = new Date().getFullYear();
 }
 
 const form = document.getElementById("search");
