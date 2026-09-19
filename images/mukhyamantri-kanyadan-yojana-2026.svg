@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#f4f7fb"/><stop offset="1" stop-color="#e7eef8"/></linearGradient></defs>
+<rect width="1200" height="630" fill="url(#g)"/>
+<rect x="0" y="0" width="1200" height="18" fill="#0645ad"/>
+<rect x="70" y="70" width="1060" height="490" rx="28" fill="#fff" stroke="#cbd5e1" stroke-width="3"/>
+<circle cx="190" cy="190" r="72" fill="#0645ad"/><path d="M190 142l15 34 37 3-28 24 9 36-33-19-33 19 9-36-28-24 37-3z" fill="#fff"/>
+<text x="300" y="175" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="700" fill="#475569">YOCEWOR • SARKARI YOJANA</text>
+<text x="120" y="315" font-family="Arial,Helvetica,sans-serif" font-size="50" font-weight="700" fill="#111827">मुख्यमंत्री कन्यादान योजना 2026</text>
+<text x="120" y="385" font-family="Arial,Helvetica,sans-serif" font-size="32" fill="#0645ad">पात्रता • सहायता • दस्तावेज • आवेदन प्रक्रिया</text>
+<text x="120" y="455" font-family="Arial,Helvetica,sans-serif" font-size="25" fill="#475569">राजस्थान सरकारी योजना की महत्वपूर्ण जानकारी</text>
+<text x="120" y="515" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="700" fill="#111827">YOCEWOR.IN</text>
+</svg>
