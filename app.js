@@ -1,55 +1,6 @@
-(() => {
-  const cfg = window.YOCEWOR_CONFIG;
-  if (!cfg || !window.supabase) return;
-  const client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabasePublishableKey);
-  const categories = ["latest-jobs","admit-card","answer-key","result","exam-date","latest-news","sarkari-yojana"];
-
-  const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[c]));
-
-  function renderList(target, rows) {
-    const el = document.getElementById(target);
-    if (!el) return;
-    if (!rows?.length) {
-      el.innerHTML = '<p class="muted">अभी कोई प्रकाशित अपडेट उपलब्ध नहीं है।</p>';
-      return;
-    }
-    el.innerHTML = rows.map(row => {
-      const date = row.published_at ? new Date(row.published_at).toLocaleDateString("en-IN") : "";
-      return '<p class="post-item"><a href="/post.html?slug=' + encodeURIComponent(row.slug) + '">' +
-        esc(row.title) + '</a>' + (date ? ' <span class="muted">(' + date + ')</span>' : '') + '</p>';
-    }).join("");
-  }
-
-  async function loadCategory(slug, target, limit = 8) {
-    const el = document.getElementById(target);
-    if (!el) return;
-    const { data: category, error: categoryError } = await client.from("categories")
-      .select("id").eq("slug", slug).eq("is_active", true).maybeSingle();
-    if (categoryError || !category) return renderList(target, []);
-    const { data, error } = await client.from("posts")
-      .select("title,slug,published_at")
-      .eq("category_id", category.id).eq("status","published")
-      .order("published_at",{ascending:false}).limit(limit);
-    if (error) {
-      console.error("YOCEWOR category load:", error);
-      return renderList(target, []);
-    }
-    renderList(target, data);
-  }
-
-  const year = document.getElementById("year");
-  if (year) year.textContent = new Date().getFullYear();
-
-  const input = document.getElementById("site-search");
-  const button = document.getElementById("search-button");
-  const search = () => {
-    const term = input?.value.trim();
-    if (term) location.href = "/search.html?q=" + encodeURIComponent(term);
-  };
-  button?.addEventListener("click", search);
-  input?.addEventListener("keydown", e => { if (e.key === "Enter") search(); });
-
-  categories.forEach(slug => loadCategory(slug, slug));
-})();
+const { createClient } = supabase; const db=createClient(YOCEWOR_CONFIG.supabaseUrl,YOCEWOR_CONFIG.supabasePublishableKey);
+const cats=["latest-jobs","admit-card","answer-key","result","exam-date","latest-news","sarkari-yojana"];
+const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+function show(id,rows){const el=document.getElementById(id);if(!el)return;if(!rows?.length){el.innerHTML='<p>No updates available.</p>';return}el.innerHTML='<ul class="post-list">'+rows.map(x=>'<li><a href="/post.html?slug='+encodeURIComponent(x.slug)+'">'+esc(x.title)+'</a>'+(x.published_at?'<small>'+new Date(x.published_at).toLocaleDateString('en-IN')+'</small>':'')+'</li>').join("")+'</ul>'}
+async function load(){for(const slug of cats){const {data}=await db.from("posts").select("title,slug,published_at").eq("status","published").eq("category_id",(await db.from("categories").select("id").eq("slug",slug).eq("is_active",true).maybeSingle()).data?.id||"00000000-0000-0000-0000-000000000000").order("published_at",{ascending:false}).limit(10);show(slug,data)}const y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear()}
+const form=document.getElementById("search");if(form)form.onsubmit=e=>{e.preventDefault();const q=document.getElementById("q")?.value.trim();if(q)location.href="/search.html?q="+encodeURIComponent(q)};load();
