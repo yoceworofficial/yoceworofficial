@@ -28,7 +28,7 @@ const fixedLinks=[
 ];
 const allLinks=[...(links||[]).map(l=>({label:l.label||"Important Link",button:"Click Here",url:l.url})),...fixedLinks];
 if(allLinks.length){html+="<section class='article-section'><h2>"+esc(post.title||"Update")+" Important Links</h2><div style='overflow-x:auto'><table class='article-links'><tbody>"+allLinks.map(l=>"<tr><td>"+esc(l.label)+"</td><td class='link-open'>"+linkHtml(l.button,l.url)+"</td></tr>").join("")+"</tbody></table></div></section>"}
-html+="<p class='muted'>Last Updated: "+fmt(post.updated_at)+"</p>";
+html+="<section class='article-section'><h2>YOCEWOR Follow</h2><div class='article-links-list'><p><a href='https://www.instagram.com/yocewor' target='_blank' rel='noopener noreferrer'>Instagram</a></p><p><a href='https://t.me/YOCEWOR' target='_blank' rel='noopener noreferrer'>Telegram</a></p><p><a href='https://www.youtube.com/@YOCEWOR' target='_blank' rel='noopener noreferrer'>YouTube</a></p><p><a href='https://whatsapp.com/channel/0029VaNA3EBJf05WBdLb1y2n' target='_blank' rel='noopener noreferrer'>WhatsApp Channel</a></p></div></section>";html+="<p class='muted'>Last Updated: "+fmt(post.updated_at)+"</p>";
 const {data:related}=await client.from("posts").select("title,slug,published_at").eq("category_id",post.category_id).eq("status","published").neq("id",post.id).order("published_at",{ascending:false}).limit(5);
 if(related?.length)html+="<section class='article-section'><h2>Related Updates</h2><ul class='related-list'>"+related.map(x=>"<li><a href='/post.html?slug="+encodeURIComponent(x.slug)+"'>"+esc(x.title)+"</a></li>").join("")+"</ul></section>";
 root.innerHTML=html;
