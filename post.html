@@ -7,7 +7,7 @@
 <script src="/config.js?v=20260919-5"></script>
 <script>
 (async()=>{
-const root=document.getElementById("article"),slug=(new URLSearchParams(location.search).get("slug")||location.pathname.replace(/^\/+|\/+$/g,"").split("/").pop()||"");document.getElementById("year").textContent=new Date().getFullYear();
+const root=document.getElementById("article"),params=new URLSearchParams(location.search),querySlug=params.get("slug"),slug=(querySlug||location.pathname.replace(/^\/+|\/+$/g,"").split("/").pop()||""); if(querySlug){history.replaceState(null,"","/"+encodeURIComponent(querySlug)+"/");}document.getElementById("year").textContent=new Date().getFullYear();
 if(!slug){notFound();return}
 try{
  let payload;
