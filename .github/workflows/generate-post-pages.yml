@@ -21,14 +21,15 @@ jobs:
       - name: Generate published post pages
         env:
           SUPABASE_URL: https://mzntgjyecymcpzciklfk.supabase.co
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           node <<'NODE'
           const fs = require('fs');
           const path = require('path');
           const url = process.env.SUPABASE_URL;
-          const key = process.env.SUPABASE_ANON_KEY;
-          if (!key) throw new Error('SUPABASE_ANON_KEY secret is not configured');
+          const cfg = fs.readFileSync('config.js','utf8');
+          const url = (cfg.match(/supabaseUrl:\s*[\"']([^\"']+)/) || [])[1];
+          const key = (cfg.match(/supabasePublishableKey:\s*[\"']([^\"']+)/) || [])[1];
+          if (!url || !key) throw new Error('Supabase public config not found');
           const headers = { apikey: key, Authorization: 'Bearer ' + key };
           const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
           const r = await fetch(url + '/rest/v1/posts?select=slug,title,seo_title,seo_description,content_intro,featured_image_url,status&status=eq.published&order=updated_at.desc&limit=1000', {headers});
