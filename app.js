@@ -1,16 +1,12 @@
 (() => {
   const cfg = window.YOCEWOR_CONFIG;
-  const client = window.supabase?.createClient(cfg.supabaseUrl, cfg.supabasePublishableKey);
+  if (!cfg || !window.supabase) return;
+  const client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabasePublishableKey);
+  const categories = ["latest-jobs","admit-card","answer-key","result","exam-date","latest-news","sarkari-yojana"];
 
-  const categoryIds = {
-    "latest-jobs": "latest-jobs",
-    "admit-card": "admit-card",
-    "answer-key": "answer-key",
-    "result": "result",
-    "exam-date": "exam-date",
-    "latest-news": "latest-news",
-    "sarkari-yojana": "sarkari-yojana"
-  };
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
 
   function renderList(target, rows) {
     const el = document.getElementById(target);
@@ -22,44 +18,38 @@
     el.innerHTML = rows.map(row => {
       const date = row.published_at ? new Date(row.published_at).toLocaleDateString("en-IN") : "";
       return '<p class="post-item"><a href="/post.html?slug=' + encodeURIComponent(row.slug) + '">' +
-        escapeHtml(row.title) + '</a>' + (date ? ' <span class="muted">(' + date + ')</span>' : '') + '</p>';
+        esc(row.title) + '</a>' + (date ? ' <span class="muted">(' + date + ')</span>' : '') + '</p>';
     }).join("");
   }
 
-  function escapeHtml(value) {
-    return String(value ?? "").replace(/[&<>"']/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[c]));
-  }
-
   async function loadCategory(slug, target, limit = 8) {
-    if (!client) return;
-    const { data: category } = await client.from("categories").select("id").eq("slug", slug).eq("is_active", true).maybeSingle();
-    if (!category) return renderList(target, []);
+    const el = document.getElementById(target);
+    if (!el) return;
+    const { data: category, error: categoryError } = await client.from("categories")
+      .select("id").eq("slug", slug).eq("is_active", true).maybeSingle();
+    if (categoryError || !category) return renderList(target, []);
     const { data, error } = await client.from("posts")
       .select("title,slug,published_at")
-      .eq("category_id", category.id)
-      .eq("status","published")
-      .order("published_at",{ascending:false})
-      .limit(limit);
+      .eq("category_id", category.id).eq("status","published")
+      .order("published_at",{ascending:false}).limit(limit);
     if (error) {
-      console.error(error);
+      console.error("YOCEWOR category load:", error);
       return renderList(target, []);
     }
     renderList(target, data);
   }
 
-  async function searchSite(term) {
-    const q = term.trim();
-    if (!q) return;
-    window.location.href = "/search.html?q=" + encodeURIComponent(q);
-  }
+  const year = document.getElementById("year");
+  if (year) year.textContent = new Date().getFullYear();
 
-  document.getElementById("year").textContent = new Date().getFullYear();
-  document.getElementById("search-button")?.addEventListener("click", () => searchSite(document.getElementById("site-search").value));
-  document.getElementById("site-search")?.addEventListener("keydown", e => { if (e.key === "Enter") searchSite(e.target.value); });
+  const input = document.getElementById("site-search");
+  const button = document.getElementById("search-button");
+  const search = () => {
+    const term = input?.value.trim();
+    if (term) location.href = "/search.html?q=" + encodeURIComponent(term);
+  };
+  button?.addEventListener("click", search);
+  input?.addEventListener("keydown", e => { if (e.key === "Enter") search(); });
 
-  if (client) {
-    Object.entries(categoryIds).forEach(([slug]) => loadCategory(slug, slug));
-  }
+  categories.forEach(slug => loadCategory(slug, slug));
 })();
