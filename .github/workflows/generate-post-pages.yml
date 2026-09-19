@@ -25,7 +25,6 @@ jobs:
           node <<'NODE'
           const fs = require('fs');
           const path = require('path');
-          const url = process.env.SUPABASE_URL;
           const cfg = fs.readFileSync('config.js','utf8');
           const url = (cfg.match(/supabaseUrl:\s*[\"']([^\"']+)/) || [])[1];
           const key = (cfg.match(/supabasePublishableKey:\s*[\"']([^\"']+)/) || [])[1];
