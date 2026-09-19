@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /secret-admin-poster/
 
 Sitemap: https://yocewor.in/sitemap.xml
