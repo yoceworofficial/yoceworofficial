@@ -1,4 +1,4 @@
 window.YOCEWOR_CONFIG = {
   supabaseUrl: "https://mzntgjyecymcpzciklfk.supabase.co",
-  supabasePublishableKey: "sb_publishable_AAXGC4EmiD4ELszpchz9Dw_Eryr6Usn"
+  supabasePublishableKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im16bnRnanllY3ltY3B6Y2lrbGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyMDIwMzAsImV4cCI6MjEwMTc3ODAzMH0.hXlshyYvE9Bv5wMq-gYOPVVeyVLjnMWS_dzusDDoAqU"
 };
