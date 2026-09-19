@@ -29,16 +29,16 @@ nav a{font-size:14px}
 .floating{position:fixed;right:15px;bottom:15px;z-index:10}
 .floating a{display:block;padding:9px 12px;background:#eee;border:1px solid #777;border-radius:4px;text-decoration:none}
 .social-channels{display:flex!important;align-items:center!important;justify-content:center!important;margin:10px 0!important;padding:0!important;border:0!important;background:transparent!important;width:100%!important}
-.social-grid{display:flex!important;align-items:center!important;justify-content:center!important;gap:14px!important;flex-wrap:nowrap!important;overflow:visible!important;padding:0!important;margin:0!important;height:40px!important}
-.social-card{display:flex!important;align-items:center!important;justify-content:center!important;width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important;flex:0 0 40px!important}
+.social-grid{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;flex-wrap:nowrap!important;overflow:visible!important;padding:0!important;margin:0!important;height:28px!important}
+.social-card{display:flex!important;align-items:center!important;justify-content:center!important;width:28px!important;height:28px!important;min-width:28px!important;padding:0!important;margin:0!important;border:0!important;background:transparent!important;flex:0 0 28px!important}
 .social-card:hover{transform:scale(1.06)!important}
-.social-icon-img{width:30px!important;height:30px!important;display:block!important;flex:0 0 30px!important;object-fit:contain!important}
+.social-icon-img{width:22px!important;height:22px!important;display:block!important;flex:0 0 22px!important;object-fit:contain!important}
 .social-card span{display:none}
 .social-card.inactive{cursor:default;opacity:.58}
 @media(max-width:800px){
- .social-grid{gap:10px!important;height:34px!important}
- .social-card{width:34px!important;height:34px!important;min-width:34px!important;flex-basis:34px!important}
- .social-icon-img{width:26px!important;height:26px!important;flex-basis:26px!important}
+ .social-grid{gap:10px!important;height:26px!important}
+ .social-card{width:26px!important;height:26px!important;min-width:26px!important;flex-basis:26px!important}
+ .social-icon-img{width:20px!important;height:20px!important;flex-basis:20px!important}
 }
 footer,.site-footer{border-top:1px solid #bbb;margin-top:20px;padding:18px 0;text-align:center;font-size:13px}
 .footer-inner{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
