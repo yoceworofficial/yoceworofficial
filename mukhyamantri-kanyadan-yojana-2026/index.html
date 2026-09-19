@@ -26,14 +26,15 @@ try{
    const posts=await get("/posts?select=*&slug=eq."+encodeURIComponent(slug)+"&status=eq.published&limit=1");
    if(!posts.length) return notFound();
    const p=posts[0];
-   const [cats,jobs,sections,links,related]=await Promise.all([
+   const results=await Promise.allSettled([
      get("/categories?select=id,name,slug&id=eq."+encodeURIComponent(p.category_id)+"&limit=1"),
      get("/jobs?select=*&post_id=eq."+encodeURIComponent(p.id)+"&limit=1"),
      get("/post_sections?select=*&post_id=eq."+encodeURIComponent(p.id)+"&order=sort_order.asc"),
      get("/post_links?select=*&post_id=eq."+encodeURIComponent(p.id)+"&order=sort_order.asc"),
      get("/posts?select=title,slug,published_at&category_id=eq."+encodeURIComponent(p.category_id)+"&status=eq.published&id=neq."+encodeURIComponent(p.id)+"&order=published_at.desc&limit=5")
    ]);
-   payload={post:{...p,categories:cats[0]||null,jobs:jobs||[]},sections:sections||[],links:links||[],related:related||[]};
+   const value=i=>results[i].status==="fulfilled"?results[i].value:[];
+   payload={post:{...p,categories:value(0)[0]||null,jobs:value(1)||[]},sections:value(2),links:value(3),related:value(4)};
  }
  const {post,sections,links,related}=payload;
  if(!post) return notFound();
