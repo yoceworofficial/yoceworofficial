@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="googlebot" content="noindex,nofollow,noarchive">
+  <title>YOCEWOR — Secret Poster</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .poster-page{max-width:900px;margin:32px auto;padding:0 16px}
+    .poster-box{border:1px solid #ccc;background:#fff;padding:20px}
+    .poster-box h1{margin-top:0;font-size:26px}
+    .poster-box label{display:block;font-weight:700;margin:16px 0 7px}
+    .poster-box input,.poster-box textarea{width:100%;box-sizing:border-box;border:1px solid #aaa;padding:12px;font:inherit}
+    .poster-box textarea{min-height:430px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:14px;resize:vertical}
+    .poster-box button{margin-top:16px;width:100%;padding:14px;border:0;background:#146c43;color:#fff;font-weight:700;font-size:17px;cursor:pointer}
+    .poster-box button:disabled{opacity:.65;cursor:wait}
+    .poster-status{margin-top:14px;padding:10px;border:1px solid #ddd;white-space:pre-wrap}
+    .poster-help{background:#f7f7f7;border:1px solid #ddd;padding:12px;margin-top:18px;font-size:14px}
+    .poster-help code{word-break:break-all}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-wrap header-inner">
+      <a class="site-title" href="/">YOCEWOR</a>
+    </div>
+  </header>
+
+  <main class="poster-page">
+    <section class="poster-box">
+      <h1>YOCEWOR — Secret Admin Poster</h1>
+      <p>यह private publishing page है। Password किसी के साथ share न करें।</p>
+
+      <label for="password">Admin Password</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="Enter admin password">
+
+      <label for="json">Post JSON</label>
+      <textarea id="json" spellcheck="false" placeholder='यहाँ AI द्वारा बनाया गया पूरा JSON paste करें...'></textarea>
+
+      <button id="publish" type="button">Publish Post</button>
+      <div id="status" class="poster-status" hidden></div>
+
+      <div class="poster-help">
+        <strong>Expected JSON structure</strong>
+        <p>कम से कम <code>category_slug</code> और <code>title</code> जरूरी हैं। Job post के लिए <code>job</code>, <code>sections</code> और <code>links</code> भी दिए जा सकते हैं।</p>
+        <details>
+          <summary>Example format</summary>
+          <pre>{
+  "category_slug": "latest-jobs",
+  "title": "Example Recruitment 2026",
+  "slug": "example-recruitment-2026",
+  "excerpt": "Short summary",
+  "content_intro": "Recruitment information...",
+  "seo_title": "Example Recruitment 2026",
+  "seo_description": "Official recruitment information.",
+  "official_source_url": "https://example.gov.in/",
+  "job": {
+    "organization": "Example Department",
+    "recruitment_name": "Example Recruitment 2026",
+    "post_name": "Example Post",
+    "total_vacancy": 100,
+    "application_mode": "Online",
+    "job_location": "Rajasthan",
+    "qualification": "As per official notification",
+    "age_limit": "As per official notification",
+    "application_fee": "As per official notification",
+    "salary": "As per official notification",
+    "selection_process": "As per official notification",
+    "application_start": "2026-09-01",
+    "application_last_date": "2026-09-30",
+    "exam_date": null,
+    "status_text": "Open"
+  },
+  "sections": [
+    {
+      "heading": "Important Information",
+      "section_type": "text",
+      "content": {"text": "Write verified information here."},
+      "sort_order": 1
+    }
+  ],
+  "links": [
+    {
+      "label": "Official Notification",
+      "url": "https://example.gov.in/notification",
+      "link_type": "notification",
+      "sort_order": 1
+    }
+  ]
+}</pre>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const FUNCTION_URL = "https://mzntgjyecymcpzciklfk.supabase.co/functions/v1/secret-poster";
+    const passwordInput = document.getElementById("password");
+    const jsonInput = document.getElementById("json");
+    const publishButton = document.getElementById("publish");
+    const statusBox = document.getElementById("status");
+
+    function showStatus(message, ok) {
+      statusBox.hidden = false;
+      statusBox.textContent = message;
+      statusBox.style.borderColor = ok ? "#2e7d32" : "#b71c1c";
+    }
+
+    publishButton.addEventListener("click", async () => {
+      const password = passwordInput.value;
+      const raw = jsonInput.value.trim();
+
+      if (!password) return showStatus("Password डालें।", false);
+      if (!raw) return showStatus("JSON paste करें।", false);
+
+      let payload;
+      try {
+        payload = JSON.parse(raw);
+      } catch {
+        return showStatus("JSON valid नहीं है। पहले JSON ठीक करें।", false);
+      }
+
+      publishButton.disabled = true;
+      showStatus("Publishing...", true);
+
+      try {
+        const response = await fetch(FUNCTION_URL, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({password, payload})
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || !result.ok) {
+          throw new Error(result.error || "Publish failed.");
+        }
+
+        showStatus("✅ Post published successfully.\nPost ID: " + result.post_id, true);
+        jsonInput.value = "";
+      } catch (error) {
+        showStatus("❌ " + (error.message || "Publish failed."), false);
+      } finally {
+        publishButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
