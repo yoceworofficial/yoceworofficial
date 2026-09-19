@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://yocewor.in/</loc></url>
+  <url><loc>https://yocewor.in/search.html</loc></url>
   <url><loc>https://yocewor.in/category.html?category=latest-jobs</loc></url>
   <url><loc>https://yocewor.in/category.html?category=admit-card</loc></url>
   <url><loc>https://yocewor.in/category.html?category=answer-key</loc></url>
@@ -8,4 +9,9 @@
   <url><loc>https://yocewor.in/category.html?category=exam-date</loc></url>
   <url><loc>https://yocewor.in/category.html?category=latest-news</loc></url>
   <url><loc>https://yocewor.in/category.html?category=sarkari-yojana</loc></url>
+  <url><loc>https://yocewor.in/about.html</loc></url>
+  <url><loc>https://yocewor.in/contact.html</loc></url>
+  <url><loc>https://yocewor.in/privacy-policy.html</loc></url>
+  <url><loc>https://yocewor.in/disclaimer.html</loc></url>
+  <url><loc>https://yocewor.in/terms.html</loc></url>
 </urlset>
