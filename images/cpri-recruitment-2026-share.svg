@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0c375c"/><stop offset="1" stop-color="#164f78"/></linearGradient></defs>
+<rect width="1200" height="630" fill="url(#bg)"/>
+<rect x="50" y="50" width="1100" height="530" rx="28" fill="#f8fafc"/>
+<rect x="50" y="50" width="1100" height="96" rx="28" fill="#145f96"/>
+<rect x="50" y="118" width="1100" height="28" fill="#145f96"/>
+<text x="90" y="111" font-family="Arial, Noto Sans, sans-serif" font-size="44" font-weight="700" fill="#ffffff">YOCEWOR</text>
+<text x="1110" y="105" text-anchor="end" font-family="Arial, Noto Sans, sans-serif" font-size="22" fill="#ffffff">GOVERNMENT JOB UPDATE</text>
+<text x="90" y="205" font-family="Arial, Noto Sans, sans-serif" font-size="54" font-weight="700" fill="#12283a">CPRI Recruitment 2026</text>
+<text x="90" y="285" font-family="Arial, Noto Sans Devanagari, Noto Sans, sans-serif" font-size="45" font-weight="700" fill="#145f96">110 पदों पर भर्ती</text>
+<text x="90" y="350" font-family="Arial, Noto Sans Devanagari, Noto Sans, sans-serif" font-size="25" fill="#414b55">आवेदन शुरू • Last Date: 12 October 2026</text>
+<line x1="90" y1="405" x2="1110" y2="405" stroke="#d2dae2" stroke-width="3"/>
+<text x="90" y="450" font-family="Arial, Noto Sans, sans-serif" font-size="25" fill="#232d36">Engineering Officer • Assistant • Technician • MTS</text>
+<text x="90" y="520" font-family="Arial, Noto Sans, sans-serif" font-size="25" font-weight="700" fill="#145f96">yocewor.in/cpri-recruitment-2026/</text>
+<text x="1110" y="560" text-anchor="end" font-family="Arial, Noto Sans Devanagari, Noto Sans, sans-serif" font-size="20" font-weight="700" fill="#323c46">YOCEWOR — सही जानकारी, सही समय पर।</text>
+</svg>
