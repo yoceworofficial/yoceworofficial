@@ -26,11 +26,10 @@ jobs:
           const fs = require('fs');
           const path = require('path');
           const cfg = fs.readFileSync('config.js','utf8');
-          const url = (cfg.match(/supabaseUrl:\s*[\"']([^\"']+)/) || [])[1];
-          const key = (cfg.match(/supabasePublishableKey:\s*[\"']([^\"']+)/) || [])[1];
+          const url = (cfg.match(/supabaseUrl:\s*["']([^"']+)/) || [])[1];
+          const key = (cfg.match(/supabasePublishableKey:\s*["']([^"']+)/) || [])[1];
           if (!url || !key) throw new Error('Supabase public config not found');
           const headers = { apikey: key, Authorization: 'Bearer ' + key };
-          const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
           const r = await fetch(url + '/rest/v1/posts?select=slug,title,seo_title,seo_description,content_intro,featured_image_url,status&status=eq.published&order=updated_at.desc&limit=1000', {headers});
           if (!r.ok) throw new Error('Supabase posts request failed: ' + r.status + ' ' + await r.text());
           const posts = await r.json();
@@ -71,3 +70,5 @@ jobs:
           if git diff --cached --quiet; then echo "No generated page changes."; exit 0; fi
           git commit -m "chore: sync clean post pages"
           git push
+
+# Triggered manually by the site-fix commit to regenerate and deploy all published post pages.
