@@ -23,6 +23,7 @@ jobs:
           SUPABASE_URL: https://mzntgjyecymcpzciklfk.supabase.co
         run: |
           node <<'NODE'
+          (async () => {
           const fs = require('fs');
           const path = require('path');
           const cfg = fs.readFileSync('config.js','utf8');
@@ -30,6 +31,7 @@ jobs:
           const key = (cfg.match(/supabasePublishableKey:\s*["']([^"']+)/) || [])[1];
           if (!url || !key) throw new Error('Supabase public config not found');
           const headers = { apikey: key, Authorization: 'Bearer ' + key };
+          const esc = (value) => String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
           const r = await fetch(url + '/rest/v1/posts?select=slug,title,seo_title,seo_description,content_intro,featured_image_url,status&status=eq.published&order=updated_at.desc&limit=1000', {headers});
           if (!r.ok) throw new Error('Supabase posts request failed: ' + r.status + ' ' + await r.text());
           const posts = await r.json();
@@ -55,6 +57,7 @@ jobs:
             fs.writeFileSync(path.join(slug,'index.html'), html);
           }
           console.log('Generated', posts.length, 'published post page(s).');
+          })();
           NODE
       - name: Validate generated renderer
         run: |
