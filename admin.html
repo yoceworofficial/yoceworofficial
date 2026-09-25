@@ -45,7 +45,7 @@ textarea{min-height:100px;resize:vertical}button{border:0;border-radius:8px;padd
 <input id="brandingFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
 <div id="brandingUrl" class="small muted" style="margin-top:8px"></div>
 <div class="actions" style="margin-top:12px"><button class="primary" id="saveBrandingBtn">Logo बदलें / Save</button><button class="danger" id="removeBrandingBtn">Logo हटाएँ</button></div>
-<div class="small muted" style="margin-top:8px">अधिकतम 5 MB. गोल dashed circle के अंदर का हिस्सा profile/logo में safe रहेगा; बाहर का हिस्सा गोल crop में कट सकता है।</div><div id="brandingFilePreview" style="margin-top:12px"></div>
+<div class="small muted" style="margin-top:8px">अधिकतम 5 MB. गोल dashed circle के अंदर का हिस्सा profile/logo में safe रहेगा; बाहर का हिस्सा गोल crop में कट सकता है।</div><div id="brandingFilePreview" style="margin-top:12px"></div><div id="brandingAdjust" hidden style="margin-top:14px"><div class="small muted">Logo को गोल frame में adjust करें</div><label class="small">Zoom <input id="brandingZoom" type="range" min="1" max="3" step="0.01" value="1"></label><div class="grid" style="margin-top:8px"><label class="small">Horizontal <input id="brandingX" type="range" min="0" max="100" step="1" value="50"></label><label class="small">Vertical <input id="brandingY" type="range" min="0" max="100" step="1" value="50"></label></div></div>
 </div>
 </div>
 </section>
@@ -95,16 +95,18 @@ function parseSection(w){const type=w.querySelector('.secType').value,heading=w.
 function addLink(label='',url='',type='other',button='Click Here',bold=false,dark=false){const w=document.createElement('div');w.className='section-row link-row';w.innerHTML='<div class="grid"><div class="field"><label>नाम / Label</label><input class="linkLabel" value="'+esc(label)+'"></div><div class="field"><label>Button Name</label><input class="linkButton" value="'+esc(button)+'"></div><div class="field"><label>URL <span class="small muted">(खाली = non-clickable)</span></label><input class="linkUrl" value="'+esc(url==="#"?"":url)+'"></div><div class="field"><label>Type</label><select class="linkType"><option value="apply">Apply</option><option value="notification">Notification</option><option value="official">Official</option><option value="other">Other</option></select></div><div class="field"><label>Style</label><div class="actions"><label><input type="checkbox" class="linkBold" '+(bold?'checked':'')+'> मोटा (Bold)</label><label><input type="checkbox" class="linkDark" '+(dark?'checked':'')+'> Dark</label></div></div><div class="field"><button type="button" class="danger removeLink">Remove</button></div></div>';w.querySelector('.linkType').value=type;w.querySelector('.removeLink').onclick=()=>w.remove();$('links').appendChild(w)}
 function renderLinks(){if(!$('links').children.length)addLink()}
 async function loadBranding(){
-  const {data,error}=await client.from('site_branding').select('id,logo_url,logo_path,updated_at').eq('id',true).maybeSingle();
+  const {data,error}=await client.from('site_branding').select('id,logo_url,logo_path,updated_at,crop_zoom,crop_x,crop_y').eq('id',true).maybeSingle();
   if(error){console.warn('Branding load failed',error);return}
   branding=data||null;
   renderBranding();
 }
+function brandingStyle(url,zoom,x,y){return '<div class="branding-crop-frame"><img src="'+esc(url)+'" alt="YOCEWOR logo" style="object-position:'+x+'% '+y+'%;transform:scale('+zoom+');"><div class="branding-safe-circle"></div><div class="branding-crop-label">⭕ गोल safe area</div></div>'}
+function updateBrandingPreview(){const f=$('brandingFile').files[0],url=f?URL.createObjectURL(f):(branding?.logo_url||'');if(!url)return;const z=parseFloat($('brandingZoom').value)||1,x=parseFloat($('brandingX').value)||50,y=parseFloat($('brandingY').value)||50;const target=f?'brandingFilePreview':'brandingPreviewWrap';$(target).innerHTML=(f?'<div class="small muted" style="margin-bottom:6px">Upload preview:</div>':'')+brandingStyle(url,z,x,y)}
 function renderBranding(){
   const wrap=$('brandingPreviewWrap');
   const url=branding?.logo_url||'';
   $('brandingUrl').textContent=url?'Current logo active.':'No logo is currently set.';
-  if(url) wrap.innerHTML='<div class="branding-crop-frame"><img src="'+esc(url)+'" alt="Current YOCEWOR logo"><div class="branding-safe-circle"></div><div class="branding-crop-label">⭕ गोल safe area</div></div>';
+  if(url){wrap.innerHTML=brandingStyle(url,branding?.crop_zoom||1,branding?.crop_x??50,branding?.crop_y??50);$('brandingAdjust').hidden=false;$('brandingZoom').value=branding?.crop_zoom||1;$('brandingX').value=branding?.crop_x??50;$('brandingY').value=branding?.crop_y??50;}else{$('brandingAdjust').hidden=true;wrap.innerHTML='<div class="branding-empty">कोई logo नहीं</div>';}
   else wrap.innerHTML='<div class="branding-empty">कोई logo नहीं</div>';
 }
 async function removeBranding(){
@@ -116,9 +118,9 @@ async function removeBranding(){
       const {error:e}=await client.storage.from('post-images').remove([branding.logo_path]);
       if(e) throw e;
     }
-    const {error}=await client.from('site_branding').upsert({id:true,logo_url:null,logo_path:null,updated_at:new Date().toISOString()});
+    const {error}=await client.from('site_branding').upsert({id:true,logo_url:null,logo_path:null,crop_zoom:1,crop_x:50,crop_y:50,updated_at:new Date().toISOString()});
     if(error) throw error;
-    branding={id:true,logo_url:null,logo_path:null};
+    branding={id:true,logo_url:null,logo_path:null,crop_zoom:1,crop_x:50,crop_y:50};
     renderBranding();
     msg('Logo हटा दिया गया.');
   }catch(e){msg(e.message||String(e),true)}
@@ -135,13 +137,13 @@ async function saveBranding(){
     if(ue) throw ue;
     const {data:pub}=client.storage.from('post-images').getPublicUrl(path);
     const oldPath=branding?.logo_path||null;
-    const {error:se}=await client.from('site_branding').upsert({id:true,logo_url:pub.publicUrl,logo_path:path,updated_at:new Date().toISOString()});
+    const z=parseFloat($('brandingZoom').value)||1,x=parseFloat($('brandingX').value)||50,y=parseFloat($('brandingY').value)||50; const {error:se}=await client.from('site_branding').upsert({id:true,logo_url:pub.publicUrl,logo_path:path,crop_zoom:z,crop_x:x,crop_y:y,updated_at:new Date().toISOString()});
     if(se){
       await client.storage.from('post-images').remove([path]);
       throw se;
     }
     if(oldPath && oldPath!==path) await client.storage.from('post-images').remove([oldPath]);
-    branding={id:true,logo_url:pub.publicUrl,logo_path:path};
+    branding={id:true,logo_url:pub.publicUrl,logo_path:path,crop_zoom:z,crop_x:x,crop_y:y};
     $('brandingFile').value='';
     renderBranding();
     msg('Logo successfully बदल दिया गया. Site refresh करने पर नया logo दिखेगा.');
@@ -156,6 +158,6 @@ const sectionRows=parsedSections.filter(x=>x.heading||x.content.text||x.content.
 async function deletePost(){const id=$('postId').value;if(!id||!confirm('Delete this post and its sections/links/job data?'))return;msg('Deleting...');const {error}=await client.from('posts').delete().eq('id',id);if(error){msg(error.message,true);return}resetForm();await loadPosts();msg('Post deleted.')}
 async function boot(){const {data:{session}}=await client.auth.getSession();if(session){const {data:u}=await client.auth.getUser();const {data:a}=await client.from('admin_users').select('user_id').eq('user_id',u.user.id).maybeSingle();if(a){$('loginView').hidden=true;$('appView').hidden=false;$('who').textContent=u.user.email||'';const {data:c}=await client.from('categories').select('*').eq('is_active',true).order('sort_order');categories=c||[];renderCategories();resetForm();await loadPosts();return}}}
 $('loginBtn').onclick=async()=>{loginMsg('Logging in...');const {data,error}=await client.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){loginMsg(error.message,true);return}const {data:a,error:ae}=await client.from('admin_users').select('user_id').eq('user_id',data.user.id).maybeSingle();if(ae){loginMsg('Admin permission check failed: '+ae.message,true);return}if(!a){loginMsg('This account is authenticated but is not registered as a YOCEWOR admin.',true);return}loginMsg('Login successful. Loading Admin Panel...');await boot()}
-$('logoutBtn').onclick=async()=>{await client.auth.signOut();location.reload()};$('newBtn').onclick=resetForm;$('saveBtn').onclick=savePost;$('deleteBtn').onclick=deletePost;$('addSectionBtn').onclick=()=>addSection('text','');$('addLinkBtn').onclick=()=>addLink();$('title').oninput=()=>{if(!$('postId').value||!$('slug').value)$('slug').value=slugify($('title').value)};$('image').onchange=()=>{const f=$('image').files[0];if(f){$('imagePreview').src=URL.createObjectURL(f);$('imagePreview').style.display='block'}};$('previewBtn').onclick=()=>{const s=$('slug').value.trim();if(s)window.open('/post.html?slug='+encodeURIComponent(s),'_blank')};$('brandingFile').onchange=()=>{const f=$('brandingFile').files[0];if(!f){$('brandingFilePreview').innerHTML='';return}if(f.size>5*1024*1024){$('brandingFilePreview').innerHTML='<div class="notice error">Photo 5 MB से छोटा होना चाहिए.</div>';return}const u=URL.createObjectURL(f);$('brandingFilePreview').innerHTML='<div class="small muted" style="margin-bottom:6px">Upload से पहले preview:</div><div class="branding-crop-frame"><img src="'+u+'" alt="Logo preview"><div class="branding-safe-circle"></div><div class="branding-crop-label">⭕ गोल safe area</div></div>';};$('saveBrandingBtn').onclick=saveBranding;$('removeBrandingBtn').onclick=removeBranding;loadBranding();boot();
+$('logoutBtn').onclick=async()=>{await client.auth.signOut();location.reload()};$('newBtn').onclick=resetForm;$('saveBtn').onclick=savePost;$('deleteBtn').onclick=deletePost;$('addSectionBtn').onclick=()=>addSection('text','');$('addLinkBtn').onclick=()=>addLink();$('title').oninput=()=>{if(!$('postId').value||!$('slug').value)$('slug').value=slugify($('title').value)};$('image').onchange=()=>{const f=$('image').files[0];if(f){$('imagePreview').src=URL.createObjectURL(f);$('imagePreview').style.display='block'}};$('previewBtn').onclick=()=>{const s=$('slug').value.trim();if(s)window.open('/post.html?slug='+encodeURIComponent(s),'_blank')};$('brandingFile').onchange=()=>{const f=$('brandingFile').files[0];if(!f){$('brandingFilePreview').innerHTML='';return}if(f.size>5*1024*1024){$('brandingFilePreview').innerHTML='<div class="notice error">Photo 5 MB से छोटा होना चाहिए.</div>';return}const u=URL.createObjectURL(f);$('brandingAdjust').hidden=false;updateBrandingPreview();};$('brandingZoom').oninput=updateBrandingPreview;$('brandingX').oninput=updateBrandingPreview;$('brandingY').oninput=updateBrandingPreview;$('saveBrandingBtn').onclick=saveBranding;$('removeBrandingBtn').onclick=removeBranding;loadBranding();boot();
 </script>
 </body></html>
