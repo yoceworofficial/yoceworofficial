@@ -62,8 +62,8 @@ jobs:
       - name: Validate generated renderer
         run: |
           test -f post.html
-          grep -q 'const items=Array.isArray(c)?c:(Array.isArray(c.items)?c.items:[])' post.html
-          grep -q 'if(s.section_type!=="links")' post.html
+          grep -Fq 'const items=Array.isArray(c)?c:(Array.isArray(c.items)?c.items:[])' post.html
+          grep -Fq 'if(s.section_type!=="links")' post.html
           echo "Renderer validation passed."
       - name: Commit generated pages
         run: |
