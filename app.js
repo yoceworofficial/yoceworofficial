@@ -42,7 +42,7 @@ async function loadBranding() {
       img.style.objectFit = "cover";
       img.style.objectPosition = `${row.crop_x ?? 50}% ${row.crop_y ?? 50}%`;
       img.style.transformOrigin = "center center";
-      img.style.transform = `scale(${Math.max(1, Math.min(3, Number(row.crop_zoom ?? 1)))})`;
+      img.style.transform = `scale(${Math.max(0.1, Math.min(3, Number(row.crop_zoom ?? 1)))})`;
       img.style.display = "";
     } else {
       img.removeAttribute("src");
