@@ -30,18 +30,23 @@ async function loadBranding() {
   const img = document.querySelector(".brand-logo");
   if (!img || !KEY) return;
   try {
-    const r = await fetch(REST + "/site_branding?select=logo_url&id=eq.true&limit=1", {
+    const r = await fetch(REST + "/site_branding?select=logo_url,crop_zoom,crop_x,crop_y&id=eq.true&limit=1", {
       headers: {apikey: KEY, Authorization: "Bearer " + KEY},
       cache: "no-store"
     });
     if (!r.ok) return;
     const rows = await r.json();
-    const url = rows?.[0]?.logo_url || "";
+    const row = rows?.[0] || {}; const url = row.logo_url || "";
     if (url) {
       img.src = url;
+      img.style.objectFit = "cover";
+      img.style.objectPosition = `${row.crop_x ?? 50}% ${row.crop_y ?? 50}%`;
+      img.style.transformOrigin = "center center";
+      img.style.transform = `scale(${Math.max(1, Math.min(3, Number(row.crop_zoom ?? 1)))})`;
       img.style.display = "";
     } else {
       img.removeAttribute("src");
+      img.style.transform = "";
       img.style.display = "none";
     }
   } catch (e) {
