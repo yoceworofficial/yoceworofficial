@@ -107,7 +107,6 @@ function renderBranding(){
   const url=branding?.logo_url||'';
   $('brandingUrl').textContent=url?'Current logo active.':'No logo is currently set.';
   if(url){wrap.innerHTML=brandingStyle(url,branding?.crop_zoom||1,branding?.crop_x??50,branding?.crop_y??50);$('brandingAdjust').hidden=false;$('brandingZoom').value=branding?.crop_zoom||1;$('brandingX').value=branding?.crop_x??50;$('brandingY').value=branding?.crop_y??50;}else{$('brandingAdjust').hidden=true;wrap.innerHTML='<div class="branding-empty">कोई logo नहीं</div>';}
-  else wrap.innerHTML='<div class="branding-empty">कोई logo नहीं</div>';
 }
 async function removeBranding(){
   if(!branding?.logo_url) return msg('अभी कोई custom logo लगा हुआ नहीं है.');
