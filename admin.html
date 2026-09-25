@@ -18,7 +18,7 @@ textarea{min-height:100px;resize:vertical}button{border:0;border-radius:8px;padd
 .post-list{display:grid;gap:8px}.post-item{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--border);border-radius:8px;padding:10px}
 .post-item strong{display:block}.section-row{border:1px solid var(--border);border-radius:10px;padding:12px;margin:10px 0;background:#fafbfc}
 .section-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}.preview{max-width:260px;max-height:150px;border-radius:8px;border:1px solid var(--border);display:none}
-.notice{padding:10px;border-radius:8px;background:#eef6ff;margin-bottom:12px}.error{background:#fff1f0;color:#b42318}.small{font-size:12px}
+.notice{padding:10px;border-radius:8px;background:#eef6ff;margin-bottom:12px}.branding-card{display:grid;grid-template-columns:180px 1fr;gap:18px;align-items:center}.branding-preview{width:160px;height:120px;object-fit:contain;border:1px solid var(--border);border-radius:12px;background:#f8fafc;display:block}.branding-empty{width:160px;height:120px;border:1px dashed #aab2bf;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#667085;text-align:center;font-size:13px;background:#f8fafc}.error{background:#fff1f0;color:#b42318}.small{font-size:12px}
 @media(max-width:700px){.grid{grid-template-columns:1fr}.admin{width:94%;margin:12px auto}.card{padding:13px}.post-item{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
@@ -37,6 +37,18 @@ textarea{min-height:100px;resize:vertical}button{border:0;border-radius:8px;padd
 <section id="appView" hidden>
 <div class="card topbar"><div><h1>YOCEWOR Admin Panel</h1><div id="who" class="muted"></div></div><div class="actions"><button class="primary" id="newBtn">+ New Vacancy / Article</button><button class="secondary" id="logoutBtn">Logout</button></div></div>
 <div id="appMsg"></div>
+<section class="card">
+<div class="topbar"><div><h2>Site Logo</h2><div class="muted small">Profile की तरह यहाँ से header का logo कभी भी बदलें या हटाएँ।</div></div></div>
+<div class="branding-card">
+<div id="brandingPreviewWrap"><div class="branding-empty">कोई logo नहीं</div></div>
+<div>
+<input id="brandingFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+<div id="brandingUrl" class="small muted" style="margin-top:8px"></div>
+<div class="actions" style="margin-top:12px"><button class="primary" id="saveBrandingBtn">Logo बदलें / Save</button><button class="danger" id="removeBrandingBtn">Logo हटाएँ</button></div>
+<div class="small muted" style="margin-top:8px">अधिकतम 5 MB. नया photo लगाने पर पुराना logo हटाकर नया logo active होगा।</div>
+</div>
+</div>
+</section>
 <div class="grid">
 <section class="card"><h2>Posts</h2><div id="postList" class="post-list">Loading...</div></section>
 <section class="card">
@@ -69,7 +81,7 @@ textarea{min-height:100px;resize:vertical}button{border:0;border-radius:8px;padd
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/config.js"></script><script>
 const client=supabase.createClient(YOCEWOR_CONFIG.supabaseUrl,YOCEWOR_CONFIG.supabasePublishableKey),$=id=>document.getElementById(id);
-let currentPost=null,currentSections=[],currentLinks=[],categories=[];
+let currentPost=null,currentSections=[],currentLinks=[],categories=[],branding=null;
 function msg(text,error=false){$('appMsg').innerHTML=text?'<div class="notice '+(error?'error':'')+'">'+esc(text)+'</div>':''}function loginMsg(text,error=false){$('loginMsg').innerHTML=text?'<div class="notice '+(error?'error':'')+'">'+esc(text)+'</div>':''}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}function slugify(v){return String(v||'').toLowerCase().trim().replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')}
 function isoLocal(v){if(!v)return '';const d=new Date(v),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}
@@ -82,6 +94,59 @@ function addSection(type='text',heading='',content={}){const wrap=document.creat
 function parseSection(w){const type=w.querySelector('.secType').value,heading=w.querySelector('.secHeading').value.trim(),raw=w.querySelector('.secContent').value;let content={};if(type==='text')content={text:raw};else if(type==='list'||type==='steps')content={items:raw.split('\n').map(x=>x.trim()).filter(Boolean)};else if(type==='table'){const rows=raw.split('\n').filter(Boolean).map(line=>line.split('\t'));content={headers:rows.shift()||[],rows}}else if(type==='links'){content={items:raw.split('\n').filter(Boolean).map(line=>{const [label,...u]=line.split('|');return {label:label.trim(),url:u.join('|').trim()}})}}return {heading,section_type:type,content}}
 function addLink(label='',url='',type='other',button='Click Here',bold=false,dark=false){const w=document.createElement('div');w.className='section-row link-row';w.innerHTML='<div class="grid"><div class="field"><label>नाम / Label</label><input class="linkLabel" value="'+esc(label)+'"></div><div class="field"><label>Button Name</label><input class="linkButton" value="'+esc(button)+'"></div><div class="field"><label>URL <span class="small muted">(खाली = non-clickable)</span></label><input class="linkUrl" value="'+esc(url==="#"?"":url)+'"></div><div class="field"><label>Type</label><select class="linkType"><option value="apply">Apply</option><option value="notification">Notification</option><option value="official">Official</option><option value="other">Other</option></select></div><div class="field"><label>Style</label><div class="actions"><label><input type="checkbox" class="linkBold" '+(bold?'checked':'')+'> मोटा (Bold)</label><label><input type="checkbox" class="linkDark" '+(dark?'checked':'')+'> Dark</label></div></div><div class="field"><button type="button" class="danger removeLink">Remove</button></div></div>';w.querySelector('.linkType').value=type;w.querySelector('.removeLink').onclick=()=>w.remove();$('links').appendChild(w)}
 function renderLinks(){if(!$('links').children.length)addLink()}
+async function loadBranding(){
+  const {data,error}=await client.from('site_branding').select('id,logo_url,logo_path,updated_at').eq('id',true).maybeSingle();
+  if(error){console.warn('Branding load failed',error);return}
+  branding=data||null;
+  renderBranding();
+}
+function renderBranding(){
+  const wrap=$('brandingPreviewWrap');
+  const url=branding?.logo_url||'';
+  $('brandingUrl').textContent=url?'Current logo active.':'No logo is currently set.';
+  if(url) wrap.innerHTML='<img class="branding-preview" src="'+esc(url)+'" alt="Current YOCEWOR logo">';
+  else wrap.innerHTML='<div class="branding-empty">कोई logo नहीं</div>';
+}
+async function removeBranding(){
+  if(!branding?.logo_url) return msg('अभी कोई custom logo लगा हुआ नहीं है.');
+  if(!confirm('क्या आप वर्तमान site logo हटाना चाहते हैं?')) return;
+  msg('Logo हटाया जा रहा है...');
+  try{
+    if(branding.logo_path){
+      const {error:e}=await client.storage.from('post-images').remove([branding.logo_path]);
+      if(e) throw e;
+    }
+    const {error}=await client.from('site_branding').upsert({id:true,logo_url:null,logo_path:null,updated_at:new Date().toISOString()});
+    if(error) throw error;
+    branding={id:true,logo_url:null,logo_path:null};
+    renderBranding();
+    msg('Logo हटा दिया गया.');
+  }catch(e){msg(e.message||String(e),true)}
+}
+async function saveBranding(){
+  const f=$('brandingFile').files[0];
+  if(!f){msg('पहले नया logo photo चुनें.',true);return}
+  if(f.size>5*1024*1024){msg('Logo photo 5 MB या उससे छोटा होना चाहिए.',true);return}
+  msg('नया logo upload हो रहा है...');
+  try{
+    const ext=(f.name.split('.').pop()||'jpg').toLowerCase();
+    const path='branding/logo-'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;
+    const {error:ue}=await client.storage.from('post-images').upload(path,f,{contentType:f.type,upsert:false,cacheControl:'31536000'});
+    if(ue) throw ue;
+    const {data:pub}=client.storage.from('post-images').getPublicUrl(path);
+    const oldPath=branding?.logo_path||null;
+    const {error:se}=await client.from('site_branding').upsert({id:true,logo_url:pub.publicUrl,logo_path:path,updated_at:new Date().toISOString()});
+    if(se){
+      await client.storage.from('post-images').remove([path]);
+      throw se;
+    }
+    if(oldPath && oldPath!==path) await client.storage.from('post-images').remove([oldPath]);
+    branding={id:true,logo_url:pub.publicUrl,logo_path:path};
+    $('brandingFile').value='';
+    renderBranding();
+    msg('Logo successfully बदल दिया गया. Site refresh करने पर नया logo दिखेगा.');
+  }catch(e){msg(e.message||String(e),true)}
+}
 async function uploadImage(){const f=$('image').files[0];if(!f)return $('imageUrl').value||'';if(f.size>5*1024*1024)throw new Error('Photo must be 5 MB or smaller.');const ext=(f.name.split('.').pop()||'jpg').toLowerCase(),path='posts/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;const {error}=await client.storage.from('post-images').upload(path,f,{contentType:f.type,upsert:false,cacheControl:'31536000'});if(error)throw error;const {data}=client.storage.from('post-images').getPublicUrl(path);return data.publicUrl}
 function hasJob(){return ['organization','recruitmentName','postName','totalVacancy','applicationMode','jobLocation','qualification','ageLimit','applicationFee','salary','selectionProcess','applicationStart','lastDate','examDate','statusText'].some(id=>$(id).value.trim()!=='')}
 async function savePost(){msg('Saving...');try{const user=(await client.auth.getUser()).data.user;if(!user)throw new Error('Please login again.');let imageUrl=$('imageUrl').value.trim();if($('image').files[0])imageUrl=await uploadImage();const id=$('postId').value||crypto.randomUUID(),published=$('status').value==='published',post={id,category_id:$('category').value,title:$('title').value.trim(),slug:($('slug').value.trim()||slugify($('title').value)),excerpt:$('excerpt').value.trim()||null,content_intro:$('intro').value.trim()||null,status:$('status').value,published_at:published?($('publishedAt').value?new Date($('publishedAt').value).toISOString():new Date().toISOString()):null,updated_at:new Date().toISOString(),featured_image_url:imageUrl||null};if(!post.title||!post.category_id||!post.slug)throw new Error('Title, slug and category are required.');const {error:pe}=await client.from('posts').upsert(post);if(pe)throw pe;await client.from('post_sections').delete().eq('post_id',id);const parsedSections=[...document.querySelectorAll('.section-row:not(.link-row)')].map(parseSection);
@@ -91,6 +156,6 @@ const sectionRows=parsedSections.filter(x=>x.heading||x.content.text||x.content.
 async function deletePost(){const id=$('postId').value;if(!id||!confirm('Delete this post and its sections/links/job data?'))return;msg('Deleting...');const {error}=await client.from('posts').delete().eq('id',id);if(error){msg(error.message,true);return}resetForm();await loadPosts();msg('Post deleted.')}
 async function boot(){const {data:{session}}=await client.auth.getSession();if(session){const {data:u}=await client.auth.getUser();const {data:a}=await client.from('admin_users').select('user_id').eq('user_id',u.user.id).maybeSingle();if(a){$('loginView').hidden=true;$('appView').hidden=false;$('who').textContent=u.user.email||'';const {data:c}=await client.from('categories').select('*').eq('is_active',true).order('sort_order');categories=c||[];renderCategories();resetForm();await loadPosts();return}}}
 $('loginBtn').onclick=async()=>{loginMsg('Logging in...');const {data,error}=await client.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){loginMsg(error.message,true);return}const {data:a,error:ae}=await client.from('admin_users').select('user_id').eq('user_id',data.user.id).maybeSingle();if(ae){loginMsg('Admin permission check failed: '+ae.message,true);return}if(!a){loginMsg('This account is authenticated but is not registered as a YOCEWOR admin.',true);return}loginMsg('Login successful. Loading Admin Panel...');await boot()}
-$('logoutBtn').onclick=async()=>{await client.auth.signOut();location.reload()};$('newBtn').onclick=resetForm;$('saveBtn').onclick=savePost;$('deleteBtn').onclick=deletePost;$('addSectionBtn').onclick=()=>addSection('text','');$('addLinkBtn').onclick=()=>addLink();$('title').oninput=()=>{if(!$('postId').value||!$('slug').value)$('slug').value=slugify($('title').value)};$('image').onchange=()=>{const f=$('image').files[0];if(f){$('imagePreview').src=URL.createObjectURL(f);$('imagePreview').style.display='block'}};$('previewBtn').onclick=()=>{const s=$('slug').value.trim();if(s)window.open('/post.html?slug='+encodeURIComponent(s),'_blank')};boot();
+$('logoutBtn').onclick=async()=>{await client.auth.signOut();location.reload()};$('newBtn').onclick=resetForm;$('saveBtn').onclick=savePost;$('deleteBtn').onclick=deletePost;$('addSectionBtn').onclick=()=>addSection('text','');$('addLinkBtn').onclick=()=>addLink();$('title').oninput=()=>{if(!$('postId').value||!$('slug').value)$('slug').value=slugify($('title').value)};$('image').onchange=()=>{const f=$('image').files[0];if(f){$('imagePreview').src=URL.createObjectURL(f);$('imagePreview').style.display='block'}};$('previewBtn').onclick=()=>{const s=$('slug').value.trim();if(s)window.open('/post.html?slug='+encodeURIComponent(s),'_blank')};$('saveBrandingBtn').onclick=saveBranding;$('removeBrandingBtn').onclick=removeBranding;loadBranding();boot();
 </script>
 </body></html>
