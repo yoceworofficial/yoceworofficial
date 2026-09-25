@@ -26,7 +26,32 @@ async function fetchJson(url, options = {}, timeout = 8000) {
   } finally { clearTimeout(timer); }
 }
 
+async function loadBranding() {
+  const img = document.querySelector(".brand-logo");
+  if (!img || !KEY) return;
+  try {
+    const r = await fetch(REST + "/site_branding?select=logo_url&id=eq.true&limit=1", {
+      headers: {apikey: KEY, Authorization: "Bearer " + KEY},
+      cache: "no-store"
+    });
+    if (!r.ok) return;
+    const rows = await r.json();
+    const url = rows?.[0]?.logo_url || "";
+    if (url) {
+      img.src = url;
+      img.style.display = "";
+    } else {
+      img.removeAttribute("src");
+      img.style.display = "none";
+    }
+  } catch (e) {
+    console.warn("YOCEWOR branding load failed.", e);
+  }
+}
+
 async function load() {
+  loadBranding();
+
   const y = document.getElementById("year");
   if (y) y.textContent = new Date().getFullYear();
 
