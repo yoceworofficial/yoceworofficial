@@ -44,7 +44,7 @@ jobs:
             const image = post.featured_image_url || 'https://yocewor.in/images/default-share.svg';
             const canonical = 'https://yocewor.in/' + encodeURIComponent(slug) + '/';
             let html = template;
-            html = html.replace(/<title>[^<]*<\/title>/i, '<title>' + esc(title) + '</title>');
+            html = html.replace(/<title>[^<]*<\/title>/i, '<title>' + esc(title) + '</title><link rel="canonical" href="' + canonical + '">');
             html = html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/i, '$1' + esc(desc) + '$2');
             html = html.replace(/(<meta\s+property="og:title"\s+content=")[^"]*(")/i, '$1' + esc(title) + '$2');
             html = html.replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/i, '$1' + esc(desc) + '$2');
