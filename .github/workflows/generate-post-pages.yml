@@ -32,7 +32,7 @@ jobs:
           if (!url || !key) throw new Error('Supabase public config not found');
           const headers = { apikey: key, Authorization: 'Bearer ' + key };
           const esc = (value) => String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-          const r = await fetch(url + '/rest/v1/posts?select=slug,title,seo_title,seo_description,content_intro,featured_image_url,status&status=eq.published&order=updated_at.desc&limit=1000', {headers});
+          const r = await fetch(url + '/rest/v1/posts?select=slug,title,seo_title,seo_description,content_intro,featured_image_url,status,published_at,updated_at&status=eq.published&order=updated_at.desc&limit=1000', {headers});
           if (!r.ok) throw new Error('Supabase posts request failed: ' + r.status + ' ' + await r.text());
           const posts = await r.json();
           const template = fs.readFileSync('post.html','utf8');
@@ -56,7 +56,22 @@ jobs:
             fs.mkdirSync(slug, {recursive:true});
             fs.writeFileSync(path.join(slug,'index.html'), html);
           }
-          console.log('Generated', posts.length, 'published post page(s).');
+          const staticUrls = [
+            '/', '/category.html?category=latest-jobs', '/category.html?category=admit-card',
+            '/category.html?category=answer-key', '/category.html?category=result',
+            '/category.html?category=exam-date', '/category.html?category=latest-news',
+            '/category.html?category=sarkari-yojana', '/about.html', '/contact.html',
+            '/privacy-policy.html', '/disclaimer.html', '/terms.html'
+          ];
+          const xmlEsc = (value) => String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+          const entries = staticUrls.map(p => ({loc:'https://yocewor.in' + p}))
+            .concat(posts.filter(p => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug||'').trim()))
+              .map(p => ({loc:'https://yocewor.in/' + encodeURIComponent(String(p.slug).trim()) + '/', lastmod:p.updated_at || p.published_at || null})));
+          const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+            entries.map(e => '  <url><loc>' + xmlEsc(e.loc) + '</loc>' + (e.lastmod ? '<lastmod>' + xmlEsc(String(e.lastmod).slice(0,10)) + '</lastmod>' : '') + '</url>').join('\n') +
+            '\n</urlset>\n';
+          fs.writeFileSync('sitemap.xml', sitemap);
+          console.log('Generated', posts.length, 'published post page(s) and refreshed sitemap.xml.');
           })();
           NODE
       - name: Validate generated renderer
@@ -69,7 +84,7 @@ jobs:
         run: |
           git config user.name "YOCEWOR Bot"
           git config user.email "yoceworofficial@users.noreply.github.com"
-          git add -- */index.html
+          git add -- */index.html sitemap.xml
           if git diff --cached --quiet; then echo "No generated page changes."; exit 0; fi
           git commit -m "chore: sync clean post pages"
           git push
