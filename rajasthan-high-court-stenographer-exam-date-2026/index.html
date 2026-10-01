@@ -11,31 +11,34 @@
 const root=document.getElementById("article"),params=new URLSearchParams(location.search),querySlug=params.get("slug"),slug=(querySlug||location.pathname.replace(/^\/+|\/+$/g,"").split("/").pop()||""); if(querySlug){history.replaceState(null,"","/"+encodeURIComponent(querySlug)+"/");}document.getElementById("year").textContent=new Date().getFullYear();
 if(!slug){notFound();return}
 try{
- let payload;
- try{
-   const r=await fetch("https://mzntgjyecymcpzciklfk.supabase.co/functions/v1/public-post?slug="+encodeURIComponent(slug),{cache:"no-store"});
-   if(!r.ok) throw new Error("HTTP "+r.status);
-   payload=await r.json();
-   if(!payload?.post) throw new Error("Invalid API payload");
- }catch(apiError){
-   console.warn("public-post failed; using REST fallback",apiError);
-   const key=window.YOCEWOR_CONFIG?.supabasePublishableKey||"";
-   if(!key) throw apiError;
-   const headers={apikey:key,Authorization:"Bearer "+key};
-   const base="https://mzntgjyecymcpzciklfk.supabase.co/rest/v1";
-   const get=async path=>{const x=await fetch(base+path,{headers,cache:"no-store"});if(!x.ok)throw new Error("REST "+x.status);return x.json()};
-   const posts=await get("/posts?select=*&slug=eq."+encodeURIComponent(slug)+"&status=eq.published&limit=1");
-   if(!posts.length) return notFound();
-   const p=posts[0];
-   const results=await Promise.allSettled([
-     get("/categories?select=id,name,slug&id=eq."+encodeURIComponent(p.category_id)+"&limit=1"),
-     get("/jobs?select=*&post_id=eq."+encodeURIComponent(p.id)+"&limit=1"),
-     get("/post_sections?select=*&post_id=eq."+encodeURIComponent(p.id)+"&order=sort_order.asc"),
-     get("/post_links?select=*&post_id=eq."+encodeURIComponent(p.id)+"&order=sort_order.asc"),
-     get("/posts?select=title,slug,published_at&category_id=eq."+encodeURIComponent(p.category_id)+"&status=eq.published&id=neq."+encodeURIComponent(p.id)+"&order=published_at.desc&limit=5")
-   ]);
-   const value=i=>results[i].status==="fulfilled"?results[i].value:[];
-   payload={post:{...p,categories:value(0)[0]||null,jobs:value(1)||[]},sections:value(2),links:value(3),related:value(4)};
+ let payload=null;
+ const key=window.YOCEWOR_CONFIG?.supabasePublishableKey||"";
+ const base="https://mzntgjyecymcpzciklfk.supabase.co/rest/v1";
+ const get=async path=>{const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),5000);try{const x=await fetch(base+path,{headers:{apikey:key,Authorization:"Bearer "+key},cache:"no-store",signal:controller.signal});if(!x.ok)throw new Error("REST "+x.status);return x.json()}finally{clearTimeout(timer)}};
+ if(key){
+   try{
+     const posts=await get("/posts?select=*&slug=eq."+encodeURIComponent(slug)+"&status=eq.published&limit=1");
+     if(!posts.length) return notFound();
+     const p=posts[0];
+     const results=await Promise.allSettled([
+       get("/categories?select=id,name,slug&id=eq."+encodeURIComponent(p.category_id)+"&limit=1"),
+       get("/jobs?select=*&post_id=eq."+encodeURIComponent(p.id)+"&limit=1"),
+       get("/post_sections?select=*&post_id=eq."+encodeURIComponent(p.id)+"&order=sort_order.asc"),
+       get("/post_links?select=*&post_id=eq."+encodeURIComponent(p.id)+"&order=sort_order.asc"),
+       get("/posts?select=title,slug,published_at&category_id=eq."+encodeURIComponent(p.category_id)+"&status=eq.published&id=neq."+encodeURIComponent(p.id)+"&order=published_at.desc&limit=5")
+     ]);
+     const value=i=>results[i].status==="fulfilled"?results[i].value:[];
+     payload={post:{...p,categories:value(0)[0]||null,jobs:value(1)||[]},sections:value(2),links:value(3),related:value(4)};
+   }catch(restError){console.warn("Direct REST load failed; using public-post fallback",restError)}
+ }
+ if(!payload){
+   const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),7000);
+   try{
+     const r=await fetch("https://mzntgjyecymcpzciklfk.supabase.co/functions/v1/public-post?slug="+encodeURIComponent(slug),{cache:"no-store",signal:controller.signal});
+     if(!r.ok) throw new Error("HTTP "+r.status);
+     payload=await r.json();
+     if(!payload?.post) throw new Error("Invalid API payload");
+   }finally{clearTimeout(timer)}
  }
  const {post,sections,links,related}=payload;
  if(!post) return notFound();
