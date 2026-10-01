@@ -60,34 +60,49 @@ async function load() {
   const y = document.getElementById("year");
   if (y) y.textContent = new Date().getFullYear();
 
-  let payload = null;
-  try {
-    payload = await fetchJson(API + "?v=2");
-  } catch (apiError) {
-    console.warn("YOCEWOR content API failed; using REST fallback.", apiError);
-    try {
-      const headers = {apikey: KEY, Authorization: "Bearer " + KEY};
-      const [categories, posts] = await Promise.all([
-        fetchJson(REST + "/categories?select=id,slug&is_active=eq.true&order=sort_order", {headers}),
-        fetchJson(REST + "/posts?select=title,slug,published_at,category_id&status=eq.published&order=published_at.desc&limit=100", {headers})
-      ]);
-      payload = {categories, posts};
-    } catch (restError) {
-      console.warn("YOCEWOR REST fallback failed.", restError);
-    }
-  }
-
-  if (payload) {
+  const CACHE_KEY = "yocewor_home_v2";
+  const renderPayload = (payload, error = false) => {
+    if (!payload) { cats.forEach(slug => show(slug, [], error)); return; }
     const categoryMap = Object.fromEntries((payload.categories || []).map(c => [c.slug, c.id]));
     const posts = payload.posts || [];
     cats.forEach(slug => {
       const id = categoryMap[slug];
       show(slug, id ? posts.filter(p => p.category_id === id).slice(0, 10) : []);
     });
-    return;
+  };
+
+  // Paint the last successful result immediately, then refresh in the background.
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+    if (cached?.payload) renderPayload(cached.payload);
+  } catch (e) {}
+
+  let payload = null;
+  try {
+    // REST is the direct public read path and avoids waiting for the edge function first.
+    const headers = {apikey: KEY, Authorization: "Bearer " + KEY};
+    const [categories, posts] = await Promise.all([
+      fetchJson(REST + "/categories?select=id,slug&is_active=eq.true&order=sort_order", {headers}, 5000),
+      fetchJson(REST + "/posts?select=title,slug,published_at,category_id&status=eq.published&order=published_at.desc&limit=100", {headers}, 5000)
+    ]);
+    payload = {categories, posts};
+  } catch (restError) {
+    console.warn("YOCEWOR direct content load failed; trying content API.", restError);
+    try {
+      payload = await fetchJson(API + "?v=2", {}, 5000);
+    } catch (apiError) {
+      console.warn("YOCEWOR content API failed.", apiError);
+    }
   }
 
-  cats.forEach(slug => show(slug, [], true));
+  if (payload) {
+    renderPayload(payload);
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({savedAt:Date.now(), payload}));
+    } catch (e) {}
+  } else if (!document.querySelector(".post-list")) {
+    renderPayload(null, true);
+  }
 }
 
 const form = document.getElementById("search");
