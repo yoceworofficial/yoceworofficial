@@ -132,6 +132,10 @@ const path = require('path');
     html=html.replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/i,'$1'+esc(image)+'$2');
     html=html.replace('</head>','<script type="application/ld+json">'+JSON.stringify(articleLd).replace(/</g,'\\u003c')+'</script><script type="application/ld+json">'+JSON.stringify(breadcrumbLd).replace(/</g,'\\u003c')+'</script></head>');
     html=html.replace(/<main class="site-wrap article" id="article">[\s\S]*?<\/main>/i,'<main class="site-wrap article" id="article">'+body+'</main>');
+    // Generated article pages are fully server-rendered. Remove the legacy client renderer so it cannot overwrite content or break navigation.
+    html=html.replace(/<script>\s*\(async\(\)=>\{[\s\S]*?\}\)\(\);\s*<\/script>\s*<\/body>/i,'</body>');
+    html=html.replace(/<script src="\/config\.js[^>]*><\/script>/i,'');
+    html=html.replace(/<span id="year"><\/span>/i,String(new Date().getFullYear()));
     fs.mkdirSync(slug,{recursive:true}); fs.writeFileSync(path.join(slug,'index.html'),html);
   }
 
