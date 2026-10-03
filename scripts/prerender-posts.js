@@ -51,6 +51,32 @@ const path = require('path');
     return '<p>'+text(typeof c==='string'?c:(c.text||''))+'</p>';
   };
 
+  const categoryDescriptions = {
+    'latest-jobs':'Government Jobs और Latest Recruitment की verified जानकारी, eligibility, dates और official links.',
+    'admit-card':'Latest Admit Card और exam city updates के साथ official download information.',
+    'answer-key':'Answer Key, response sheet और objection से जुड़ी verified updates.',
+    'result':'Sarkari Result और exam result की official information, result links और next steps.',
+    'exam-date':'Government exams की official exam dates, schedule और important date changes.',
+    'latest-news':'Government और education से जुड़ी महत्वपूर्ण latest updates.',
+    'sarkari-yojana':'Government Schemes, scholarship और public welfare updates की जानकारी.'
+  };
+  const categoryNav = [
+    ['latest-jobs','Latest Jobs'],['admit-card','Admit Card'],['answer-key','Answer Key'],
+    ['result','Result'],['exam-date','Exam Date'],['latest-news','Latest News'],['sarkari-yojana','Sarkari Yojana']
+  ];
+  for (const cat of categories) {
+    const catPosts = posts.filter(p => p.category_id === cat.id).sort((a,b) => new Date(b.published_at||0)-new Date(a.published_at||0));
+    const catSlug = String(cat.slug||'').trim();
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(catSlug)) continue;
+    const catTitle = cat.name || 'Updates';
+    const catDesc = categoryDescriptions[catSlug] || ('YOCEWOR '+catTitle+' updates.');
+    const nav = categoryNav.map(([s,n]) => '<a href="/category/'+s+'/">'+n+'</a>').join('');
+    const items = catPosts.map(p => '<article class="cat-item"><h2><a href="/'+encodeURIComponent(p.slug)+'/">'+esc(p.title)+'</a></h2>'+(p.excerpt ? '<p>'+text(p.excerpt)+'</p>' : '')+'<div class="meta">प्रकाशित: '+fmt(p.published_at)+'</div></article>').join('') || '<p class="muted">अभी इस category में कोई प्रकाशित अपडेट उपलब्ध नहीं है।</p>';
+    const catHtml = '<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="index,follow"><meta name="description" content="'+esc(catDesc)+'"><title>'+esc(catTitle)+' — YOCEWOR</title><link rel="canonical" href="https://yocewor.in/category/'+esc(catSlug)+'/"><link rel="stylesheet" href="/styles.css"></head><body><header><div class="wrap head"><a class="brand" href="/"><img class="brand-logo" src="/images/yocewor-logo.svg" alt="YOCEWOR logo"><span class="brand-copy"><span class="brand-name">YOCEWOR</span><span class="tagline">Your Voice. Your World.</span></span></a><nav><a href="/">Home</a>'+nav+'</nav></div></header><main class="site-wrap article"><p><a href="/">Home</a> &gt; '+esc(catTitle)+'</p><h1>'+esc(catTitle)+'</h1><p>'+esc(catDesc)+'</p><div class="category-posts">'+items+'</div></main><footer class="site-footer"><div class="site-wrap footer-inner"><div>© '+new Date().getFullYear()+' YOCEWOR</div><div class="footer-links"><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy-policy.html">Privacy Policy</a><a href="/disclaimer.html">Disclaimer</a><a href="/terms.html">Terms &amp; Conditions</a><a href="/editorial-policy.html">Editorial Policy</a></div></div></footer></body></html>';
+    fs.mkdirSync(path.join('category',catSlug),{recursive:true});
+    fs.writeFileSync(path.join('category',catSlug,'index.html'),catHtml);
+  }
+
   const template=fs.readFileSync('post.html','utf8');
   for(const post of posts){
     const slug=String(post.slug||'').trim();
@@ -102,7 +128,7 @@ const path = require('path');
     fs.mkdirSync(slug,{recursive:true}); fs.writeFileSync(path.join(slug,'index.html'),html);
   }
 
-  const staticUrls=['/','/category.html?category=latest-jobs','/category.html?category=admit-card','/category.html?category=answer-key','/category.html?category=result','/category.html?category=exam-date','/category.html?category=latest-news','/category.html?category=sarkari-yojana','/about.html','/contact.html','/editorial-policy.html','/privacy-policy.html','/disclaimer.html','/terms.html'];
+  const staticUrls=['/','/category/latest-jobs/','/category/admit-card/','/category/answer-key/','/category/result/','/category/exam-date/','/category/latest-news/','/category/sarkari-yojana/','/about.html','/contact.html','/editorial-policy.html','/privacy-policy.html','/disclaimer.html','/terms.html'];
   const xmlEsc=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
   const entries=staticUrls.map(loc=>({loc:'https://yocewor.in'+loc})).concat(posts.filter(p=>/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug||'').trim())).map(p=>({loc:'https://yocewor.in/'+encodeURIComponent(String(p.slug).trim())+'/',lastmod:p.updated_at||p.published_at||null})));
   fs.writeFileSync('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries.map(e=>'  <url><loc>'+xmlEsc(e.loc)+'</loc>'+(e.lastmod?'<lastmod>'+xmlEsc(String(e.lastmod).slice(0,10))+'</lastmod>':'')+'</url>').join('\n')+'\n</urlset>\n');
