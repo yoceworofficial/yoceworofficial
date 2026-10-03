@@ -127,7 +127,11 @@ const path = require('path');
 
     // Important Links table: article-specific links + only the two permanent channel links.
     // Instagram and YouTube stay only in the separate "YOCEWOR से जुड़ें" section below.
-    const all=ls.map(l=>({label:l.label||'Important Link',button:l.button_label||((l.label||'').includes('Coming Soon')?'Coming Soon':'Click Here'),url:l.url,bold:!!l.is_bold,dark:!!l.is_dark})).concat([
+    // Keep social channels out of the article link list. The table gets exactly one
+    // permanent WhatsApp + Telegram entry; Instagram and YouTube stay in the social section below.
+    const isSocialUrl = v => /(?:instagram\\.com|youtube\\.com|youtu\\.be|t\\.me|whatsapp\\.com)/i.test(String(v||''));
+    const contentLinks = ls.filter(l => !isSocialUrl(l.url)).map(l => ({label:l.label||'Important Link',button:l.button_label||((l.label||'').includes('Coming Soon')?'Coming Soon':'Click Here'),url:l.url,bold:!!l.is_bold,dark:!!l.is_dark}));
+    const all=contentLinks.concat([
       {label:'Join WhatsApp Channel',button:'Join Now',url:'https://whatsapp.com/channel/0029VaNA3EBJf05WBdLb1y2n'},
       {label:'Join Telegram Channel',button:'Join Now',url:'https://t.me/YOCEWOR'}
     ]);
