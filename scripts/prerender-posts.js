@@ -122,6 +122,11 @@ const path = require('path');
       // renders the compact "संक्षिप्त जानकारी" block above.
       const h=String(s.heading||'').toLowerCase();
       if(job && s.section_type==='table' && (h.includes('एक नजर में') || h.includes('overview') || h.includes('at a glance'))) continue;
+      const normalizedHeading=h.replace(/\s+/g,' ').trim();
+      // The generator already renders database post_links and the social block below.
+      // Avoid showing the same link/social sections twice when editors also stored them as sections.
+      if(ls.length && (normalizedHeading.includes('महत्वपूर्ण लिंक') || normalizedHeading.includes('important link'))) continue;
+      if(normalizedHeading.includes('yocewor से जुड़े') || normalizedHeading.includes('yocewor से जुड़ें') || normalizedHeading.includes('yocewor से जुड़े')) continue;
       if(s.section_type!=='links') body+='<section class="article-section">'+(s.heading?'<h2>'+esc(s.heading)+'</h2>':'')+sectionHtml(s)+'</section>';
     }
 
