@@ -14,7 +14,7 @@ nav a{font-size:14px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .box,.list-box{border:1px solid #bbb;margin-bottom:14px;padding:0 13px 13px;background:#fff}
 .box h2{font-size:18px;margin:0 -13px 10px;padding:7px 10px;border-bottom:1px solid #999;background:#f2f2f2}
-.loading-space{display:block;min-height:28px}.post-loading-space{display:block;min-height:420px}.article:has(.post-loading-space){visibility:hidden}.post-list{margin:0;padding:0;list-style:none}
+.loading-space{display:block;min-height:28px}.post-loading-space{display:block;min-height:80px}.post-list{margin:0;padding:0;list-style:none}
 .post-list li,.post-item{padding:7px 0;border-bottom:1px dotted #bbb}
 .post-list li:last-child,.post-item:last-child{border-bottom:0}
 .post-list small,.muted{display:block;color:#666;font-size:13px}
