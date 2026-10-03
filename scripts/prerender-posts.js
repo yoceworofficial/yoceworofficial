@@ -86,7 +86,7 @@ const path = require('path');
     const image=post.featured_image_url||'https://yocewor.in/images/default-share.svg';
     const canonical=post.canonical_url||'https://yocewor.in/'+encodeURIComponent(slug)+'/';
 
-    let body='<p class="muted"><a href="/">Home</a> &gt; <a href="/category.html?category='+encodeURIComponent(cat?.slug||'')+'">'+esc(cat?.name||'Update')+'</a></p>';
+    let body='<p class="muted"><a href="/">Home</a> &gt; <a href="/category/'+encodeURIComponent(cat?.slug||'')+'/">'+esc(cat?.name||'Update')+'</a></p>';
     body+='<h1>'+esc(post.title)+'</h1><div class="meta">प्रकाशित: '+fmt(post.published_at)+' &nbsp; | &nbsp; प्रकाशितकर्ता: <strong>YOCEWOR</strong></div>';
     if(post.content_intro) body+='<p>'+text(post.content_intro)+'</p>';
     if(post.featured_image_url) body+='<div class="post-hero-image"><img src="'+esc(post.featured_image_url)+'" alt="'+esc(post.title)+'" loading="eager"></div>';
@@ -111,7 +111,7 @@ const path = require('path');
     if(related.length) body+='<section class="article-section"><h2>संबंधित अपडेट</h2><ul class="related-list">'+related.map(x=>'<li><a href="/'+encodeURIComponent(x.slug)+'/">'+esc(x.title)+'</a></li>').join('')+'</ul></section>';
 
     const articleLd={'@context':'https://schema.org','@type':'Article','headline':post.title,'description':desc,'image':post.featured_image_url?[post.featured_image_url]:undefined,'datePublished':post.published_at,'dateModified':post.updated_at||post.published_at,'author':{'@type':'Organization','name':'YOCEWOR','url':'https://yocewor.in/about.html'},'publisher':{'@type':'Organization','name':'YOCEWOR','url':'https://yocewor.in/'},'mainEntityOfPage':{'@type':'WebPage','@id':canonical}};
-    const breadcrumbLd={'@context':'https://schema.org','@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':1,'name':'Home','item':'https://yocewor.in/'},{'@type':'ListItem','position':2,'name':cat?.name||'Update','item':'https://yocewor.in/category.html?category='+encodeURIComponent(cat?.slug||'')},{'@type':'ListItem','position':3,'name':post.title,'item':canonical}]};
+    const breadcrumbLd={'@context':'https://schema.org','@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':1,'name':'Home','item':'https://yocewor.in/'},{'@type':'ListItem','position':2,'name':cat?.name||'Update','item':'https://yocewor.in/category/'+encodeURIComponent(cat?.slug||'')+'/'},{'@type':'ListItem','position':3,'name':post.title,'item':canonical}]};
 
     let html=template;
     html=html.replace(/<title>[^<]*<\/title>/i,'<title>'+esc(title)+'</title><link rel="canonical" href="'+esc(canonical)+'">');
