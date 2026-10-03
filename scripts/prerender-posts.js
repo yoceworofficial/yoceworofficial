@@ -145,6 +145,7 @@ const path = require('path');
 
     let html=template;
     html=html.replace(/<title>[^<]*<\/title>/i,'<title>'+esc(title)+'</title><link rel="canonical" href="'+esc(canonical)+'">');
+    html=html.replace(/<meta\s+name="robots"\s+content="[^"]*"/i,'<meta name="robots" content="index,follow"');
     html=html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/i,'$1'+esc(desc)+'$2');
     html=html.replace(/(<meta\s+property="og:title"\s+content=")[^"]*(")/i,'$1'+esc(title)+'$2');
     html=html.replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/i,'$1'+esc(desc)+'$2');
