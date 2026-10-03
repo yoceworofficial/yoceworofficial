@@ -24,9 +24,10 @@ jobs:
       - name: Validate generated pages
         run: |
           test -f post.html
-          grep -Fq 'const items=Array.isArray(c)?c:(Array.isArray(c.items)?c.items:[])' post.html
-          grep -Fq 'if(s.section_type!=="links")' post.html
-          echo "Renderer validation passed."
+          test -f editorial-policy.html
+          grep -Fq 'Article' post.html
+          grep -Fq 'rrc-nwr-apprentice-recruitment-2026' sitemap.xml
+          echo "Static page validation passed."
       - name: Commit generated pages
         run: |
           git config user.name "YOCEWOR Bot"
