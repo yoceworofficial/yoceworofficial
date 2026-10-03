@@ -135,7 +135,7 @@ const path = require('path');
     fs.mkdirSync(slug,{recursive:true}); fs.writeFileSync(path.join(slug,'index.html'),html);
   }
 
-  const staticUrls=['/','/category/latest-jobs/','/category/admit-card/','/category/answer-key/','/category/result/','/category/exam-date/','/category/latest-news/','/category/sarkari-yojana/','/about.html','/contact.html','/editorial-policy.html','/privacy-policy.html','/disclaimer.html','/terms.html','/author/yocewor-editorial-desk.html'];
+  const staticUrls=['/','/category/latest-jobs/','/category/admit-card/','/category/answer-key/','/category/result/','/category/exam-date/','/category/latest-news/','/category/sarkari-yojana/','/about.html','/contact.html','/editorial-policy.html','/privacy-policy.html','/disclaimer.html','/terms.html','/author/yocewor-editorial-desk.html','/education.html','/news.html'];
   const xmlEsc=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
   const entries=staticUrls.map(loc=>({loc:'https://yocewor.in'+loc})).concat(posts.filter(p=>/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug||'').trim())).map(p=>({loc:'https://yocewor.in/'+encodeURIComponent(String(p.slug).trim())+'/',lastmod:p.updated_at||p.published_at||null})));
   fs.writeFileSync('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries.map(e=>'  <url><loc>'+xmlEsc(e.loc)+'</loc>'+(e.lastmod?'<lastmod>'+xmlEsc(String(e.lastmod).slice(0,10))+'</lastmod>':'')+'</url>').join('\n')+'\n</urlset>\n');
