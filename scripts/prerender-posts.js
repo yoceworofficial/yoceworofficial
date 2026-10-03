@@ -1,0 +1,110 @@
+const fs = require('fs');
+const path = require('path');
+
+(async () => {
+  const cfg = fs.readFileSync('config.js', 'utf8');
+  const url = (cfg.match(/supabaseUrl:\s*["']([^"']+)/) || [])[1];
+  const key = (cfg.match(/supabasePublishableKey:\s*["']([^"']+)/) || [])[1];
+  if (!url || !key) throw new Error('Supabase public config not found');
+
+  const headers = { apikey: key, Authorization: 'Bearer ' + key };
+  const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  const get = async endpoint => {
+    const r = await fetch(url + '/rest/v1/' + endpoint, {headers});
+    if (!r.ok) throw new Error(endpoint + ': ' + r.status + ' ' + await r.text());
+    return r.json();
+  };
+
+  const [posts,categories,jobs,sections,links] = await Promise.all([
+    get('posts?select=id,category_id,title,slug,excerpt,content_intro,status,published_at,updated_at,seo_title,seo_description,canonical_url,featured_image_url&status=eq.published&order=updated_at.desc&limit=1000'),
+    get('categories?select=id,name,slug&is_active=eq.true&order=sort_order'),
+    get('jobs?select=*'),
+    get('post_sections?select=*&order=sort_order.asc&limit=5000'),
+    get('post_links?select=*&order=sort_order.asc&limit=5000')
+  ]);
+
+  const catById = new Map(categories.map(x => [x.id,x]));
+  const jobByPost = new Map(jobs.map(x => [x.post_id,x]));
+  const secByPost = new Map(), linkByPost = new Map();
+  for (const x of sections) (secByPost.get(x.post_id) || (secByPost.set(x.post_id,[]),secByPost.get(x.post_id))).push(x);
+  for (const x of links) (linkByPost.get(x.post_id) || (linkByPost.set(x.post_id,[]),linkByPost.get(x.post_id))).push(x);
+
+  const text = v => esc(v).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  const fmt = v => v ? new Date(v).toLocaleDateString('en-IN')+' | '+new Date(v).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}) : '-';
+  const safeUrl = v => { try { const u=new URL(String(v)); return /^https?:$/.test(u.protocol)?esc(u.href):''; } catch { return ''; } };
+  const linkHtml = (label,url,bold=false,dark=false) => {
+    const cls=(bold?' link-bold':'')+(dark?' link-dark':'');
+    if(!url || url==='#' || label==='Coming Soon') return '<span class="link-label'+cls+'">'+esc(label)+'</span>';
+    const safe=safeUrl(url);
+    return safe?'<a class="link-label'+cls+'" href="'+safe+'" target="_blank" rel="noopener noreferrer">'+esc(label)+'</a>':'';
+  };
+  const sectionHtml = s => {
+    const c=s.content||{}, items=Array.isArray(c)?c:(Array.isArray(c.items)?c.items:[]);
+    if(s.section_type==='table'){
+      const h=Array.isArray(c.headers)?c.headers:[], r=Array.isArray(c.rows)?c.rows:[];
+      return '<table class="info-table'+(h.length>2?' responsive-wide':'')+'"><thead><tr>'+h.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+
+        r.map(row=>'<tr>'+row.map((x,i)=>'<td data-label="'+esc(h[i]||'')+'">'+text(x)+'</td>').join('')+'</tr>').join('')+
+        '</tbody></table>';
+    }
+    if(s.section_type==='list') return '<ul>'+items.map(x=>'<li>'+text(x)+'</li>').join('')+'</ul>';
+    if(s.section_type==='steps') return '<ol>'+items.map(x=>'<li>'+text(x)+'</li>').join('')+'</ol>';
+    return '<p>'+text(typeof c==='string'?c:(c.text||''))+'</p>';
+  };
+
+  const template=fs.readFileSync('post.html','utf8');
+  for(const post of posts){
+    const slug=String(post.slug||'').trim();
+    if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) continue;
+    const cat=catById.get(post.category_id), job=jobByPost.get(post.id), secs=secByPost.get(post.id)||[], ls=linkByPost.get(post.id)||[];
+    const title=post.seo_title||post.title||'YOCEWOR', desc=post.seo_description||post.content_intro||post.title||'YOCEWOR government information update';
+    const image=post.featured_image_url||'https://yocewor.in/images/default-share.svg';
+    const canonical=post.canonical_url||'https://yocewor.in/'+encodeURIComponent(slug)+'/';
+
+    let body='<p class="muted"><a href="/">Home</a> &gt; <a href="/category.html?category='+encodeURIComponent(cat?.slug||'')+'">'+esc(cat?.name||'Update')+'</a></p>';
+    body+='<h1>'+esc(post.title)+'</h1><div class="meta">Published: '+fmt(post.published_at)+' &nbsp; | &nbsp; Published by: <strong>YOCEWOR</strong></div>';
+    if(post.content_intro) body+='<p>'+text(post.content_intro)+'</p>';
+    if(post.featured_image_url) body+='<div class="post-hero-image"><img src="'+esc(post.featured_image_url)+'" alt="'+esc(post.title)+'" loading="eager"></div>';
+    if(job){
+      const rows=[['Recruitment Name',job.recruitment_name],['Organization',job.organization],['Post Name',job.post_name],['Total Vacancy',job.total_vacancy],['Application Mode',job.application_mode],['Job Location',job.job_location]].filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=='');
+      if(rows.length) body+='<section class="article-section"><h2>Overview</h2><table class="info-table">'+rows.map(x=>'<tr><th>'+esc(x[0])+'</th><td>'+text(x[1])+'</td></tr>').join('')+'</table></section>';
+    }
+    for(const s of secs) if(s.section_type!=='links') body+='<section class="article-section">'+(s.heading?'<h2>'+esc(s.heading)+'</h2>':'')+sectionHtml(s)+'</section>';
+
+    const all=ls.map(l=>({label:l.label||'Important Link',button:l.button_label||((l.label||'').includes('Coming Soon')?'Coming Soon':'Click Here'),url:l.url,bold:!!l.is_bold,dark:!!l.is_dark})).concat([
+      {label:'More Job Updates',button:'yocewor.in',url:'https://yocewor.in/'},
+      {label:'Join WhatsApp Channel',button:'Join Now',url:'https://whatsapp.com/channel/0029VaNA3EBJf05WBdLb1y2n'},
+      {label:'Join Telegram Channel',button:'Join Now',url:'https://t.me/YOCEWOR'}
+    ]);
+    body+='<section class="article-section"><h2>'+esc(post.title)+' Important Links</h2><div style="overflow-x:auto"><table class="article-links"><tbody>'+
+      all.map(l=>'<tr><td>'+esc(l.label)+'</td><td class="link-open">'+linkHtml(l.button,l.url,l.bold,l.dark)+'</td></tr>').join('')+
+      '</tbody></table></div></section>';
+    body+='<section class="article-section"><h2>YOCEWOR Follow</h2><div class="article-links-list"><p><a href="https://www.instagram.com/yocewor" target="_blank" rel="noopener noreferrer">Instagram</a></p><p><a href="https://t.me/YOCEWOR" target="_blank" rel="noopener noreferrer">Telegram</a></p><p><a href="https://www.youtube.com/@YOCEWOR" target="_blank" rel="noopener noreferrer">YouTube</a></p><p><a href="https://whatsapp.com/channel/0029VaNA3EBJf05WBdLb1y2n" target="_blank" rel="noopener noreferrer">WhatsApp Channel</a></p></div></section>';
+    body+='<p class="muted">Last Updated: '+fmt(post.updated_at)+'</p>';
+
+    const related=posts.filter(x=>x.category_id===post.category_id&&x.id!==post.id).sort((a,b)=>new Date(b.published_at||0)-new Date(a.published_at||0)).slice(0,5);
+    if(related.length) body+='<section class="article-section"><h2>Related Updates</h2><ul class="related-list">'+related.map(x=>'<li><a href="/'+encodeURIComponent(x.slug)+'/">'+esc(x.title)+'</a></li>').join('')+'</ul></section>';
+
+    const articleLd={'@context':'https://schema.org','@type':'Article','headline':post.title,'description':desc,'image':post.featured_image_url?[post.featured_image_url]:undefined,'datePublished':post.published_at,'dateModified':post.updated_at||post.published_at,'author':{'@type':'Organization','name':'YOCEWOR','url':'https://yocewor.in/about.html'},'publisher':{'@type':'Organization','name':'YOCEWOR','url':'https://yocewor.in/'},'mainEntityOfPage':{'@type':'WebPage','@id':canonical}};
+    const breadcrumbLd={'@context':'https://schema.org','@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':1,'name':'Home','item':'https://yocewor.in/'},{'@type':'ListItem','position':2,'name':cat?.name||'Update','item':'https://yocewor.in/category.html?category='+encodeURIComponent(cat?.slug||'')},{'@type':'ListItem','position':3,'name':post.title,'item':canonical}]};
+
+    let html=template;
+    html=html.replace(/<title>[^<]*<\/title>/i,'<title>'+esc(title)+'</title><link rel="canonical" href="'+esc(canonical)+'">');
+    html=html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/i,'$1'+esc(desc)+'$2');
+    html=html.replace(/(<meta\s+property="og:title"\s+content=")[^"]*(")/i,'$1'+esc(title)+'$2');
+    html=html.replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/i,'$1'+esc(desc)+'$2');
+    html=html.replace(/(<meta\s+property="og:url"\s+content=")[^"]*(")/i,'$1'+esc(canonical)+'$2');
+    html=html.replace(/(<meta\s+property="og:image"\s+content=")[^"]*(")/i,'$1'+esc(image)+'$2');
+    html=html.replace(/(<meta\s+name="twitter:title"\s+content=")[^"]*(")/i,'$1'+esc(title)+'$2');
+    html=html.replace(/(<meta\s+name="twitter:description"\s+content=")[^"]*(")/i,'$1'+esc(desc)+'$2');
+    html=html.replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/i,'$1'+esc(image)+'$2');
+    html=html.replace('</head>','<script type="application/ld+json">'+JSON.stringify(articleLd).replace(/</g,'\\u003c')+'</script><script type="application/ld+json">'+JSON.stringify(breadcrumbLd).replace(/</g,'\\u003c')+'</script></head>');
+    html=html.replace(/<main class="site-wrap article" id="article">[\s\S]*?<\/main>/i,'<main class="site-wrap article" id="article">'+body+'</main>');
+    fs.mkdirSync(slug,{recursive:true}); fs.writeFileSync(path.join(slug,'index.html'),html);
+  }
+
+  const staticUrls=['/','/category.html?category=latest-jobs','/category.html?category=admit-card','/category.html?category=answer-key','/category.html?category=result','/category.html?category=exam-date','/category.html?category=latest-news','/category.html?category=sarkari-yojana','/about.html','/contact.html','/editorial-policy.html','/privacy-policy.html','/disclaimer.html','/terms.html'];
+  const xmlEsc=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+  const entries=staticUrls.map(loc=>({loc:'https://yocewor.in'+loc})).concat(posts.filter(p=>/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug||'').trim())).map(p=>({loc:'https://yocewor.in/'+encodeURIComponent(String(p.slug).trim())+'/',lastmod:p.updated_at||p.published_at||null})));
+  fs.writeFileSync('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries.map(e=>'  <url><loc>'+xmlEsc(e.loc)+'</loc>'+(e.lastmod?'<lastmod>'+xmlEsc(String(e.lastmod).slice(0,10))+'</lastmod>':'')+'</url>').join('\n')+'\n</urlset>\n');
+  console.log('Pre-rendered',posts.length,'published posts.');
+})().catch(err=>{console.error(err);process.exit(1);});
