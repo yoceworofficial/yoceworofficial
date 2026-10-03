@@ -116,7 +116,7 @@ const path = require('path');
     const related=posts.filter(x=>x.category_id===post.category_id&&x.id!==post.id).sort((a,b)=>new Date(b.published_at||0)-new Date(a.published_at||0)).slice(0,5);
     if(related.length) body+='<section class="article-section"><h2>संबंधित अपडेट</h2><ul class="related-list">'+related.map(x=>'<li><a href="/'+encodeURIComponent(x.slug)+'/">'+esc(x.title)+'</a></li>').join('')+'</ul></section>';
 
-    const articleLd={'@context':'https://schema.org','@type':'Article','headline':post.title,'description':desc,'image':post.featured_image_url?[post.featured_image_url]:undefined,'datePublished':post.published_at,'dateModified':post.updated_at||post.published_at,'author':{'@type':'Organization','name':'YOCEWOR','url':'https://yocewor.in/about.html'},'publisher':{'@type':'Organization','name':'YOCEWOR','url':'https://yocewor.in/'},'mainEntityOfPage':{'@type':'WebPage','@id':canonical}};
+    const articleLd={'@context':'https://schema.org','@type':'Article','headline':post.title,'description':desc,'image':post.featured_image_url?[post.featured_image_url]:undefined,'datePublished':post.published_at,'dateModified':post.updated_at||post.published_at,'author':{'@type':'Organization','name':'YOCEWOR Editorial Desk','url':'https://yocewor.in/author/yocewor-editorial-desk.html'},'publisher':{'@type':'Organization','name':'YOCEWOR','url':'https://yocewor.in/'},'mainEntityOfPage':{'@type':'WebPage','@id':canonical}};
     const breadcrumbLd={'@context':'https://schema.org','@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':1,'name':'Home','item':'https://yocewor.in/'},{'@type':'ListItem','position':2,'name':cat?.name||'Update','item':'https://yocewor.in/category/'+encodeURIComponent(cat?.slug||'')+'/'},{'@type':'ListItem','position':3,'name':post.title,'item':canonical}]};
 
     let html=template;
@@ -134,7 +134,7 @@ const path = require('path');
     fs.mkdirSync(slug,{recursive:true}); fs.writeFileSync(path.join(slug,'index.html'),html);
   }
 
-  const staticUrls=['/','/category/latest-jobs/','/category/admit-card/','/category/answer-key/','/category/result/','/category/exam-date/','/category/latest-news/','/category/sarkari-yojana/','/about.html','/contact.html','/editorial-policy.html','/privacy-policy.html','/disclaimer.html','/terms.html'];
+  const staticUrls=['/','/category/latest-jobs/','/category/admit-card/','/category/answer-key/','/category/result/','/category/exam-date/','/category/latest-news/','/category/sarkari-yojana/','/about.html','/contact.html','/editorial-policy.html','/privacy-policy.html','/disclaimer.html','/terms.html','/author/yocewor-editorial-desk.html'];
   const xmlEsc=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
   const entries=staticUrls.map(loc=>({loc:'https://yocewor.in'+loc})).concat(posts.filter(p=>/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug||'').trim())).map(p=>({loc:'https://yocewor.in/'+encodeURIComponent(String(p.slug).trim())+'/',lastmod:p.updated_at||p.published_at||null})));
   fs.writeFileSync('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries.map(e=>'  <url><loc>'+xmlEsc(e.loc)+'</loc>'+(e.lastmod?'<lastmod>'+xmlEsc(String(e.lastmod).slice(0,10))+'</lastmod>':'')+'</url>').join('\n')+'\n</urlset>\n');
