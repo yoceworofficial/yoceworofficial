@@ -62,7 +62,7 @@ const path = require('path');
   };
   const categoryNav = [
     ['latest-jobs','Latest Jobs'],['admit-card','Admit Card'],['answer-key','Answer Key'],
-    ['result','Result'],['exam-date','Exam Date'],['latest-news','Latest News'],['sarkari-yojana','Sarkari Yojana'],['candidate-guide','Candidate Guide']
+    ['result','Result'],['exam-date','Exam Date'],['latest-news','Latest News'],['sarkari-yojana','Sarkari Yojana']
   ];
   for (const cat of categories) {
     const catPosts = posts.filter(p => p.category_id === cat.id).sort((a,b) => new Date(b.published_at||0)-new Date(a.published_at||0));
@@ -70,7 +70,7 @@ const path = require('path');
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(catSlug)) continue;
     const catTitle = cat.name || 'Updates';
     const catDesc = categoryDescriptions[catSlug] || ('YOCEWOR '+catTitle+' updates.');
-    const nav = categoryNav.map(([s,n]) => '<a href="/category/'+s+'/">'+n+'</a>').join('');
+    const nav = categoryNav.map(([s,n]) => '<a href="/category/'+s+'/">'+n+'</a>').join('') + '<a href="/candidate-guide.html">Candidate Guide</a>';
     const items = catPosts.map(p => '<article class="cat-item"><h2><a href="/'+encodeURIComponent(p.slug)+'/">'+esc(p.title)+'</a></h2>'+(p.excerpt ? '<p>'+text(p.excerpt)+'</p>' : '')+'<div class="meta">Published: '+fmt(p.published_at)+'</div></article>').join('') || '<p class="muted">अभी इस category में कोई प्रकाशित अपडेट उपलब्ध नहीं है।</p>';
     const catHtml = '<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="index,follow"><meta name="description" content="'+esc(catDesc)+'"><title>'+esc(catTitle)+' — YOCEWOR</title><link rel="canonical" href="https://yocewor.in/category/'+esc(catSlug)+'/"><link rel="stylesheet" href="/styles.css"></head><body><header><div class="wrap head"><a class="brand" href="/"><img class="brand-logo" src="/images/yocewor-logo.svg" alt="YOCEWOR logo"><span class="brand-copy"><span class="brand-name">YOCEWOR</span><span class="tagline">Your Voice. Your World.</span></span></a><nav><a href="/">Home</a>'+nav+'</nav></div></header><main class="site-wrap article"><p><a href="/">Home</a> &gt; '+esc(catTitle)+'</p><h1>'+esc(catTitle)+'</h1><p>'+esc(catDesc)+'</p><div class="category-posts">'+items+'</div></main><footer class="site-footer"><div class="site-wrap footer-inner"><div>© '+new Date().getFullYear()+' YOCEWOR</div><div class="footer-links"><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy-policy.html">Privacy Policy</a><a href="/disclaimer.html">Disclaimer</a><a href="/terms.html">Terms &amp; Conditions</a><a href="/editorial-policy.html">Editorial Policy</a></div></div></footer></body></html>';
     fs.mkdirSync(path.join('category',catSlug),{recursive:true});
