@@ -13,3 +13,5 @@ Clean, content-first foundation for yocewor.in.
 
 ## Important
 No recruitment content is seeded. Real content should be added only after verification against the relevant official notification/source.
+
+<!-- content sync marker -->
