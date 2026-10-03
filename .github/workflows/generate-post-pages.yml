@@ -28,6 +28,7 @@ jobs:
           test -f rrc-nwr-apprentice-recruitment-2026/index.html
           grep -Fq 'application/ld+json' rrc-nwr-apprentice-recruitment-2026/index.html
           grep -Fq 'rrc-nwr-apprentice-recruitment-2026' sitemap.xml
+          grep -Fq 'post-list' index.html
           echo "Static page validation passed."
       - name: Commit generated pages
         run: |
