@@ -66,7 +66,7 @@ const path = require('path');
     if(post.featured_image_url) body+='<div class="post-hero-image"><img src="'+esc(post.featured_image_url)+'" alt="'+esc(post.title)+'" loading="eager"></div>';
     if(job){
       const rows=[['भर्ती का नाम',job.recruitment_name],['संस्था',job.organization],['पद का नाम',job.post_name],['कुल पद',job.total_vacancy],['आवेदन माध्यम',job.application_mode],['कार्य स्थान',job.job_location]].filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=='');
-      if(rows.length) body+='<section class="article-section"><h2>Overview</h2><table class="info-table">'+rows.map(x=>'<tr><th>'+esc(x[0])+'</th><td>'+text(x[1])+'</td></tr>').join('')+'</table></section>';
+      if(rows.length) body+='<section class="article-section"><h2>संक्षिप्त जानकारी</h2><table class="info-table">'+rows.map(x=>'<tr><th>'+esc(x[0])+'</th><td>'+text(x[1])+'</td></tr>').join('')+'</table></section>';
     }
     for(const s of secs) if(s.section_type!=='links') body+='<section class="article-section">'+(s.heading?'<h2>'+esc(s.heading)+'</h2>':'')+sectionHtml(s)+'</section>';
 
@@ -79,10 +79,10 @@ const path = require('path');
       all.map(l=>'<tr><td>'+esc(l.label)+'</td><td class="link-open">'+linkHtml(l.button,l.url,l.bold,l.dark)+'</td></tr>').join('')+
       '</tbody></table></div></section>';
     body+='<section class="article-section"><h2>YOCEWOR से जुड़ें</h2><div class="article-links-list"><p><a href="https://www.instagram.com/yocewor" target="_blank" rel="noopener noreferrer">Instagram</a></p><p><a href="https://t.me/YOCEWOR" target="_blank" rel="noopener noreferrer">Telegram</a></p><p><a href="https://www.youtube.com/@YOCEWOR" target="_blank" rel="noopener noreferrer">YouTube</a></p><p><a href="https://whatsapp.com/channel/0029VaNA3EBJf05WBdLb1y2n" target="_blank" rel="noopener noreferrer">WhatsApp Channel</a></p></div></section>';
-    body+='<p class="muted">Last Updated: '+fmt(post.updated_at)+'</p>';
+    body+='<p class="muted">अंतिम अपडेट: '+fmt(post.updated_at)+'</p>';
 
     const related=posts.filter(x=>x.category_id===post.category_id&&x.id!==post.id).sort((a,b)=>new Date(b.published_at||0)-new Date(a.published_at||0)).slice(0,5);
-    if(related.length) body+='<section class="article-section"><h2>Related Updates</h2><ul class="related-list">'+related.map(x=>'<li><a href="/'+encodeURIComponent(x.slug)+'/">'+esc(x.title)+'</a></li>').join('')+'</ul></section>';
+    if(related.length) body+='<section class="article-section"><h2>संबंधित अपडेट</h2><ul class="related-list">'+related.map(x=>'<li><a href="/'+encodeURIComponent(x.slug)+'/">'+esc(x.title)+'</a></li>').join('')+'</ul></section>';
 
     const articleLd={'@context':'https://schema.org','@type':'Article','headline':post.title,'description':desc,'image':post.featured_image_url?[post.featured_image_url]:undefined,'datePublished':post.published_at,'dateModified':post.updated_at||post.published_at,'author':{'@type':'Organization','name':'YOCEWOR','url':'https://yocewor.in/about.html'},'publisher':{'@type':'Organization','name':'YOCEWOR','url':'https://yocewor.in/'},'mainEntityOfPage':{'@type':'WebPage','@id':canonical}};
     const breadcrumbLd={'@context':'https://schema.org','@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':1,'name':'Home','item':'https://yocewor.in/'},{'@type':'ListItem','position':2,'name':cat?.name||'Update','item':'https://yocewor.in/category.html?category='+encodeURIComponent(cat?.slug||'')},{'@type':'ListItem','position':3,'name':post.title,'item':canonical}]};
