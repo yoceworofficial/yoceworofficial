@@ -38,4 +38,4 @@ jobs:
           git commit -m "chore: sync pre-rendered post pages"
           git push
 
-# Triggered manually by the site-fix commit to regenerate and deploy all published post pages.
+# Regenerate static pages after content, trust-signal, and SEO template changes.
