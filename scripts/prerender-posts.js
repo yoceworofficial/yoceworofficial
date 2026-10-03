@@ -94,7 +94,13 @@ const path = require('path');
       const rows=[['भर्ती का नाम',job.recruitment_name],['संस्था',job.organization],['पद का नाम',job.post_name],['कुल पद',job.total_vacancy],['आवेदन माध्यम',job.application_mode],['कार्य स्थान',job.job_location]].filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=='');
       if(rows.length) body+='<section class="article-section"><h2>संक्षिप्त जानकारी</h2><table class="info-table">'+rows.map(x=>'<tr><th>'+esc(x[0])+'</th><td>'+text(x[1])+'</td></tr>').join('')+'</table></section>';
     }
-    for(const s of secs) if(s.section_type!=='links') body+='<section class="article-section">'+(s.heading?'<h2>'+esc(s.heading)+'</h2>':'')+sectionHtml(s)+'</section>';
+    for(const s of secs) {
+      // Avoid repeating the same recruitment summary twice when the job table already
+      // renders the compact "संक्षिप्त जानकारी" block above.
+      const h=String(s.heading||'').toLowerCase();
+      if(job && s.section_type==='table' && (h.includes('एक नजर में') || h.includes('overview') || h.includes('at a glance'))) continue;
+      if(s.section_type!=='links') body+='<section class="article-section">'+(s.heading?'<h2>'+esc(s.heading)+'</h2>':'')+sectionHtml(s)+'</section>';
+    }
 
     const all=ls.map(l=>({label:l.label||'Important Link',button:l.button_label||((l.label||'').includes('Coming Soon')?'Coming Soon':'Click Here'),url:l.url,bold:!!l.is_bold,dark:!!l.is_dark})).concat([
       {label:'More Job Updates',button:'yocewor.in',url:'https://yocewor.in/'},
