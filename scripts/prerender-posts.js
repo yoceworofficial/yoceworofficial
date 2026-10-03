@@ -125,8 +125,9 @@ const path = require('path');
       if(s.section_type!=='links') body+='<section class="article-section">'+(s.heading?'<h2>'+esc(s.heading)+'</h2>':'')+sectionHtml(s)+'</section>';
     }
 
+    // Important Links table: article-specific links + only the two permanent channel links.
+    // Instagram and YouTube stay only in the separate "YOCEWOR से जुड़ें" section below.
     const all=ls.map(l=>({label:l.label||'Important Link',button:l.button_label||((l.label||'').includes('Coming Soon')?'Coming Soon':'Click Here'),url:l.url,bold:!!l.is_bold,dark:!!l.is_dark})).concat([
-      {label:'More Job Updates',button:'yocewor.in',url:'https://yocewor.in/'},
       {label:'Join WhatsApp Channel',button:'Join Now',url:'https://whatsapp.com/channel/0029VaNA3EBJf05WBdLb1y2n'},
       {label:'Join Telegram Channel',button:'Join Now',url:'https://t.me/YOCEWOR'}
     ]);
