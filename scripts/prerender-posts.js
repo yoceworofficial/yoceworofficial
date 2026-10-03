@@ -77,6 +77,29 @@ const path = require('path');
     fs.writeFileSync(path.join('category',catSlug,'index.html'),catHtml);
   }
 
+  // Also pre-render the homepage category lists so the homepage has useful,
+  // crawlable content even when JavaScript/API requests are unavailable.
+  const homeCategorySlugs = ['latest-jobs','admit-card','result','answer-key','exam-date','latest-news','sarkari-yojana'];
+  let homeHtml = fs.readFileSync('index.html','utf8');
+  for (const catSlug of homeCategorySlugs) {
+    const cat = categories.find(c => String(c.slug || '') === catSlug);
+    const catPosts = cat
+      ? posts.filter(p => p.category_id === cat.id)
+          .sort((a,b) => new Date(b.published_at || 0) - new Date(a.published_at || 0))
+          .slice(0,10)
+      : [];
+    const content = catPosts.length
+      ? '<ul class="post-list">' + catPosts.map(p =>
+          '<li><a href="/' + encodeURIComponent(p.slug) + '/">' + esc(p.title) + '</a>' +
+          (p.published_at ? '<small>' + fmt(p.published_at) + '</small>' : '') +
+          '</li>'
+        ).join('') + '</ul>'
+      : '<p class="muted">अभी इस category में कोई प्रकाशित अपडेट उपलब्ध नहीं है।</p>';
+    const re = new RegExp('<div id="' + catSlug + '">[\\s\\S]*?<\\/div>', 'i');
+    homeHtml = homeHtml.replace(re, '<div id="' + catSlug + '">' + content + '</div>');
+  }
+  fs.writeFileSync('index.html', homeHtml);
+
   const template=fs.readFileSync('post.html','utf8');
   for(const post of posts){
     const slug=String(post.slug||'').trim();
