@@ -58,3 +58,4 @@ footer,.site-footer{border-top:1px solid #bbb;margin-top:20px;padding:18px 0;tex
  .wrap,.site-wrap{width:94%}
  .footer-inner{display:block}
 }
+.trust-box h3{font-size:17px;margin:8px 0 4px}.trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.trust-grid>div{border:1px solid #ddd;padding:10px;background:#fafafa}.trust-grid p{margin:4px 0}.author-card{border:1px solid #ccc;padding:14px;background:#fafafa}.author-meta{color:#666;font-size:14px}@media(max-width:800px){.trust-grid{grid-template-columns:1fr}}
