@@ -41,6 +41,37 @@ jobs:
           ! grep -Fq 'href="#"' itbp-head-constable-motor-mechanic-recruitment-2026/index.html
           ! grep -Fq 'href="#"' rrb-ntpc-under-graduate-recruitment-2026/index.html
           grep -Fq 'Candidate Guide' candidate-guide.html
+          node <<'NODE'
+          const fs = require('fs');
+          const cfg = fs.readFileSync('config.js','utf8');
+          const base = (cfg.match(/supabaseUrl:\s*["']([^"']+)/)||[])[1];
+          const key = (cfg.match(/supabasePublishableKey:\s*["']([^"']+)/)||[])[1];
+          if (!base || !key) throw new Error('Supabase public config missing');
+          const headers = {apikey:key, Authorization:'Bearer '+key};
+          const res = await fetch(base + '/rest/v1/posts?select=slug&status=eq.published&limit=1000',{headers});
+          if (!res.ok) throw new Error('Published posts API failed: '+res.status);
+          const posts = await res.json();
+          const slugs = posts.map(p=>String(p.slug)).filter(Boolean);
+          const sitemap = fs.readFileSync('sitemap.xml','utf8');
+          const missing = slugs.filter(s => !sitemap.includes('https://yocewor.in/'+s+'/'));
+          const dirs = slugs.filter(s => !fs.existsSync(s+'/'+ 'index.html'));
+          if (missing.length) throw new Error('Published posts missing from sitemap: '+missing.join(', '));
+          if (dirs.length) throw new Error('Published posts missing generated HTML: '+dirs.join(', '));
+          const allowedStatic = new Set(['about.html','contact.html','privacy-policy.html','disclaimer.html','terms.html','editorial-policy.html','candidate-guide.html','education.html','news.html','search.html','author/yocewor-editorial-desk.html']);
+          const localHref = /href=["']\/(?!category\/)([^"'#?]+?)\/["']/g;
+          for (const slug of slugs) {
+            const html=fs.readFileSync(slug+'/index.html','utf8');
+            let m;
+            while ((m=localHref.exec(html))) {
+              const target=m[1];
+              if (target===slug || target.startsWith('images/') || target.startsWith('styles') || target.startsWith('scripts/')) continue;
+              if (!slugs.includes(target) && !allowedStatic.has(target)) {
+                throw new Error('Broken internal article/static link in '+slug+': /'+target+'/');
+              }
+            }
+          }
+          console.log('Published-page integrity passed:', slugs.length, 'articles.');
+          NODE
           echo "Static page validation passed."
       - name: Commit generated pages
         run: |
