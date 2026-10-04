@@ -41,8 +41,8 @@ jobs:
           ! grep -Fq 'href="#"' itbp-head-constable-motor-mechanic-recruitment-2026/index.html
           ! grep -Fq 'href="#"' rrb-ntpc-under-graduate-recruitment-2026/index.html
           grep -Fq 'Candidate Guide' candidate-guide.html
-          node <<'NODE'
-          const fs = require('fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
           const cfg = fs.readFileSync('config.js','utf8');
           const base = (cfg.match(/supabaseUrl:\s*["']([^"']+)/)||[])[1];
           const key = (cfg.match(/supabasePublishableKey:\s*["']([^"']+)/)||[])[1];
