@@ -33,9 +33,11 @@ jobs:
           test -f candidate-guide.html
           test -f rrc-nwr-apprentice-recruitment-2026/index.html
           grep -Fq 'application/ld+json' rrc-nwr-apprentice-recruitment-2026/index.html
-          ! grep -Fq 'root.innerHTML=html' rrc-nwr-apprentice-recruitment-2026/index.html
-          ! grep -Fq 'function renderSection' rrc-nwr-apprentice-recruitment-2026/index.html
-          ! grep -Fq '/config.js' rrc-nwr-apprentice-recruitment-2026/index.html
+          grep -Fq 'root.innerHTML=html' rrc-nwr-apprentice-recruitment-2026/index.html
+          grep -Fq 'function renderSection' rrc-nwr-apprentice-recruitment-2026/index.html
+          grep -Fq 'Live refresh failed; keeping prerendered article content.' rrc-nwr-apprentice-recruitment-2026/index.html
+          grep -Fq '/config.js' rrc-nwr-apprentice-recruitment-2026/index.html
+          ! grep -Fq 'Update unavailable' rrc-nwr-apprentice-recruitment-2026/index.html
           ! grep -Fq '/app.js' rrc-nwr-apprentice-recruitment-2026/index.html
           grep -Fq 'rrc-nwr-apprentice-recruitment-2026' sitemap.xml
           grep -Fq 'post-list' index.html
