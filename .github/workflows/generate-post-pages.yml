@@ -68,9 +68,7 @@ jobs:
             while ((m=localHref.exec(html))) {
               const target=m[1];
               if (target===slug || target.startsWith('images/') || target.startsWith('styles') || target.startsWith('scripts/')) continue;
-              if (!slugs.includes(target) && !allowedStatic.has(target)) {
-                throw new Error('Broken internal article/static link in '+slug+': /'+target+'/');
-              }
+              if (!slugs.includes(target) && !allowedStatic.has(target)) throw new Error('Broken internal article/static link in '+slug+': /'+target+'/');
             }
           }
           console.log('Published-page integrity passed:', slugs.length, 'articles.');
@@ -86,5 +84,4 @@ jobs:
           git push
 
 # Regenerate static pages after content, trust-signal, SEO template, metadata, time-sensitive update, and link changes.
-
-# Force content sync check: 2026-10-04T16:40:30.000Z
+# Force content sync check: 2026-10-04T16:46:30.000Z
