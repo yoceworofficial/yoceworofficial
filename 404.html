@@ -1,1 +1,62 @@
-<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,follow"><title>Page Not Found — YOCEWOR</title></head><body><header><div class="wrap head"><a class="brand" href="/"><img class="brand-logo" src="/images/yocewor-logo.svg" alt="YOCEWOR logo"><span class="brand-copy"><span class="brand-name">YOCEWOR</span><span class="tagline">Your Voice. Your World.</span></span></a><nav><a href="/">Home</a><a href="/category/latest-jobs/">Latest Jobs</a><a href="/category/admit-card/">Admit Card</a><a href="/category/answer-key/">Answer Key</a><a href="/category/result/">Result</a><a href="/category/exam-date/">Exam Date</a><a href="/category/latest-news/">Latest News</a><a href="/category/sarkari-yojana/">Sarkari Yojana</a><a href="/education.html">Education</a><a href="/news.html">News</a></nav></div></header><main class="site-wrap article"><h1>Page Not Found</h1><p>यह पेज उपलब्ध नहीं है या हटाया जा चुका है।</p><p><a href="/">YOCEWOR Home</a></p></main></body></html>
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow">
+<title>Page Not Found — YOCEWOR</title>
+<link rel="stylesheet" href="/styles.css">
+<style>
+.fallback-status{padding:14px 0;color:#666}
+.fallback-status[hidden]{display:none}
+</style>
+</head>
+<body>
+<header><div class="wrap head">
+<a class="brand" href="/"><img class="brand-logo" src="/images/yocewor-logo.svg" alt="YOCEWOR logo"><span class="brand-copy"><span class="brand-name">YOCEWOR</span><span class="tagline">Your Voice. Your World.</span></span></a>
+<nav><a href="/">Home</a><a href="/category/latest-jobs/">Latest Jobs</a><a href="/category/admit-card/">Admit Card</a><a href="/category/answer-key/">Answer Key</a><a href="/category/result/">Result</a><a href="/category/exam-date/">Exam Date</a><a href="/category/latest-news/">Latest News</a><a href="/category/sarkari-yojana/">Sarkari Yojana</a><a href="/education.html">Education</a><a href="/news.html">News</a></nav>
+</div></header>
+<main class="site-wrap article" id="fallback-article">
+<h1>Page Not Found</h1>
+<p>यह पेज उपलब्ध नहीं है या हटा दिया गया है।</p>
+<p><a href="/">YOCEWOR Home</a></p>
+<p id="fallback-status" class="fallback-status" hidden>अपडेट लोड किया जा रहा है…</p>
+</main>
+<script>
+(async()=>{
+  const root=document.getElementById("fallback-article"),status=document.getElementById("fallback-status");
+  const reserved=new Set(["","404.html","about.html","contact.html","privacy-policy.html","disclaimer.html","terms.html","editorial-policy.html","candidate-guide.html","education.html","news.html","search.html","post.html"]);
+  const parts=location.pathname.replace(/^\/+|\/+$/g,"").split("/");
+  const slug=parts.length===1?parts[0]:"";
+  if(!slug||reserved.has(slug)||slug==="category"||slug==="author") return;
+  status.hidden=false;
+  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+  const text=v=>esc(v).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
+  const safe=v=>{try{const u=new URL(String(v));return /^https?:$/.test(u.protocol)?esc(u.href):""}catch{return""}};
+  const fmt=v=>v?new Date(v).toLocaleDateString("en-IN")+" | "+new Date(v).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true}):"-";
+  const render=s=>{
+    const c=s.content||{},items=Array.isArray(c)?c:(Array.isArray(c.items)?c.items:[]);
+    if(s.section_type==="table"){const h=Array.isArray(c.headers)?c.headers:[],rows=Array.isArray(c.rows)?c.rows:[];return '<table class="info-table"><thead><tr>'+h.map(x=>"<th>"+esc(x)+"</th>").join("")+"</tr></thead><tbody>"+rows.map(r=>"<tr>"+r.map((x,i)=>'<td data-label="'+esc(h[i]||"")+'">'+text(x)+"</td>").join("")+"</tr>").join("")+"</tbody></table>"}
+    if(s.section_type==="list")return "<ul>"+items.map(x=>"<li>"+text(x)+"</li>").join("")+"</ul>";
+    if(s.section_type==="steps")return "<ol>"+items.map(x=>"<li>"+text(x)+"</li>").join("")+"</ol>";
+    return "<p>"+text(typeof c==="string"?c:(c.text||""))+"</p>";
+  };
+  try{
+    const r=await fetch("https://mzntgjyecymcpzciklfk.supabase.co/functions/v1/public-post?slug="+encodeURIComponent(slug),{cache:"no-store"});
+    if(!r.ok) throw new Error("not found");
+    const p=await r.json();
+    if(!p?.post) throw new Error("not found");
+    const post=p.post,sections=p.sections||[],links=p.links||[],j=Array.isArray(post.jobs)?post.jobs[0]:post.jobs;
+    let html='<p class="muted"><a href="/">Home</a> &gt; Update</p><h1>'+esc(post.title)+'</h1><div class="meta">प्रकाशित: '+fmt(post.published_at)+' &nbsp; | &nbsp; प्रकाशितकर्ता: <strong>YOCEWOR</strong></div>';
+    if(post.content_intro)html+="<p>"+text(post.content_intro)+"</p>";
+    if(post.featured_image_url)html+='<div class="post-hero-image"><img src="'+esc(post.featured_image_url)+'" alt="'+esc(post.title)+'" loading="eager"></div>';
+    if(j){const rows=[["भर्ती का नाम",j.recruitment_name],["संस्था",j.organization],["पद का नाम",j.post_name],["कुल पद",j.total_vacancy],["आवेदन माध्यम",j.application_mode],["कार्य स्थान",j.job_location]].filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=="");html+='<section class="article-section"><h2>संक्षिप्त जानकारी</h2><table class="info-table">'+rows.map(x=>"<tr><th>"+esc(x[0])+"</th><td>"+text(x[1])+"</td></tr>").join("")+"</table></section>"}
+    for(const s of sections)if(s.section_type!=="links")html+='<section class="article-section">'+(s.heading?"<h2>"+esc(s.heading)+"</h2>":"")+render(s)+"</section>";
+    if(links.length){html+='<section class="article-section"><h2>महत्वपूर्ण लिंक</h2><div style="overflow-x:auto"><table class="article-links"><tbody>';for(const l of links){const u=safe(l.url);html+="<tr><td>"+esc(l.label||"Important Link")+"</td><td class="link-open">"+(u?'<a class="link-label" href="'+u+'" target="_blank" rel="noopener noreferrer">'+esc(l.button_label||"Open Link")+"</a>":esc(l.button_label||"Coming Soon"))+"</td></tr>"}html+="</tbody></table></div></section>"}
+    html+='<p class="muted">अंतिम अपडेट: '+fmt(post.updated_at)+'</p><p><a href="/">YOCEWOR Home</a></p>';
+    root.innerHTML=html;
+    document.title=(post.seo_title||post.title)+" — YOCEWOR";
+  }catch(e){status.hidden=true}
+})();
+</script>
+</body></html>
