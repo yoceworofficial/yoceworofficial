@@ -17,8 +17,4 @@ No recruitment content is seeded. Real content should be added only after verifi
 <!-- content sync marker -->
 <!-- publish sync: centralized Join Now links -->
 <!-- publish sync: 2026-10-03-panchayat-mcc-official-links -->
-
-<!-- content-sync: 2026-10-03T15:05Z -->
-
-
-<!-- content sync trigger: 2026-10-03 -->
+<!-- publish sync: 2026-10-04-panchayat-mcc-content-review -->
