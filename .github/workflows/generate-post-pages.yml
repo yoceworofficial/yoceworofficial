@@ -83,4 +83,4 @@ jobs:
           git commit -m "chore: sync pre-rendered post pages"
           git push
 
-# Regenerate static pages after content, trust-signal, SEO template, metadata, and time-sensitive update changes.
+# Regenerate static pages after content, trust-signal, SEO template, metadata, time-sensitive update, and link changes.
