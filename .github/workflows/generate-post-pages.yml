@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: generate-post-pages
@@ -93,3 +94,5 @@ jobs:
           if git diff --cached --quiet; then echo "No generated page changes."; exit 0; fi
           git commit -m "chore: sync pre-rendered post pages"
           git push
+          echo "Generated pages committed. Triggering the single final Pages deployment..."
+          gh workflow run pages.yml --ref main
