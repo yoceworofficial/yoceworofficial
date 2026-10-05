@@ -81,4 +81,4 @@ jobs:
           if git diff --cached --quiet; then echo "No generated page changes."; exit 0; fi
           git commit -m "chore: sync pre-rendered post pages"
           git push
-# Force content sync check: 2026-10-05T11:04:35.000Z
+# Force content sync check: 2026-10-05T11:18:00.000Z
