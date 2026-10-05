@@ -95,4 +95,4 @@ jobs:
           git commit -m "chore: sync pre-rendered post pages"
           git push
           echo "Generated pages committed. Triggering the single final Pages deployment..."
-          gh workflow run pages.yml --ref main
+          GH_TOKEN="${{ github.token }}" gh workflow run pages.yml --ref main
