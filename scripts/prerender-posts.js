@@ -8,12 +8,27 @@ const path = require('path');
   if (!url || !key) throw new Error('Supabase public config not found');
 
   const headers = { apikey: key, Authorization: 'Bearer ' + key };
-  const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  const get = async endpoint => {
-    const r = await fetch(url + '/rest/v1/' + endpoint, {headers});
-    if (!r.ok) throw new Error(endpoint + ': ' + r.status + ' ' + await r.text());
-    return r.json();
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const fetchJsonWithRetry = async (endpoint, attempts = 5) => {
+    let lastErr;
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 30000);
+      try {
+        const r = await fetch(url + '/rest/v1/' + endpoint, {headers, signal: controller.signal});
+        if (!r.ok) throw new Error(endpoint + ': ' + r.status + ' ' + await r.text());
+        return await r.json();
+      } catch (err) {
+        lastErr = err;
+        if (attempt < attempts) await sleep(1000 * attempt);
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    throw lastErr;
   };
+  const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  const get = endpoint => fetchJsonWithRetry(endpoint);
 
   const [posts,categories,jobs,sections,links] = await Promise.all([
     get('posts?select=id,category_id,title,slug,excerpt,content_intro,status,published_at,updated_at,seo_title,seo_description,canonical_url,featured_image_url&status=eq.published&order=updated_at.desc&limit=1000'),
@@ -22,6 +37,16 @@ const path = require('path');
     get('post_sections?select=*&order=sort_order.asc&limit=5000'),
     get('post_links?select=*&order=sort_order.asc&limit=5000')
   ]);
+
+  const publishedSlugs = new Set(posts.map(p => String(p.slug || '').trim()).filter(s => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s)));
+  // Remove stale pre-rendered article folders that are no longer published.
+  // Only root-level slug/index.html folders are eligible; site assets/static areas are untouched.
+  for (const name of fs.readdirSync('.')) {
+    if (name === 'category' || name === 'images' || name === 'scripts' || name === 'author') continue;
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name) || publishedSlugs.has(name)) continue;
+    const file = path.join(name, 'index.html');
+    if (fs.existsSync(file)) fs.rmSync(name, {recursive:true, force:true});
+  }
 
   const catById = new Map(categories.map(x => [x.id,x]));
   const jobByPost = new Map(jobs.map(x => [x.post_id,x]));
