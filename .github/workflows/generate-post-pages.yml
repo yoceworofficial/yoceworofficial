@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Poll Supabase for Admin Panel changes every 5 minutes.
-    - cron: "*/5 * * * *"
+    - cron: "2-59/5 * * * *"
   push:
     paths-ignore:
       - "*/index.html"
@@ -20,11 +20,23 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Generate fully pre-rendered published post pages
-        run: node scripts/prerender-posts.js
+        run: |
+          for attempt in 1 2 3; do
+            echo "Generation attempt $attempt/3"
+            if node scripts/prerender-posts.js; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              sleep $((attempt * 5))
+            fi
+          done
+          echo "Static generation failed after 3 attempts."
+          exit 1
       - name: Validate generated pages
         run: |
           test -f post.html
@@ -81,4 +93,3 @@ jobs:
           if git diff --cached --quiet; then echo "No generated page changes."; exit 0; fi
           git commit -m "chore: sync pre-rendered post pages"
           git push
-# Force content sync check: 2026-10-05T12:05:00.000Z
