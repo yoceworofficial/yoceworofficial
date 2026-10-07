@@ -50,7 +50,6 @@ function pageShell({title, description, canonical, image, body, ld}) {
 <title>${esc(title)}</title>
 <link rel="canonical" href="${esc(canonical)}">
 <link rel="stylesheet" href="/styles.css">
-<link rel="stylesheet" href="/post.html">
 <meta property="og:type" content="article"><meta property="og:site_name" content="YOCEWOR">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(canonical)}"><meta property="og:image" content="${esc(image)}">
@@ -76,7 +75,6 @@ export async function onRequestGet(context) {
   try {
     const r = await fetch(API+"?slug="+encodeURIComponent(slug), {
       headers: {accept:"application/json"},
-      cf: {cacheTtl:30, cacheEverything:false}
     });
     if (!r.ok) return context.next();
     const data = await r.json();
@@ -140,7 +138,7 @@ export async function onRequestGet(context) {
        "mainEntityOfPage":{"@type":"WebPage","@id":canonical}},
       {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
         {"@type":"ListItem","position":1,"name":"Home","item":"https://yocewor.in/"},
-        {"@type":"ListItem","position":2,"name":cat.name||"Update","item":"https://yocewor.in/category/"+encodeURIComponent(cat.slug||"")+" /".replace(" ","")},
+        {"@type":"ListItem","position":2,"name":cat.name||"Update","item":"https://yocewor.in/category/"+encodeURIComponent(cat.slug||"")+"/"},
         {"@type":"ListItem","position":3,"name":p.title,"item":canonical}
       ]}
     ];
