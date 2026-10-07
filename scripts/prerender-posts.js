@@ -83,11 +83,12 @@ const path = require('path');
     'result':'Sarkari Result और exam result की official information, result links और next steps.',
     'exam-date':'Government exams की official exam dates, schedule और important date changes.',
     'latest-news':'Government और education से जुड़ी महत्वपूर्ण latest updates.',
-    'sarkari-yojana':'Government Schemes, scholarship और public welfare updates की जानकारी.'
+    'sarkari-yojana':'Government Schemes, scholarship और public welfare updates की जानकारी.',
+    'expired-jobs':'समाप्त हो चुकी सरकारी भर्तियों की जानकारी, अंतिम तिथि और आवेदन स्थिति का archive.'
   };
   const categoryNav = [
     ['latest-jobs','Latest Jobs'],['admit-card','Admit Card'],['answer-key','Answer Key'],
-    ['result','Result'],['exam-date','Exam Date'],['latest-news','Latest News'],['sarkari-yojana','Sarkari Yojana']
+    ['result','Result'],['exam-date','Exam Date'],['latest-news','Latest News'],['sarkari-yojana','Sarkari Yojana'],['expired-jobs','Expired Jobs']
   ];
   for (const cat of categories) {
     const catPosts = posts.filter(p => p.category_id === cat.id).sort((a,b) => new Date(b.published_at||0)-new Date(a.published_at||0));
@@ -195,7 +196,7 @@ const path = require('path');
     fs.mkdirSync(slug,{recursive:true}); fs.writeFileSync(path.join(slug,'index.html'),html);
   }
 
-  const staticUrls=['/','/category/latest-jobs/','/category/admit-card/','/category/answer-key/','/category/result/','/category/exam-date/','/category/latest-news/','/category/sarkari-yojana/','/candidate-guide.html','/about.html','/contact.html','/editorial-policy.html','/privacy-policy.html','/disclaimer.html','/terms.html','/author/yocewor-editorial-desk.html','/education.html','/news.html'];
+  const staticUrls=['/','/category/latest-jobs/','/category/admit-card/','/category/answer-key/','/category/result/','/category/exam-date/','/category/latest-news/','/category/sarkari-yojana/','/category/expired-jobs/','/candidate-guide.html','/about.html','/contact.html','/editorial-policy.html','/privacy-policy.html','/disclaimer.html','/terms.html','/author/yocewor-editorial-desk.html','/education.html','/news.html'];
   const xmlEsc=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
   const entries=staticUrls.map(loc=>({loc:'https://yocewor.in'+loc})).concat(posts.filter(p=>/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(p.slug||'').trim())).map(p=>({loc:'https://yocewor.in/'+encodeURIComponent(String(p.slug).trim())+'/',lastmod:p.updated_at||p.published_at||null})));
   fs.writeFileSync('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries.map(e=>'  <url><loc>'+xmlEsc(e.loc)+'</loc>'+(e.lastmod?'<lastmod>'+xmlEsc(String(e.lastmod).slice(0,10))+'</lastmod>':'')+'</url>').join('\n')+'\n</urlset>\n');
