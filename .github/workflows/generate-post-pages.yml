@@ -12,7 +12,8 @@ on:
 
 permissions:
   contents: write
-  actions: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: generate-post-pages
@@ -87,12 +88,32 @@ jobs:
           NODE
           echo "Static page validation passed."
       - name: Commit generated pages
+        id: commit
         run: |
           git config user.name "YOCEWOR Bot"
           git config user.email "yoceworofficial@users.noreply.github.com"
           git add -- index.html sitemap.xml '*/index.html' 'category/*/index.html'
-          if git diff --cached --quiet; then echo "No generated page changes."; exit 0; fi
+          if git diff --cached --quiet; then
+            echo "No generated page changes."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git commit -m "chore: sync pre-rendered post pages"
           git push
-          echo "Generated pages committed. Triggering the single final Pages deployment..."
-          GH_TOKEN="${{ github.token }}" gh workflow run pages.yml --ref main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "Generated pages committed."
+
+      - name: Setup GitHub Pages
+        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push'
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push'
+        id: deployment
+        uses: actions/deploy-pages@v4
