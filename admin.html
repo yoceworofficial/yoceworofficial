@@ -166,9 +166,17 @@ if(job){const {error:e}=await client.from('jobs').insert(job);if(e)throw new Err
 const {data:verify,error:ve}=await client.from('posts').select('id,title,slug,status,updated_at').eq('id',id).single();if(ve)throw new Error('Save verification failed: '+ve.message);
 if(verify.title!==post.title||verify.slug!==post.slug)throw new Error('Save verification failed: saved data does not match the form.');
 if(post.status==='published'){
+  msg('Database में save हो गया. GitHub Pages पर तुरंत publish trigger किया जा रहा है...');
+  let triggerOk=false,triggerMessage='';
+  try{
+    const {data:tr,error:te}=await client.functions.invoke('publish-trigger',{body:{slug:post.slug}});
+    if(!te&&tr?.ok){triggerOk=true;triggerMessage=tr.message||'Instant publish triggered.'}
+    else triggerMessage=(tr?.error||te?.message||'Instant trigger unavailable');
+  }catch(e){triggerMessage=e.message||String(e)}
   const publicUrl=new URL('/'+encodeURIComponent(post.slug)+'/',window.location.origin).href;
-  let publicVerified=false,lastPublicError='';
-  for(let attempt=0;attempt<6;attempt++){
+  let publicVerified=false,lastPublicError=triggerMessage;
+  const maxAttempts=triggerOk?30:6;
+  for(let attempt=0;attempt<maxAttempts;attempt++){
     try{
       const res=await fetch(publicUrl,{cache:'no-store'});
       const html=await res.text();
@@ -177,9 +185,12 @@ if(post.status==='published'){
       if(res.ok&&titleOk&&slugOk){publicVerified=true;break}
       lastPublicError='HTTP '+res.status;
     }catch(e){lastPublicError=e.message||String(e)}
-    await new Promise(r=>setTimeout(r,3000));
+    await new Promise(r=>setTimeout(r,2000));
   }
-  if(!publicVerified)throw new Error('Database save हुआ, लेकिन public page अभी verify नहीं हुई ('+lastPublicError+'). Post दोबारा save मत करें; कुछ सेकंड बाद public page check करें.');
+  if(!publicVerified){
+    if(triggerOk) throw new Error('Database save हो गया और GitHub publish trigger हो चुका है, लेकिन public page deployment अभी पूरा नहीं हुआ. कुछ सेकंड बाद refresh करें; post दोबारा save न करें.');
+    throw new Error('Database save हो गया. Instant publish trigger अभी configure नहीं है ('+lastPublicError+'); 5-minute fallback active है. Post दोबारा save न करें.');
+  }
 }
 msg(post.status==='published'?'Saved successfully. Database and public page verified.':'Saved successfully. Draft is saved in the database; public page verification will occur when it is published.');
 await loadPosts();await editPost(id)}catch(e){msg(e.message||String(e),true)}}
