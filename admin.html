@@ -165,7 +165,24 @@ const {error:jd}=await client.from('jobs').delete().eq('post_id',id);if(jd)throw
 if(job){const {error:e}=await client.from('jobs').insert(job);if(e)throw new Error('Job details save failed: '+e.message)}
 const {data:verify,error:ve}=await client.from('posts').select('id,title,slug,status,updated_at').eq('id',id).single();if(ve)throw new Error('Save verification failed: '+ve.message);
 if(verify.title!==post.title||verify.slug!==post.slug)throw new Error('Save verification failed: saved data does not match the form.');
-msg('Saved successfully. Public page sync is automatic; the latest data is now in the database.');await loadPosts();await editPost(id)}catch(e){msg(e.message||String(e),true)}}
+if(post.status==='published'){
+  const publicUrl=new URL('/'+encodeURIComponent(post.slug)+'/',window.location.origin).href;
+  let publicVerified=false,lastPublicError='';
+  for(let attempt=0;attempt<6;attempt++){
+    try{
+      const res=await fetch(publicUrl,{cache:'no-store'});
+      const html=await res.text();
+      const titleOk=html.includes('<title>'+esc(post.title))||html.includes('>'+esc(post.title)+'<')||html.includes(post.title);
+      const slugOk=html.includes(post.slug);
+      if(res.ok&&titleOk&&slugOk){publicVerified=true;break}
+      lastPublicError='HTTP '+res.status;
+    }catch(e){lastPublicError=e.message||String(e)}
+    await new Promise(r=>setTimeout(r,3000));
+  }
+  if(!publicVerified)throw new Error('Database save हुआ, लेकिन public page अभी verify नहीं हुई ('+lastPublicError+'). Post दोबारा save मत करें; कुछ सेकंड बाद public page check करें.');
+}
+msg(post.status==='published'?'Saved successfully. Database and public page verified.':'Saved successfully. Draft is saved in the database; public page verification will occur when it is published.');
+await loadPosts();await editPost(id)}catch(e){msg(e.message||String(e),true)}}
 async function deletePost(){const id=$('postId').value;if(!id||!confirm('Delete this post and its sections/links/job data?'))return;msg('Deleting...');const {error}=await client.from('posts').delete().eq('id',id);if(error){msg(error.message,true);return}resetForm();await loadPosts();msg('Post deleted.')}
 async function boot(){const {data:{session}}=await client.auth.getSession();if(session){const {data:u}=await client.auth.getUser();const {data:a}=await client.from('admin_users').select('user_id').eq('user_id',u.user.id).maybeSingle();if(a){$('loginView').hidden=true;$('appView').hidden=false;$('who').textContent=u.user.email||'';const {data:c}=await client.from('categories').select('*').eq('is_active',true).order('sort_order');categories=c||[];renderCategories();resetForm();await loadPosts();return}}}
 $('loginBtn').onclick=async()=>{loginMsg('Logging in...');const {data,error}=await client.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){loginMsg(error.message,true);return}const {data:a,error:ae}=await client.from('admin_users').select('user_id').eq('user_id',data.user.id).maybeSingle();if(ae){loginMsg('Admin permission check failed: '+ae.message,true);return}if(!a){loginMsg('This account is authenticated but is not registered as a YOCEWOR admin.',true);return}loginMsg('Login successful. Loading Admin Panel...');await boot()}
