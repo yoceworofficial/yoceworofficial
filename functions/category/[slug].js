@@ -19,3 +19,5 @@ export async function onRequestGet(context) {
     return new Response(html,{headers:{"content-type":"text/html; charset=UTF-8","cache-control":"public, max-age=30, s-maxage=30, stale-while-revalidate=60"}});
   } catch(e){ console.error("YOCEWOR live category render failed",e); return context.next(); }
 }
+
+// syntax-fixed deployment trigger
