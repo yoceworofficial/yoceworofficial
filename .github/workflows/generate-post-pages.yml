@@ -2,8 +2,10 @@ name: Generate clean post pages
 
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [supabase-content-published]
   schedule:
-    # Poll Supabase for Admin Panel changes every 5 minutes.
+    # Safety fallback: poll Supabase every 5 minutes if an instant trigger is unavailable.
     - cron: "2-59/5 * * * *"
   push:
     paths-ignore:
