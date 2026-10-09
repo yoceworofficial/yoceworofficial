@@ -55,7 +55,7 @@ const path = require('path');
   for (const x of links) (linkByPost.get(x.post_id) || (linkByPost.set(x.post_id,[]),linkByPost.get(x.post_id))).push(x);
 
   const text = v => esc(v).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-  const fmt = v => v ? new Date(v).toLocaleDateString('en-IN')+' | '+new Date(v).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}) : '-';
+  const fmt = v => v ? new Date(v).toLocaleDateString('en-IN',{timeZone:'Asia/Kolkata'})+' | '+new Date(v).toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',hour12:true})+' IST' : '-';
   const safeUrl = v => { try { const u=new URL(String(v)); return /^https?:$/.test(u.protocol)?esc(u.href):''; } catch { return ''; } };
   const linkHtml = (label,url,bold=false,dark=false) => {
     const cls=(bold?' link-bold':'')+(dark?' link-dark':'');
