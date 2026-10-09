@@ -33,7 +33,7 @@
   const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
   const text=v=>esc(v).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
   const safe=v=>{try{const u=new URL(String(v));return /^https?:$/.test(u.protocol)?esc(u.href):""}catch{return""}};
-  const fmt=v=>v?new Date(v).toLocaleDateString("en-IN")+" | "+new Date(v).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true}):"-";
+  const fmt=v=>v?new Date(v).toLocaleDateString("en-IN",{timeZone:"Asia/Kolkata"})+" | "+new Date(v).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:true})+" IST":"-";
   const render=s=>{
     const c=s.content||{},items=Array.isArray(c)?c:(Array.isArray(c.items)?c.items:[]);
     if(s.section_type==="table"){const h=Array.isArray(c.headers)?c.headers:[],rows=Array.isArray(c.rows)?c.rows:[];return '<table class="info-table"><thead><tr>'+h.map(x=>"<th>"+esc(x)+"</th>").join("")+"</tr></thead><tbody>"+rows.map(r=>"<tr>"+r.map((x,i)=>'<td data-label="'+esc(h[i]||"")+'">'+text(x)+"</td>").join("")+"</tr>").join("")+"</tbody></table>"}
@@ -53,9 +53,17 @@
     if(j){const rows=[["भर्ती का नाम",j.recruitment_name],["संस्था",j.organization],["पद का नाम",j.post_name],["कुल पद",j.total_vacancy],["आवेदन माध्यम",j.application_mode],["कार्य स्थान",j.job_location]].filter(x=>x[1]!==null&&x[1]!==undefined&&x[1]!=="");html+='<section class="article-section"><h2>संक्षिप्त जानकारी</h2><table class="info-table">'+rows.map(x=>"<tr><th>"+esc(x[0])+"</th><td>"+text(x[1])+"</td></tr>").join("")+"</table></section>"}
     for(const s of sections)if(s.section_type!=="links")html+='<section class="article-section">'+(s.heading?"<h2>"+esc(s.heading)+"</h2>":"")+render(s)+"</section>";
     if(links.length){html+='<section class="article-section"><h2>महत्वपूर्ण लिंक</h2><div style="overflow-x:auto"><table class="article-links"><tbody>';for(const l of links){const u=safe(l.url);html+="<tr><td>"+esc(l.label||"Important Link")+"</td><td class="link-open">"+(u?'<a class="link-label" href="'+u+'" target="_blank" rel="noopener noreferrer">'+esc(l.button_label||"Open Link")+"</a>":esc(l.button_label||"Coming Soon"))+"</td></tr>"}html+="</tbody></table></div></section>"}
+    if(post.official_source_url){const source=safe(post.official_source_url);if(source)html+='<p><a href="'+source+'" target="_blank" rel="noopener noreferrer">आधिकारिक स्रोत देखें</a></p>'}
     html+='<p class="muted">अंतिम अपडेट: '+fmt(post.updated_at)+'</p><p><a href="/">YOCEWOR Home</a></p>';
     root.innerHTML=html;
-    document.title=(post.seo_title||post.title)+" — YOCEWOR";
+    const pageTitle=(post.seo_title||post.title)+" — YOCEWOR";
+    document.title=pageTitle;
+    const setMeta=(key,value,property=false)=>{let el=document.querySelector(`meta[${property?"property":"name"}="${key}"]`);if(!el){el=document.createElement("meta");el.setAttribute(property?"property":"name",key);document.head.appendChild(el)}el.setAttribute("content",String(value||""))};
+    setMeta("description",post.seo_description||post.excerpt||post.title);
+    setMeta("og:title",post.seo_title||post.title,true);
+    setMeta("og:description",post.seo_description||post.excerpt||post.title,true);
+    setMeta("og:url",post.canonical_url||location.origin+"/"+slug+"/",true);
+    let canonical=document.querySelector('link[rel="canonical"]');if(!canonical){canonical=document.createElement("link");canonical.rel="canonical";document.head.appendChild(canonical)}canonical.href=post.canonical_url||location.origin+"/"+slug+"/";
   }catch(e){status.hidden=true}
 })();
 </script>
