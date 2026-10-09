@@ -11,7 +11,7 @@ function show(id, rows, error = false) {
   if (!rows?.length) { el.innerHTML = "<p>No updates available.</p>"; return; }
   el.innerHTML = '<ul class="post-list">' + rows.map(x =>
     '<li><a href="/' + encodeURIComponent(x.slug) + '/">' + esc(x.title) + '</a>' +
-    (x.published_at ? '<small>' + new Date(x.published_at).toLocaleDateString("en-IN") + '</small>' : '') +
+    (x.published_at ? '<small>' + new Date(x.published_at).toLocaleDateString("en-IN", {timeZone:"Asia/Kolkata"}) + '</small>' : '') +
     '</li>'
   ).join("") + "</ul>";
 }
