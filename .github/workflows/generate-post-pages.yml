@@ -108,16 +108,16 @@ jobs:
           echo "Generated pages committed."
 
       - name: Setup GitHub Pages
-        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push'
+        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch'
         uses: actions/configure-pages@v5
 
       - name: Upload GitHub Pages artifact
-        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push'
+        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch'
         uses: actions/upload-pages-artifact@v4
         with:
           path: .
 
       - name: Deploy to GitHub Pages
-        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push'
+        if: steps.commit.outputs.changed == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch'
         id: deployment
         uses: actions/deploy-pages@v4
