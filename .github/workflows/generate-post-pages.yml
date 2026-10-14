@@ -1,6 +1,7 @@
 name: Generate clean post pages
 
 # Rebuild pre-rendered pages after repository changes and scheduled Supabase syncs.
+# Content date extensions are synced from the database before publishing.
 
 on:
   workflow_dispatch:
