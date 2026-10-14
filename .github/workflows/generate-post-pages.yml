@@ -1,5 +1,7 @@
 name: Generate clean post pages
 
+# Rebuild pre-rendered pages after repository changes and scheduled Supabase syncs.
+
 on:
   workflow_dispatch:
   repository_dispatch:
