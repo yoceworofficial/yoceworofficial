@@ -23,3 +23,5 @@ No recruitment content is seeded. Real content should be added only after verifi
 
 <!-- publish sync: 2026-10-19-adsense-quality-audit-and-date-corrections -->
 <!-- publish sync: 2026-10-19-seo-metadata-correction-after-live-audit -->
+
+<!-- publish sync: 2026-10-19-next-expiry-and-metadata-audit -->
