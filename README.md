@@ -22,3 +22,4 @@ No recruitment content is seeded. Real content should be added only after verifi
 <!-- publish sync: 2026-10-04-static-page-fallback-hardening -->
 
 <!-- publish sync: 2026-10-19-adsense-quality-audit-and-date-corrections -->
+<!-- publish sync: 2026-10-19-seo-metadata-correction-after-live-audit -->
