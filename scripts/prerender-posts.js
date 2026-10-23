@@ -65,6 +65,7 @@ const path = require('path');
   };
   const sectionHtml = s => {
     const c=s.content||{}, items=Array.isArray(c)?c:(Array.isArray(c.items)?c.items:[]);
+    if(s.section_type==='image'){const u=safeUrl(c.image_url||c.url||'');if(!u)return '<p class="muted">फोटो उपलब्ध नहीं है।</p>';const align=['left','center','right'].includes(c.align)?c.align:'center';const width=['50%','75%','90%','100%'].includes(c.width)?c.width:'100%';const margin=align==='left'?'0 auto 0 0':align==='right'?'0 0 0 auto':'0 auto';return '<figure class="content-image" style="width:'+width+';max-width:100%;margin:'+margin+';text-align:'+align+'"><img src="'+u+'" alt="'+esc(c.alt||s.heading||'YOCEWOR photo')+'" loading="lazy" style="display:block;width:100%;height:auto;max-height:650px;object-fit:contain;border-radius:8px"><figcaption style="font-size:14px;color:#666;margin-top:6px">'+esc(c.caption||'')+'</figcaption></figure>';}
     if(s.section_type==='table'){
       const h=Array.isArray(c.headers)?c.headers:[], r=Array.isArray(c.rows)?c.rows:[];
       return '<table class="info-table'+(h.length>2?' responsive-wide':'')+'"><thead><tr>'+h.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+
